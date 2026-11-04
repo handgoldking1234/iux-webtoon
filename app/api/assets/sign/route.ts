@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { apiMe, err, isRes, safeKey } from '@/lib/api';
 import { supabaseServer } from '@/lib/supabase/server';
+import { signUpload } from '@/lib/storage';
 
 const MAX = 25 * 1024 * 1024;
 const OK_MIME = /^(image\/(png|jpe?g|webp|gif|avif|bmp)|application\/octet-stream)$/;
@@ -17,10 +18,8 @@ export async function POST(req: Request) {
   if (!OK_MIME.test(mime)) return err('bad_type', '이미지 파일만 올릴 수 있어요');
   const sb = await supabaseServer();
   const path = `${me.profile.id}/assets/${key}`;
-  const { data: ex } = await sb.from('assets').select('key').eq('owner_id', me.profile.id).eq('key', key).maybeSingle();
-  if (ex) return NextResponse.json({ exists: true });
-  const { data, error } = await sb.storage.from('studio').createSignedUploadUrl(path, { upsert: true });
-  if (error) return err('storage', error.message, 500);
+  let url: string;
+  try { url = await signUpload(path); } catch (e) { return err('storage', String(e), 500); }
   await sb.from('assets').upsert({ owner_id: me.profile.id, key, path, bytes, mime });
-  return NextResponse.json({ url: data.signedUrl });
+  return NextResponse.json({ url });
 }

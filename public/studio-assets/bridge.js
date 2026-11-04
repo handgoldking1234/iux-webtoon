@@ -167,15 +167,15 @@
   function image(prompt, W, H, refKeys) {
     var map = (typeof blobs !== 'undefined' && blobs) || new Map();
     var refs = (refKeys || []).filter(function (k, i, a) { return k && a.indexOf(k) === i && map.has(k); }).slice(0, 3);
-    var model = '';
-    try { model = (S.settings.aiModel || '').indexOf('Pro') >= 0 ? 'pro' : ''; } catch (_) {}
+    var model = '', res = '';
+    try { model = (S.settings.aiModel || '').indexOf('Pro') >= 0 ? 'pro' : ''; res = S.settings.sbRes === undefined ? '2K' : (S.settings.sbRes || ''); } catch (_) {}
     return Promise.all(refs.map(function (k) { return shrink(map.get(k)).catch(function () { return null; }); })).then(function (R) {
-      return fetch('/api/ai/image', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: prompt, width: Math.round(W), height: Math.round(H), model: model, refs: R.filter(Boolean) }) });
+      return fetch('/api/ai/image', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: prompt, width: Math.round(W), height: Math.round(H), model: model, res: res, refs: R.filter(Boolean) }) });
     }).then(function (r) {
       var q = r.headers.get('x-wb-quota'); if (q) try { setQuota(JSON.parse(q)); } catch (_) {}
       if (r.ok && (r.headers.get('content-type') || '').indexOf('image/') === 0) return r.blob();
       return r.json().catch(function () { return {}; }).then(function (j) {
-        var m = { image_quota: 'AI 이미지를 다 썼어요', not_configured: '이미지 AI가 아직 연결되지 않았어요', blocked: 'AI가 이 장면은 그릴 수 없다고 했어요 · 설명을 바꿔 보세요', suspended: '이용이 정지된 계정이에요' }[j.code];
+        var m = { budget_exceeded: '이번 달 AI 사용량이 많아 잠시 멈췄어요', image_quota: 'AI 이미지를 다 썼어요', not_configured: '이미지 AI가 아직 연결되지 않았어요', blocked: 'AI가 이 장면은 그릴 수 없다고 했어요 · 설명을 바꿔 보세요', suspended: '이용이 정지된 계정이에요' }[j.code];
         say((m || j.message || '이미지를 만들지 못했어요') + ' · 사용 횟수는 줄지 않았어요');
         if (j.code === 'image_quota' && typeof paywall === 'function') setTimeout(function () { paywall('img'); }, 300);
         return null;
@@ -206,7 +206,23 @@
       if (typeof renderAcct === 'function') renderAcct();
     } catch (_) {}
   }
-  document.addEventListener('DOMContentLoaded', function () { setTimeout(applyUser, 0); });
+  /* ---------- 공지 띠 (관리자 › 공지) ---------- */
+  function showNotices() {
+    var list = (boot.notices || []).filter(function (n) { return LS.get('wb-notice-x', []).indexOf(n.id) < 0; });
+    if (!list.length) return;
+    var css = document.createElement('style');
+    css.textContent = '.wbn{position:fixed;left:50%;top:10px;transform:translateX(-50%);z-index:9999;display:flex;align-items:center;gap:10px;max-width:min(720px,calc(100% - 24px));padding:10px 12px 10px 16px;border-radius:12px;background:#121212;color:#fff;font:600 13px/1.45 system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.25)}.wbn.warn{background:#7a3d00}.wbn.event{background:#13863c}.wbn small{display:block;font-weight:400;opacity:.85}.wbn a{color:inherit;text-decoration:underline}.wbn button{margin-left:auto;border:0;background:rgba(255,255,255,.15);color:inherit;width:26px;height:26px;border-radius:7px;cursor:pointer;flex:none}';
+    document.head.appendChild(css);
+    var n = list[0], el = document.createElement('div');
+    el.className = 'wbn ' + (n.level || 'info'); el.setAttribute('role', 'status');
+    var t = document.createElement('div'); var b = document.createElement('b'); b.textContent = n.title; t.appendChild(b);
+    if (n.body) { var sm = document.createElement('small'); sm.textContent = n.body; t.appendChild(sm); }
+    if (n.link && /^https?:\/\//.test(n.link)) { var a = document.createElement('a'); a.href = n.link; a.target = '_blank'; a.rel = 'noopener'; a.textContent = '자세히'; t.appendChild(a); }
+    var x = document.createElement('button'); x.setAttribute('aria-label', '공지 닫기'); x.textContent = '✕';
+    x.onclick = function () { var d = LS.get('wb-notice-x', []); d.push(n.id); LS.set('wb-notice-x', d.slice(-50)); el.remove(); };
+    el.appendChild(t); el.appendChild(x); document.body.appendChild(el);
+  }
+  document.addEventListener('DOMContentLoaded', function () { setTimeout(applyUser, 0); setTimeout(showNotices, 600); });
   if (cloud) fetch('/api/me', { method: 'POST', credentials: 'same-origin' }).catch(function () {});
 
   window.__WBX = boot.ai.image ? '' : undefined;

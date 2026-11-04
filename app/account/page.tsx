@@ -4,6 +4,7 @@ import { getQuota } from '@/lib/quota';
 import { supabaseServer } from '@/lib/supabase/server';
 import { Logo } from '@/components';
 import AccountClient from './AccountClient';
+import { mailReady } from '@/lib/mail';
 
 export const metadata = { title: '내 계정' };
 export const dynamic = 'force-dynamic';
@@ -47,7 +48,7 @@ export default async function Account({ searchParams }: { searchParams: Promise<
           </div>
         </div>
         <div className="card">
-          <div className="hd"><h2>문의</h2><span className="note">답변은 여기와 이메일로 알려 드려요</span></div>
+          <div className="hd"><h2>문의</h2><span className="note">{mailReady() ? '답변은 여기와 이메일로 알려 드려요' : '답변은 이 화면에서 확인할 수 있어요'}</span></div>
           <AccountClient part="inquiry" local={me.mode !== 'cloud'} />
           {inquiries.length > 0 && (
             <div className="qlist">{inquiries.map((x) => (

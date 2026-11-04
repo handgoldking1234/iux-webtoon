@@ -34,7 +34,7 @@ P('이미지 한도', 'const AI_FREE=10;', 'const AI_FREE=window.__WB?__WB.boot.
 P('글 남은 횟수', 'function txtAi(){aiTestReset();', 'function txtAi(){if(window.__WB)return __WB.txtAi();aiTestReset();');
 P('글 사용 기록', 'function txtAiUse(n=1){', 'function txtAiUse(n=1){if(window.__WB)return;');
 P('이미지 남은 장 수(토스트)', 'Math.max(0,AI_FREE-st.aiUsed)', 'Math.max(0,aiImgLeft(st))');
-P('AI 오류 문구', 'const SM_ERR={', "const SM_ERR={quota_exceeded:'이번 달 글 AI를 다 썼어요',image_quota:'AI 이미지를 다 썼어요',not_configured:'AI가 아직 연결되지 않았어요',suspended:'이용이 정지된 계정이에요',upstream_error:'AI 서버가 답하지 않았어요',");
+P('AI 오류 문구', 'const SM_ERR={', "const SM_ERR={budget_exceeded:'이번 달 AI 사용량이 많아 잠시 멈췄어요',quota_exceeded:'이번 달 글 AI를 다 썼어요',image_quota:'AI 이미지를 다 썼어요',not_configured:'AI가 아직 연결되지 않았어요',suspended:'이용이 정지된 계정이에요',upstream_error:'AI 서버가 답하지 않았어요',");
 
 // 3) 계정 메뉴: 진짜 로그인 · 내 계정 · 관리자
 P('로그아웃', "else if(a==='logout'){USER=null;", "else if(a==='account'){location.href='/account';}else if(a==='admin'){location.href='/admin';}else if(a==='logout'){if(window.__WB){location.href='/auth/signout';return;}USER=null;");

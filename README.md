@@ -45,6 +45,7 @@ supabase/migrations/       DB 스키마 · RLS · Storage 정책
 npm install
 cp .env.example .env.local   # 비워 둬도 돼요
 npm run dev                  # http://localhost:3000
+npm test                     # 한도 · AI 엔진 · 편집기 패치 테스트
 ```
 
 **DB 연동 전(로컬 시연 모드)**: `.env.local`에 Supabase 키가 없으면 로그인 없이 동작해요. 작품은 브라우저에만 저장되고, 관리자 화면은 예시 데이터로 보여요. AI 키(ANTHROPIC_API_KEY · GEMINI_API_KEY)만 넣으면 AI는 실제로 써 볼 수 있어요.
@@ -52,7 +53,7 @@ npm run dev                  # http://localhost:3000
 ## DB 연동 (Supabase)
 
 1. Supabase에서 새 프로젝트를 만들어요 (리전: Seoul 권장).
-2. SQL Editor에 `supabase/migrations/0001_init.sql`을 붙여 넣고 실행해요.
+2. SQL Editor에 `supabase/migrations/0001_init.sql` → `0002_settings_notices.sql` 순서로 붙여 넣고 실행해요.
 3. Authentication → Providers
    - Email: 켜기 (메일 인증 사용 여부 선택)
    - Kakao · Google: 각 개발자 콘솔에서 앱을 만들고 Client ID · Secret 입력
@@ -68,17 +69,28 @@ npm run dev                  # http://localhost:3000
 - 환경 변수: `.env.example`의 항목 전부
 - `GEMINI_IMAGE_MODEL` · `GEMINI_IMAGE_MODEL_PRO` · `CLAUDE_MODEL`은 쓰는 계정에서 열려 있는 모델 이름으로 확인해 주세요.
 
-## 한도 · 비용 (환경 변수로 조정)
+## 선택 연결
+
+- **OpenAI** — `OPENAI_API_KEY`를 넣으면 관리자 › 설정에서 글 · 이미지 엔진을 OpenAI로 바꿀 수 있어요 (기본은 Claude + 나노바나나).
+- **Cloudflare R2** — `R2_*`를 넣으면 작품 · 그림 파일을 Supabase Storage 대신 R2에 저장해요. R2 버킷 CORS에 사이트 주소의 `PUT` · `GET`을 허용해 주세요.
+- **메일 (Resend)** — `RESEND_API_KEY` · `MAIL_FROM`을 넣으면 새 문의가 관리자에게, 답변이 회원에게 메일로 가요. 없으면 화면에서만 보여요.
+
+## 관리자 화면
+
+대시보드 · 유입경로(퍼널 · 채널 · 캠페인 링크) · 회원관리 · AI 사용·비용 · 작품 · 요금제(프로 알림 신청 CSV) · 문의 · 공지 · 설정.
+공지는 작업실 위쪽 띠와 첫 화면에 보이고, 설정(엔진 · 한도 · 월 예산 · 단가)은 30초 안에 서비스에 반영돼요.
+
+## 한도 · 비용 (관리자 › 설정에서 조정 · 처음 값은 환경 변수)
 
 | 항목 | 무료 | 프로 · 교육 |
 |---|---|---|
 | 글 AI | 매달 30회 | 매달 1,000회 |
 | AI 이미지 | 가입 선물 10장 (누적) | 매달 300장 |
 
-회원별 추가 이미지는 관리자 › 회원 상세에서 줄 수 있어요. 비용 통계는 `COST_*` 단가 × 사용량으로 계산해요.
+회원별 추가 이미지는 관리자 › 회원 상세에서 줄 수 있어요. 비용 통계는 단가 × 사용량으로 계산하고, 월 예산을 넘으면 회원 AI를 멈춰요(관리자는 계속 사용).
 
 ## 다음 단계
 
 - 편집기를 React 컴포넌트로 단계적으로 옮기기 (기획 · 콘티·AI 팝업부터)
-- 결제(프로 요금제) · 알림 메일
+- 결제(프로 요금제)
 - 작품 공유 링크 · 팀 작업

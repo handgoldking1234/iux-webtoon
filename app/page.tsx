@@ -2,11 +2,12 @@ import Link from 'next/link';
 import { getMe } from '@/lib/auth';
 import { dbReady } from '@/lib/env';
 import { Logo } from '@/components';
+import { activeNotices } from '@/lib/notices';
 
 export const dynamic = 'force-dynamic';
 
 export default async function Home() {
-  const me = await getMe();
+  const [me, notices] = await Promise.all([getMe(), activeNotices()]);
   return (
     <div className="hero">
       <header>
@@ -26,6 +27,7 @@ export default async function Home() {
         )}
       </header>
       <div className="in">
+        {notices.map((n) => <div key={n.id} className={`msg ${n.level === 'warn' ? 'bad' : n.level === 'event' ? 'ok' : 'info'}`}><b>{n.title}</b>{n.body ? ` · ${n.body}` : ''}{n.link && /^https?:\/\//.test(n.link) && <> · <a href={n.link} target="_blank" rel="noopener">자세히</a></>}</div>)}
         {!dbReady() && <div className="msg info">DB 연동 전 · 로컬 시연 모드예요. 로그인 없이 작업실을 열 수 있고, 작품은 이 브라우저에만 저장돼요.</div>}
         <h1>웹툰 한 화, 기획부터 말풍선까지</h1>
         <p>로그라인 · 인물 · 회차 시놉시스를 적으면 AI가 콘티(S#) · 컷별 이미지 프롬프트 · 말풍선을 만들어요. 캐릭터 시트로 얼굴을 맞추고, 컷에 그림과 대사를 한 번에 넣어 내보내요.</p>

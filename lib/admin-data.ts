@@ -2,6 +2,7 @@ import 'server-only';
 import { adminReady, env } from '@/lib/env';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { limitsOf } from '@/lib/quota';
+import { getSettings } from '@/lib/settings';
 import type { Profile } from '@/lib/auth';
 
 /** 관리자 화면 데이터 — DB 연동 전에는 예시 데이터를 돌려줘요 (demo: true) */
@@ -75,7 +76,7 @@ export async function listMembers(o: { q?: string; plan?: string; status?: strin
 export async function getMember(id: string) {
   if (!adminReady()) {
     const d = demo(), m = d.members.find((x) => x.id === id) || d.members[0];
-    return { demo: true, member: m, projects: [] as ProjectRow[], usage: d.usage.filter((u) => u.user_id === m.id).slice(0, 30), inquiries: [] as InquiryRow[], limits: limitsOf(m) };
+    return { demo: true, member: m, projects: [] as ProjectRow[], usage: d.usage.filter((u) => u.user_id === m.id).slice(0, 30), inquiries: [] as InquiryRow[], limits: limitsOf(m, (await getSettings()).limits) };
   }
   const sb = supabaseAdmin();
   const { data: p } = await sb.from('profiles').select('*').eq('id', id).maybeSingle();
@@ -87,14 +88,14 @@ export async function getMember(id: string) {
     listMembers({ q: p.email || '' }),
   ]);
   const row = list.rows.find((x) => x.id === id) || ({ ...p, works: 0, text_month: 0, image_month: 0, image_total: 0, cost_month: 0 } as MemberRow);
-  return { demo: false, member: row, projects: (projects || []) as ProjectRow[], usage: (usage || []) as UsageRow[], inquiries: (inquiries || []) as InquiryRow[], limits: limitsOf(p as Profile) };
+  return { demo: false, member: row, projects: (projects || []) as ProjectRow[], usage: (usage || []) as UsageRow[], inquiries: (inquiries || []) as InquiryRow[], limits: limitsOf(p as Profile, (await getSettings()).limits) };
 }
 
 /* ───────── 대시보드 */
 export async function dashboard() {
   if (!adminReady()) {
     const d = demo();
-    return summarize(true, d.members, d.usage, d.members.reduce((a, m) => a + m.works, 0), d.members.filter((m) => m.last_seen_at && Date.parse(m.last_seen_at) > Date.now() - 7 * 864e5).length, 2);
+    return summarize((await getSettings()).budgetKrw, true, d.members, d.usage, d.members.reduce((a, m) => a + m.works, 0), d.members.filter((m) => m.last_seen_at && Date.parse(m.last_seen_at) > Date.now() - 7 * 864e5).length, 2);
   }
   const sb = supabaseAdmin();
   const [{ data: members }, { data: usage }, { count: works }, { data: active }, { count: openQ }] = await Promise.all([
@@ -105,10 +106,10 @@ export async function dashboard() {
     sb.from('inquiries').select('id', { count: 'exact', head: true }).eq('status', 'open'),
   ]);
   const act = new Set((active || []).map((x) => x.owner_id)).size;
-  return summarize(false, (members || []) as MemberRow[], (usage || []) as UsageRow[], works || 0, act, openQ || 0);
+  return summarize((await getSettings()).budgetKrw, false, (members || []) as MemberRow[], (usage || []) as UsageRow[], works || 0, act, openQ || 0);
 }
 
-function summarize(demoFlag: boolean, members: MemberRow[] | Profile[], usage: UsageRow[], works: number, activeMakers: number, openInquiries: number) {
+function summarize(budget: number, demoFlag: boolean, members: MemberRow[] | Profile[], usage: UsageRow[], works: number, activeMakers: number, openInquiries: number) {
   const ms = monthStart(), w7 = daysAgo(7);
   const month = usage.filter((u) => u.created_at >= ms && u.ok);
   const days = Array.from({ length: 14 }, (_, i) => day(daysAgo(13 - i)));
@@ -133,7 +134,7 @@ function summarize(demoFlag: boolean, members: MemberRow[] | Profile[], usage: U
     monthCost: month.reduce((a, u) => a + +u.cost_krw, 0),
     monthImages: month.filter((u) => u.kind === 'image').reduce((a, u) => a + u.units, 0),
     monthTexts: month.filter((u) => u.kind === 'text').reduce((a, u) => a + u.units, 0),
-    budget: env.budgetKrw,
+    budget,
     byDay, top, byModel: [...byModel.entries()].map(([model, v]) => ({ model, ...v })),
     recent: members.slice().sort((a, b) => (a.created_at < b.created_at ? 1 : -1)).slice(0, 6),
     sources: Object.entries(members.reduce<Record<string, number>>((a, m) => { const k = ('signup_source' in m && m.signup_source) || '직접 · 알 수 없음'; a[k] = (a[k] || 0) + 1; return a; }, {})).sort((a, b) => b[1] - a[1]),
@@ -165,4 +166,52 @@ export async function listInquiries(status?: string) {
 export async function aiReport() {
   const d = await dashboard();
   return d;
+}
+
+/* ───────── 유입경로 — 가입 → 작품 저장 → AI 사용 → 다시 방문 → 프로 알림 */
+export async function acquisition(days = 30) {
+  type M = { id: string; created_at: string; last_seen_at: string | null; signup_source: string | null; pro_notify: boolean };
+  let members: M[], makers: Set<string>, aiUsers: Set<string>, demoFlag = false;
+  const since = daysAgo(days);
+  if (!adminReady()) {
+    const d = demo();
+    members = d.members; makers = new Set(d.members.filter((m) => m.works > 0).map((m) => m.id)); aiUsers = new Set(d.usage.map((u) => u.user_id)); demoFlag = true;
+  } else {
+    const sb = supabaseAdmin();
+    const { data } = await sb.from('profiles').select('id,created_at,last_seen_at,signup_source,pro_notify').gte('created_at', since).limit(20000);
+    members = (data || []) as M[];
+    const ids = members.map((m) => m.id);
+    const [{ data: pj }, { data: au }] = ids.length
+      ? await Promise.all([sb.from('projects').select('owner_id').in('owner_id', ids.slice(0, 1000)), sb.from('ai_usage').select('user_id').in('user_id', ids.slice(0, 1000)).limit(50000)])
+      : [{ data: [] }, { data: [] }];
+    makers = new Set((pj || []).map((x) => x.owner_id)); aiUsers = new Set((au || []).map((x) => x.user_id));
+  }
+  const back = (m: M) => !!m.last_seen_at && Date.parse(m.last_seen_at) - Date.parse(m.created_at) > 864e5;
+  const steps = (L: M[]) => [L.length, L.filter((m) => makers.has(m.id)).length, L.filter((m) => aiUsers.has(m.id)).length, L.filter(back).length, L.filter((m) => m.pro_notify).length];
+  const groups = new Map<string, M[]>();
+  members.forEach((m) => { const k = m.signup_source || '직접 · 알 수 없음'; groups.set(k, [...(groups.get(k) || []), m]); });
+  return {
+    demo: demoFlag, days,
+    funnel: steps(members),
+    labels: ['가입', '작품 저장', 'AI 사용', '다음 날 이후 재방문', '프로 알림 신청'],
+    channels: [...groups.entries()].map(([k, L]) => ({ source: k, s: steps(L) })).sort((a, b) => b.s[0] - a.s[0]),
+  };
+}
+
+/* ───────── 요금제 */
+export async function plans() {
+  if (!adminReady()) {
+    const m = demo().members;
+    return { demo: true, counts: { free: m.filter((x) => x.plan === 'free').length, pro: m.filter((x) => x.plan === 'pro').length, edu: m.filter((x) => x.plan === 'edu').length }, notify: m.filter((x) => x.pro_notify).map((x) => ({ id: x.id, name: x.name, email: x.email, created_at: x.created_at })) };
+  }
+  const sb = supabaseAdmin();
+  const c = async (plan: string) => (await sb.from('profiles').select('id', { count: 'exact', head: true }).eq('plan', plan)).count || 0;
+  const [free, pro, edu, { data: notify }] = await Promise.all([c('free'), c('pro'), c('edu'), sb.from('profiles').select('id,name,email,created_at').eq('pro_notify', true).order('created_at', { ascending: false }).limit(1000)]);
+  return { demo: false, counts: { free, pro, edu }, notify: (notify || []) as { id: string; name: string | null; email: string | null; created_at: string }[] };
+}
+
+export async function admins() {
+  if (!adminReady()) return [{ id: 'local', name: '로컬 작가', email: 'local@webtoonboard.dev', last_seen_at: null as string | null }];
+  const { data } = await supabaseAdmin().from('profiles').select('id,name,email,last_seen_at').eq('role', 'admin').limit(50);
+  return (data || []) as { id: string; name: string | null; email: string | null; last_seen_at: string | null }[];
 }

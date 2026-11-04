@@ -3,7 +3,9 @@ import { join } from 'node:path';
 import { NextResponse } from 'next/server';
 import { getMe } from '@/lib/auth';
 import { getQuota } from '@/lib/quota';
-import { env } from '@/lib/env';
+import { getSettings } from '@/lib/settings';
+import { engineReady } from '@/lib/ai';
+import { activeNotices } from '@/lib/notices';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,7 +17,7 @@ export async function GET(req: Request) {
   if (!me) return NextResponse.redirect(new URL('/login?next=/studio', req.url));
   if (me.profile.status === 'suspended') return NextResponse.redirect(new URL('/account?suspended=1', req.url));
   if (!cache || process.env.NODE_ENV !== 'production') cache = await readFile(join(process.cwd(), 'editor', 'studio.html'), 'utf8');
-  const quota = await getQuota(me.profile);
+  const [quota, st, notices] = await Promise.all([getQuota(me.profile), getSettings(), activeNotices()]);
   const p = me.profile;
   const boot = {
     mode: me.mode,
@@ -23,7 +25,8 @@ export async function GET(req: Request) {
     isAdmin: me.isAdmin,
     plan: p.plan,
     quota,
-    ai: { text: !!env.anthropicKey, image: !!env.geminiKey },
+    ai: { text: engineReady(st.engines.text), image: engineReady(st.engines.image) },
+    notices,
   };
   const json = JSON.stringify(boot).replace(/</g, '\\u003c');
   return new NextResponse(cache.replace('__WB_BOOT_JSON__', json), {

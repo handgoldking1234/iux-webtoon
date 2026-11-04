@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { apiMe, err, isRes, safeKey } from '@/lib/api';
 import { supabaseServer } from '@/lib/supabase/server';
+import { signDownload } from '@/lib/storage';
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -13,9 +14,10 @@ export async function GET(_req: Request, { params }: Ctx) {
   const sb = await supabaseServer();
   const { data: p } = await sb.from('projects').select('data_path').eq('id', id).maybeSingle();
   if (!p?.data_path) return err('not_found', '작품을 찾을 수 없어요', 404);
-  const { data, error } = await sb.storage.from('studio').createSignedUrl(p.data_path, 60);
-  if (error) return err('storage', error.message, 500);
-  return NextResponse.json({ url: data.signedUrl });
+  if (!p.data_path.startsWith(me.profile.id + '/')) return err('not_found', '작품을 찾을 수 없어요', 404);
+  const url = await signDownload(p.data_path, 60);
+  if (!url) return err('storage', '작품 파일을 찾을 수 없어요', 404);
+  return NextResponse.json({ url });
 }
 
 /** 올린 뒤 목록 정보 저장 */

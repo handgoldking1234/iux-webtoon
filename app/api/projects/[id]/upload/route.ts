@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { apiMe, err, isRes, safeKey } from '@/lib/api';
-import { supabaseServer } from '@/lib/supabase/server';
+import { signUpload } from '@/lib/storage';
 
 const MAX = 50 * 1024 * 1024;
 
@@ -12,8 +12,9 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
   if (!safeKey(id) || me.mode !== 'cloud') return err('bad_id', '작품 id가 올바르지 않아요');
   const b = await req.json().catch(() => ({}));
   if (+b.bytes > MAX) return err('too_large', '작품 파일이 50MB를 넘어요', 413);
-  const sb = await supabaseServer();
-  const { data, error } = await sb.storage.from('studio').createSignedUploadUrl(`${me.profile.id}/projects/${id}.json`, { upsert: true });
-  if (error) return err('storage', error.message, 500);
-  return NextResponse.json({ url: data.signedUrl, path: data.path });
+  try {
+    return NextResponse.json({ url: await signUpload(`${me.profile.id}/projects/${id}.json`) });
+  } catch (e) {
+    return err('storage', String(e), 500);
+  }
 }
