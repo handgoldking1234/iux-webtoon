@@ -2151,7 +2151,7 @@ function paywall(kind){let m=$('#mPay');if(m)m.remove();m=document.createElement
  document.body.appendChild(m);m.addEventListener('click',ev=>{const x=ev.target.closest('[data-pay]');if(x||ev.target===m){if(x&&x.dataset.pay==='r'){aiTestReset(true);save();renderAll();if($('#mPlan'))planRender();stuRender();toast('테스트 · AI 횟수를 다시 채웠어요');}if(x&&x.dataset.pay==='1'){S.settings.proNotify=true;save();toast('알림을 신청했어요 · 프로가 열리면 가장 먼저 알려 드려요');}m.remove();}});
  m.addEventListener('keydown',ev=>{if(ev.key==='Escape'){ev.stopPropagation();m.remove();}});setTimeout(()=>m.querySelector('[data-pay="1"]').focus(),0);}
 /* ---------- 작품 기획 · 인물 · 회차 시놉시스 ---------- */
-const PLF=[['logline','로그라인','한 줄로 — 예) 1944년 경성, 유리건판에 갇힌 혼을 보는 견습 사진사',1],['genre','장르','공포 · 시대극 · 미스터리',1],['tone','톤','진지 70 · 코믹 30, 서늘하고 쓸쓸하게',1],['target','타깃','20~30대 · 네이버 웹툰 독자',1],['world','세계관 · 배경','시대 · 장소 · 규칙 (예: 사진관 암실에서만 혼이 보인다)',4],['story','전체 줄거리','기 · 승 · 전 · 결 / 큰 사건 / 결말 방향',6]];
+const PLF=[['logline','로그라인','한 문장으로 — 예) 혼을 보는 견습 사진사가 사라진 스승을 찾아 나서지만, 스승을 가둔 유리건판이 하나씩 깨져 가고, 마지막 한 장마저 깨지면 경성의 혼이 모두 풀려난다',1],['genre','장르','공포 · 시대극 · 미스터리',1],['tone','톤','진지 70 · 코믹 30, 서늘하고 쓸쓸하게',1],['target','타깃','20~30대 · 네이버 웹툰 독자',1],['world','세계관 · 배경','시대 · 장소 · 규칙 (예: 사진관 암실에서만 혼이 보인다)',4],['story','전체 줄거리','기 · 승 · 전 · 결 / 큰 사건 / 결말 방향',6]];
 function plan(){return S.settings.plan=S.settings.plan||{};}
 function planFill(){const P=plan();return PLF.filter(([k])=>(P[k]||'').trim()).length+((S.settings.sbCharList||[]).some(c=>c.name)?1:0);}
 function planCtx(e){const P=plan(),L=[];if((P.idea||'').trim())L.push(`하고 싶은 이야기(작가 메모): ${P.idea.trim().slice(0,800)}`);if(P.format)L.push(`연재 형식: ${P.format}`);PLF.forEach(([k,l])=>{if((P[k]||'').trim())L.push(`${l}: ${P[k].trim().slice(0,k==='story'?1800:600)}`);});if(P.eps)L.push(`계획 화수: ${P.eps}화`);
@@ -2271,14 +2271,14 @@ async function planAIFull(){const P=plan();if(!SM){toast('여기서는 Claude를
 하고 싶은 이야기: ${(P.idea||'').trim()}
 ${planCtx(null)}
 Answer JSON only:
-{"logline":"(한 문장)","ll_who":"","ll_want":"","ll_but":"","ll_stake":"","tone":"","target":"","intent":"(기획의도 3-4문장)","selling":"(셀링 포인트 3개, 줄바꿈)","world":"(세계관 3-5문장)","locs":[{"name":"","desc":"(그림 AI용 장소 묘사)"}],
+{"logline":"(한 문장 50-80자 · 주인공은 이름 대신 특징으로)","ll_when":"(계기 · 배경, 없으면 빈칸)","ll_who":"","ll_want":"","ll_but":"","ll_stake":"","tone":"","target":"","intent":"(기획의도 3-4문장)","selling":"(셀링 포인트 3개, 줄바꿈)","world":"(세계관 3-5문장)","locs":[{"name":"","desc":"(그림 AI용 장소 묘사)"}],
 "chars":[{"name":"","cat":"주연|조연|단역","role":"(역할 · 나이)","group":"","intro":"","want":"","secret":"","pers":"","voice":"(말투)","look":"(외모, 그림 AI용으로 구체적으로)","outfit":""}],
 "rels":[{"a":"(이름)","b":"(이름)","t":"가족|연인|친구|동료|라이벌|적대|스승·제자|기타","call":"(호칭 · 존댓말/반말)"}],
 "struct":"3act","acts":[{"step":"설정|대립|해결","from":1,"to":0,"t":"(단계 줄거리 3-5문장)"}],"story":"(전체 줄거리 요약)","eps":<계획 화수 숫자>}
 Use 3-6 characters, 2-5 locations, every main pair in rels. acts must cover 1..eps without gaps.`,{cache:false});
   progSet(.8,'기획에 채우는 중…');
   mutate(()=>{const put=(k,v)=>{if(v!=null&&String(v).trim()&&!(P[k]||'').toString().trim())P[k]=String(v).trim();};
-   ['logline','ll_who','ll_want','ll_but','ll_stake','tone','target','intent','selling','world','story'].forEach(k=>{const was=(P[k]||'').toString().trim();put(k,res[k]);if(!was&&(P[k]||'').toString().trim())plMark(k,1);});if(!P.eps&&res.eps)P.eps=+res.eps||'';
+   ['logline','ll_when','ll_who','ll_want','ll_but','ll_stake','tone','target','intent','selling','world','story'].forEach(k=>{const was=(P[k]||'').toString().trim();put(k,res[k]);if(!was&&(P[k]||'').toString().trim())plMark(k,1);});if(!P.eps&&res.eps)P.eps=+res.eps||'';
    const LO=S.settings.locs=S.settings.locs||[];(res.locs||[]).forEach(l=>{if(!l||!l.name)return;const o=LO.find(x=>x.name===l.name);if(o){if(!o.desc&&l.desc)o.desc=l.desc;}else LO.push({id:uid(),name:l.name,desc:l.desc||'',refs:[]});});
    const L=plChars();(res.chars||[]).forEach(c=>{if(!c||!c.name)return;let o=L.find(x=>x.name===c.name);if(!o){o={id:uid(),name:c.name,refs:[]};L.push(o);}if(!o.id)o.id=uid();['cat','role','group','intro','want','secret','pers','voice','look','outfit'].forEach(k=>{if(c[k]&&!(o[k]||'').trim()){o[k]=c[k];o._ai=o._ai||{};o._ai[k]=1;}});});
    S.settings.sbChars=sbCharsText(L);
@@ -2320,9 +2320,20 @@ function plRfBox(k){if(!PLREF||PLREF.k!==k)return'';const R=PLREF,q=txtAi();
   <div class="plrfseg" role="radiogroup" aria-label="다듬는 방식">${MD.map(([m,l])=>`<button type="button" role="radio" data-placts="rfmode" data-v="${m}" aria-checked="${R.mode===m}" aria-pressed="${R.mode===m}">${l}</button>`).join('')}</div>
   ${R.mode==='ask'?`<textarea data-rfreq rows="2" class="plrfreq" placeholder="예) 더 어둡게 · 중반에 반전 추가 · 주인공을 더 능동적으로">${esc(R.req||'')}</textarea>`:`<p class="plrfhint">${cm[2]}</p>`}
   <div class="plrfF"><span class="plrfcost">${ic('wand',12)}<span>글 AI 1회 · 남은 무료 <b>${q.left}</b>/${TXT_FREE}회</span></span><button class="btn sm pri" data-placts="rfgo"${R.busy?' disabled':''}>${R.busy?'만드는 중…':'✦ 제안 받기'}</button></div></div>`;}
-function plRfSchema(k){return({ov:'{"tone":"","target":""}',ll:'{"options":["(결이 다른 로그라인 5개)"],"ll_who":"","ll_want":"","ll_but":"","ll_stake":""}',why:'{"intent":"(3-4문장)","selling":"(3개, 줄바꿈)"}',
+function plRfSchema(k){return({ov:'{"tone":"","target":""}',ll:'{"options":["(결이 다른 로그라인 5개 · 각각 한 문장 50-80자 · 주인공은 이름 대신 특징 · 목표 · 장애물 · 대가가 모두 들어가게)"],"ll_when":"","ll_who":"","ll_want":"","ll_but":"","ll_stake":""}',why:'{"intent":"(3-4문장)","selling":"(3개, 줄바꿈)"}',
  world:'{"world":"(3-5문장)","locs":[{"name":"","desc":"(그림 AI용 장소 묘사)"}]}',ch:'{"chars":[{"name":"(기존 이름 그대로, 새 인물만 새 이름)","cat":"주연|조연|단역","role":"","group":"","intro":"","want":"","secret":"","pers":"","voice":"","look":"(그림 AI용 외모)","outfit":""}]}',
  rel:'{"rels":[{"a":"(이름)","b":"(이름)","t":"가족|연인|친구|동료|라이벌|적대|스승·제자|기타","call":"(호칭 · 존댓말/반말)"}]}',plot:'{"struct":"3act|ki","acts":[{"step":"(단계 이름)","from":1,"to":10,"t":"(3-5문장)"}],"story":"(전체 요약)"}'})[k];}
+async function plLlPolish(){const P=plan();const parts=[P.ll_when,P.ll_who,P.ll_want,P.ll_but,P.ll_stake].map(x=>(x||'').trim()).filter(Boolean);const cur=(P.logline||'').trim();
+ if(!cur&&!parts.length){toast('로그라인이나 칸을 먼저 적어 주세요');return;}if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}if(!txtAi().left){paywall('txt');return;}
+ prog('AI가 로그라인을 다듬는 중');
+ try{const res=await SM.json(`You are a veteran Korean webtoon planner. Rewrite this webtoon logline as ONE natural Korean sentence of about 50-80 characters. Describe the protagonist by a defining trait instead of a name. It must contain the protagonist, their goal, the obstacle and what is at stake (and the trigger/setting if given). Keep the creator's meaning; do not add new plot facts.
+지금 로그라인: ${cur||'(없음)'}
+칸: 계기·배경=${(P.ll_when||'').trim()} / 누가=${(P.ll_who||'').trim()} / 원하는 것=${(P.ll_want||'').trim()} / 막는 것=${(P.ll_but||'').trim()} / 잃는 것=${(P.ll_stake||'').trim()}
+${planCtx(null)}
+Answer JSON only: {"logline":"(한 문장)"}`,{cache:false});
+  progEnd();const v=String(res&&res.logline||'').trim();if(!v){toast('AI가 답하지 못했어요 · 사용 횟수는 줄지 않았어요');return;}
+  txtAiUse(1);mutate(()=>{P.logline=v;plMark('logline',1);});plSave();planRender();toast('로그라인을 다듬었어요 · 실행 취소로 되돌릴 수 있어요');}
+ catch(x){progEnd();toast((SM_ERR[x&&x.code]||'AI가 답하지 못했어요')+' · 사용 횟수는 줄지 않았어요');}}
 async function plRfGo(){const R=PLREF,P=plan(),k=R.k;if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}if(!txtAi().left){paywall('txt');return;}
  if(R.mode==='ask'&&!(R.req||'').trim()){toast('어떻게 고칠지 한 줄로 적어 주세요');$('#mPlan [data-rfreq]')?.focus();return;}
  R.busy=true;planRender();
@@ -2337,7 +2348,7 @@ Answer JSON only: ${plRfSchema(k)}`,{cache:false});
 function plRfBuild(res){const R=PLREF,P=plan(),k=R.k,fill=R.mode==='fill',items=[];const add=(label,cur,next,apply,isNew)=>{next=(next==null?'':String(next)).trim();cur=(cur==null?'':String(cur)).trim();if(!next||next===cur)return;if(fill&&cur)return;items.push({label,cur,next,apply,on:true,isNew});};
  const pf=(key,label)=>add(label,P[key],res[key],v=>{P[key]=v;plMark(key,1);});
  if(k==='ov'){pf('tone','톤');pf('target','타깃');}
- if(k==='ll'){R.opts=(res.options||[]).filter(Boolean).slice(0,5);R.pick=R.opts.length?0:-1;[['ll_who','누가'],['ll_want','무엇을 원하는데'],['ll_but','무엇이 막고'],['ll_stake','실패하면 잃는 것']].forEach(([a,b])=>pf(a,b));}
+ if(k==='ll'){R.opts=(res.options||[]).filter(Boolean).slice(0,5);R.pick=R.opts.length?0:-1;[['ll_when','계기 · 배경'],['ll_who','누가'],['ll_want','무엇을 원하는데'],['ll_but','무엇이 막고'],['ll_stake','실패하면 잃는 것']].forEach(([a,b])=>pf(a,b));}
  if(k==='why'){pf('intent','기획의도');pf('selling','셀링 포인트');}
  if(k==='world'){pf('world','세계관 · 배경');const LO=S.settings.locs=S.settings.locs||[];(res.locs||[]).forEach(l=>{if(!l||!l.name)return;const o=LO.find(x=>x.name===l.name);if(o)add(`장소 · ${o.name}`,o.desc,l.desc,v=>{o.desc=v;});else add(`장소 · ${l.name}`,'',l.desc||l.name,v=>{LO.push({id:uid(),name:l.name,desc:l.desc||'',refs:[]});},true);});}
  if(k==='ch'){const L=plChars(),F=[['cat','분류'],['role','역할'],['group','소속'],['intro','소개'],['want','욕망'],['secret','비밀'],['pers','성격'],['voice','말투'],['look','외모'],['outfit','고정 의상']];
@@ -2359,10 +2370,12 @@ function plSecHTML(k){const P=plan(),q=txtAi();
  let h='';
  if(k==='ov'){h=`<div class="plsh4"><h4>톤 · 타깃</h4>${plRfBtn('ov')}</div>${plRfBox('ov')}<p class="sub">제목 · 장르 · 형식 · 화수는 위 「빠른 시작」에서 정해요.</p>
   <div class="pl2">${F('tone','톤','진지 70 · 코믹 30, 서늘하고 쓸쓸하게')}${F('target','타깃','20~30대 · 네이버 웹툰 독자')}</div>`;}
- else if(k==='ll'){h=`<div class="plsh4"><h4>로그라인</h4>${plRfBtn('ll')}</div>${plRfBox('ll')}<p class="sub">네 칸을 채우고 합치면 한 문장이 돼요. 바로 한 줄로 써도 돼요.</p>
-  <div class="pl2">${F('ll_who','누가','예) 혼을 보는 견습 사진사 해원이')}${F('ll_want','무엇을 원하는데','예) 사라진 스승을 찾으려 하지만')}${F('ll_but','무엇이 막고','예) 스승을 가둔 유리건판이 하나씩 깨지고')}${F('ll_stake','실패하면 무엇을 잃나','예) 마지막 장이 깨지면 경성의 혼이 모두 풀려난다')}</div>
+ else if(k==='ll'){h=`<div class="plsh4"><h4>로그라인</h4>${plRfBtn('ll')}</div>${plRfBox('ll')}<p class="sub">칸을 채우고 합치면 한 문장이 돼요. 바로 한 줄로 써도 돼요. 주인공은 이름보다 특징으로 쓰면 처음 읽는 사람도 바로 알아봐요.</p>
+  ${F('ll_when','계기 · 배경','예) 1944년 경성, 스승이 사라진 밤',1,'선택')}
+  <div class="pl2">${F('ll_who','누가','예) 혼을 보는 견습 사진사가')}${F('ll_want','무엇을 원하는데','예) 사라진 스승을 찾아 나서지만')}${F('ll_but','무엇이 막고','예) 스승을 가둔 유리건판이 하나씩 깨져 가고')}${F('ll_stake','실패하면 무엇을 잃나','예) 마지막 한 장마저 깨지면 경성의 혼이 모두 풀려난다')}</div>
   <button class="btn sm" data-placts="assemble">${ic('rows',13)}한 문장으로 합치기</button>
-  ${F('logline','로그라인','한 줄로 — 예) 1944년 경성, 유리건판에 갇힌 혼을 보는 견습 사진사',2)}
+  ${F('logline','로그라인','예) 혼을 보는 견습 사진사가 사라진 스승을 찾아 나서지만, 스승을 가둔 유리건판이 하나씩 깨져 가고, 마지막 한 장마저 깨지면 경성의 혼이 모두 풀려난다',2,`${(P.logline||'').trim().length}자 · 한 문장 50~80자 안팎`)}
+  <div class="plrow"><button class="btn sm" data-placts="llpolish">✦ AI로 한 문장 다듬기</button></div>
   <div class="plrow"><button class="btn sm" data-placts="draft">✦ 로그라인으로 나머지 빈칸 초안 채우기</button></div>${cost}`;}
  else if(k==='why'){h=`<div class="plsh4"><h4>기획의도 · 셀링 포인트</h4>${plRfBtn('why')}</div>${plRfBox('why')}<p class="sub">공모전 · 플랫폼 투고 기획서에 그대로 들어가요.</p>
   ${F('intent','기획의도','왜 지금 이 이야기인가 · 독자가 얻는 것',5)}${F('selling','셀링 포인트','다른 작품과 다른 점 3가지 · 첫 화에서 붙잡는 장면',5)}`;}
@@ -2459,7 +2472,7 @@ function plInput(ev){const t=ev.target,P=plan();
  if(t.dataset.rfi!=null){if(PLREF&&PLREF.items[+t.dataset.rfi])PLREF.items[+t.dataset.rfi].on=t.checked;return;}
  if(t.name==='plrfo'){if(PLREF)PLREF.pick=+t.value;return;}
  if(ev.type==='input'){if(t.dataset.plk&&plAI(t.dataset.plk)){plMark(t.dataset.plk,0);const tag=t.closest('.plf')?.querySelector('.aitag');tag&&tag.remove();}if(t.classList.contains('aif')){t.classList.remove('aif');if(t.dataset.plc!=null){const c=plChars()[+t.dataset.plc];if(c&&c._ai)delete c._ai[t.dataset.f];}if(t.dataset.plact){const a=(P.acts||{})[t.dataset.plact];if(a)delete a._ai;}}}
- if(t.dataset.plk){P[t.dataset.plk]=t.value;if(t.dataset.plk==='genre'){} plSave();plProg();return;}
+ if(t.dataset.plk){P[t.dataset.plk]=t.value;if(t.dataset.plk==='genre'){}if(t.dataset.plk==='logline'){const sm=t.closest('.plf')?.querySelector('span small');if(sm)sm.textContent=`${t.value.trim().length}자 · 한 문장 50~80자 안팎`;} plSave();plProg();return;}
  if(t.hasAttribute('data-plstyle')){S.settings.sbStyle=t.value;plSave();return;}
  if(t.dataset.plset){S.settings[t.dataset.plset]=t.value;plSave();if(typeof lpmSync==='function')lpmSync();return;}
  if(t.dataset.plc!=null){const c=plChars()[+t.dataset.plc];if(!c)return;if(!c.id)c.id=uid();c[t.dataset.f]=t.value;S.settings.sbChars=sbCharsText(plChars());plSave();plProg();if(t.dataset.f==='name'){const a=t.closest('.plchar')?.querySelector('.plava span');if(a)a.textContent=(t.value||'?').slice(0,1);}return;}
@@ -2475,7 +2488,8 @@ async function plClick(ev){const t=ev.target,m=$('#mPlan'),P=plan();if(t===m||t.
  const sx=t.closest('[data-plstruct]');if(sx){P.struct=sx.dataset.plstruct;plSave();planRender();return;}
  const nd=t.closest('[data-plnode]');if(nd){if(PLRDRAGGED)return;const v=nd.dataset.plnode;PLFOCUS=v&&v!==PLFOCUS?v:null;planRender();return;}
  const b=t.closest('[data-placts]');if(!b)return;const a=b.dataset.placts,C=plChars();
- if(a==='assemble'){const s=[P.ll_who,P.ll_want,P.ll_but,P.ll_stake].map(x=>(x||'').trim()).filter(Boolean);if(!s.length){toast('네 칸 중 하나라도 적어 주세요');return;}P.logline=s.join(' ').replace(/\s+/g,' ').replace(/([^.!?])$/,'$1.');plSave();planRender();toast('로그라인으로 합쳤어요 · 자연스럽게 다듬어 주세요');}
+ if(a==='assemble'){const w=(P.ll_when||'').trim();const s=[w&&!/[,.!?…]$/.test(w)?w+',':w,P.ll_who,P.ll_want,P.ll_but,P.ll_stake].map(x=>(x||'').trim()).filter(Boolean);if(!s.length){toast('칸 중 하나라도 적어 주세요');return;}P.logline=s.join(' ').replace(/\s+/g,' ').replace(/([^.!?])$/,'$1.');plSave();planRender();toast('로그라인으로 합쳤어요 · 「AI로 한 문장 다듬기」로 매끄럽게 만들 수 있어요');}
+ else if(a==='llpolish'){await plLlPolish();}
  else if(a==='draft'){await planAI('draft');planRender();}
  else if(a==='full'){await planAIFull();}
  else if(a==='detail'){P.detail=true;P.qsFold=false;plSave();PLT='ov';planRender();plGo('ov',true);}
