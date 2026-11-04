@@ -1,0 +1,857 @@
+<title>웹툰보드 관리자</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
+<style>
+/* 레이아웃: 왼쪽 고정 메뉴 + 오른쪽 화면 하나씩(해시로 전환) · 좁으면 메뉴가 위 가로 줄로 */
+:root{
+ --bg:#f6f6f6;--panel:#ffffff;--soft:#f0f0f0;--soft2:#fafafa;--line:#e3e3e3;--line2:#f0f0f0;--ctl:#d6d6d6;
+ --ink:#121212;--ink2:#3a3a3a;--mute:#6a6a6a;--faint:#9a9a9a;
+ --acc:#1db954;--accInk:#08391a;--accText:#13863c;--accSoft:#e8f8ee;--accRow:#f0faf4;
+ --blue:#2563eb;--blueSoft:#e6efff;--blueText:#1d4ed8;
+ --warnSoft:#fff3e6;--warnText:#7a3d00;--orange:#e8590c;--amber:#a15c00;
+ --badSoft:#fdecea;--badText:#b42318;--noteSoft:#fff7e0;--noteText:#6b4e00;
+ --inv:#121212;--invInk:#ffffff;
+ --f:Figtree,'Noto Sans KR',system-ui,sans-serif;--mono:ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#111312;--panel:#191c1a;--soft:#232725;--soft2:#1d201e;--line:#2c312e;--line2:#242826;--ctl:#3a403c;
+ --ink:#eef1ef;--ink2:#c9cfcb;--mute:#9aa39d;--faint:#6f7872;
+ --acc:#2fd06a;--accInk:#062b13;--accText:#4fdc85;--accSoft:#183424;--accRow:#17271d;
+ --blue:#6b9bff;--blueSoft:#1b2741;--blueText:#9dbcff;
+ --warnSoft:#3a2a14;--warnText:#f3c48a;--orange:#ff8a4c;--amber:#f0b45c;
+ --badSoft:#3a1d1a;--badText:#ff8f84;--noteSoft:#332b12;--noteText:#ecd38a;
+ --inv:#eef1ef;--invInk:#121212;color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#111312;--panel:#191c1a;--soft:#232725;--soft2:#1d201e;--line:#2c312e;--line2:#242826;--ctl:#3a403c;
+ --ink:#eef1ef;--ink2:#c9cfcb;--mute:#9aa39d;--faint:#6f7872;
+ --acc:#2fd06a;--accInk:#062b13;--accText:#4fdc85;--accSoft:#183424;--accRow:#17271d;
+ --blue:#6b9bff;--blueSoft:#1b2741;--blueText:#9dbcff;
+ --warnSoft:#3a2a14;--warnText:#f3c48a;--orange:#ff8a4c;--amber:#f0b45c;
+ --badSoft:#3a1d1a;--badText:#ff8f84;--noteSoft:#332b12;--noteText:#ecd38a;
+ --inv:#eef1ef;--invInk:#121212;color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:15;display:flex;align-items:center;gap:12px;margin:-20px calc(-1 * max(28px,env(safe-area-inset-right,0px))) 0 calc(-1 * max(28px,env(safe-area-inset-left,0px)));padding:10px max(28px,env(safe-area-inset-right,0px)) 10px max(28px,env(safe-area-inset-left,0px));background:var(--panel);border-bottom:1px solid var(--line)}
+.tbt{font-weight:700;color:var(--mute);font-size:12.5px}
+.tbr{margin-left:auto;display:flex;align-items:center;gap:6px}
+.popwrap{position:relative}
+.svc{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:9px;border:1px solid var(--ctl);background:var(--panel);color:var(--ink);font-size:12.5px;font-weight:700;text-decoration:none;white-space:nowrap}.svc:hover{border-color:var(--ink2);background:var(--soft2)}.svc svg:last-child{color:var(--mute)}
+.tbsep{width:1px;height:22px;background:var(--line);margin:0 4px}
+@media (max-width:560px){.svc span{display:none}.svc{padding:0 9px}.tbsep{display:none}}
+.ibtn{position:relative;width:38px;height:38px;border-radius:10px;border:1px solid transparent;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--ink2)}
+.ibtn:hover,.ibtn[aria-expanded="true"]{background:var(--soft);border-color:var(--line)}
+.bdg{position:absolute;top:4px;right:3px;min-width:17px;height:17px;padding:0 4px;border-radius:9px;background:var(--orange);color:#fff;font-size:10.5px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid var(--panel)}
+.ubtn{display:flex;align-items:center;gap:8px;height:40px;padding:0 8px 0 4px;border-radius:10px;border:1px solid transparent;background:transparent;cursor:pointer;text-align:left}
+.ubtn:hover,.ubtn[aria-expanded="true"]{background:var(--soft);border-color:var(--line)}
+.uname b{display:block;font-size:12.5px}.uname small{display:block;font-size:11px;color:var(--mute)}
+.pop{position:absolute;right:0;top:calc(100% + 6px);width:min(320px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 36px rgba(0,0,0,.16);padding:6px;display:flex;flex-direction:column;z-index:30}
+.pophd{display:flex;align-items:center;gap:8px;padding:8px 10px 10px;border-bottom:1px solid var(--line2);margin-bottom:4px}
+.pophd .lnk{margin-left:auto;border:0;background:none;color:var(--accText);font-weight:600;font-size:12px;cursor:pointer}
+.nt{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:8px;color:var(--ink);text-decoration:none;border:0;background:none;width:100%;text-align:left;cursor:pointer;font-size:12.5px}
+a.nt:hover,button.nt:hover{background:var(--soft)}
+.nt>span:not(.dot){flex:1;min-width:0}.nt small{display:block;color:var(--mute);font-size:11.5px}
+.nt .dot{align-self:flex-start;margin-top:5px}
+.nt:not(.un) b{font-weight:600}.nt:not(.un) .dot{opacity:.35}
+.nt.mob{cursor:default}
+.themebox{margin-top:auto;padding:12px 6px 0;display:flex;flex-direction:column;gap:6px;border-top:1px solid var(--line2)}
+.seg.theme button{display:inline-flex;align-items:center;justify-content:center;gap:5px;flex:1}
+.themebox .seg{width:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--f);font-size:13px;line-height:1.45}
+button,input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+a{color:var(--accText)}
+h1,h2,h3{margin:0;text-wrap:balance}
+.num,td,.kv{font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+
+.app{display:flex;min-height:100vh}
+.nav{flex:none;width:228px;background:var(--panel);border-right:1px solid var(--line);padding:16px 12px;display:flex;flex-direction:column;gap:2px;position:sticky;top:env(safe-area-inset-top,0px);height:100vh;padding-left:max(12px,env(safe-area-inset-left,0px))}
+.brand{display:flex;align-items:center;gap:8px;padding:4px 8px 16px}
+.brand i{width:28px;height:28px;border-radius:8px;background:var(--acc);display:flex;align-items:center;justify-content:center;color:#fff}
+.brand b{display:block;font-size:14px;font-weight:800}.brand small{font-size:11px;color:var(--mute)}
+.nav a{display:flex;align-items:center;gap:10px;height:36px;padding:0 10px;border-radius:8px;color:var(--ink2);text-decoration:none;white-space:nowrap}
+.nav a:hover{background:var(--soft);color:var(--ink)}
+.nav a[aria-current="page"]{background:var(--accSoft);color:var(--accText);font-weight:700}
+.nav .sep{height:1px;background:var(--line2);margin:10px 4px}
+.nav .tag{margin-left:auto;font-size:10.5px;font-weight:700;color:var(--mute);background:var(--soft);padding:1px 6px;border-radius:8px}
+.nav .cnt{margin-left:auto;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--inv);color:var(--invInk);font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.me{margin-top:auto;padding:12px 8px 0;display:flex;align-items:center;gap:8px}
+.av{width:28px;height:28px;border-radius:50%;background:var(--soft);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;flex:none}
+.av.dark{background:var(--inv);color:var(--invInk)}
+.me b{display:block}.me small{font-size:11px;color:var(--mute)}
+
+main{flex:1;min-width:0;padding-block:20px 48px;padding-left:max(28px,env(safe-area-inset-left,0px));padding-right:max(28px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+.view{display:flex;flex-direction:column;gap:16px}
+.view[hidden]{display:none!important}
+.ph{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px}
+.ph h1{font-size:22px;font-weight:800}
+.ph .sub{color:var(--mute)}
+.ph .act{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.demo{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:8px;background:var(--noteSoft);color:var(--noteText);font-size:12px}
+
+.btn{height:32px;padding:0 12px;border:1px solid var(--ctl);border-radius:8px;background:var(--panel);font-size:12px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;white-space:nowrap}
+.btn:hover{border-color:var(--ink2)}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:var(--accInk);font-weight:700}
+.btn.pri:hover{filter:brightness(.95)}
+.btn.danger{color:var(--badText);border-color:color-mix(in srgb,var(--badText) 35%,var(--ctl))}
+.btn.sm{height:28px;padding:0 10px;font-size:11.5px}
+.btn.lg{height:36px;font-size:12.5px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.seg{display:flex;padding:3px;border-radius:8px;background:var(--soft)}
+.seg button{height:26px;padding:0 12px;border:0;border-radius:6px;background:transparent;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.12)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{height:28px;padding:0 12px;border-radius:14px;border:1px solid var(--ctl);background:var(--panel);font-size:12px;font-weight:600;cursor:pointer;color:var(--ink2)}
+.chip[aria-pressed="true"]{border-color:var(--inv);background:var(--inv);color:var(--invInk)}
+.chip span{opacity:.7;margin-left:4px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto;overflow-y:hidden;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tabs button{height:38px;padding:0 14px;border:0;background:transparent;font-size:13px;font-weight:600;cursor:pointer;color:var(--mute);border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;display:inline-flex;align-items:center;gap:6px}
+.tabs button[aria-selected="true"]{font-weight:800;color:var(--ink);border-bottom-color:var(--ink)}
+.tabs .cnt{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--inv);color:var(--invInk);font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center}
+.tabs .new{font-size:10px;font-weight:800;color:var(--accText);background:var(--accSoft);padding:1px 6px;border-radius:8px}
+
+.card{padding:16px 18px;border-radius:12px;background:var(--panel);border:1px solid var(--line);display:flex;flex-direction:column;gap:10px;min-width:0}
+.card h2{font-size:14px;font-weight:700}
+.card .hd{display:flex;align-items:center;gap:8px 10px;flex-wrap:wrap}
+.card .hd .r{margin-left:auto}
+.note{font-size:11.5px;color:var(--mute);margin:0}
+.grid{display:grid;gap:12px}
+.g-kpi{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:1100px){.g-kpi{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#v-members table th:first-child,#memRows td:first-child{padding-left:16px}
+.g-2{grid-template-columns:repeat(auto-fit,minmax(340px,1fr))}
+.g-3{grid-template-columns:repeat(auto-fit,minmax(290px,1fr))}
+.kpi{display:flex;flex-direction:column;gap:6px;padding:16px;border-radius:12px;background:var(--panel);border:1px solid var(--line);color:var(--ink);text-decoration:none}
+a.kpi:hover{border-color:var(--ctl)}
+.kpi span{font-size:12px;color:var(--mute);font-weight:600}
+.kpi strong{font-size:24px;font-weight:800;letter-spacing:-.5px}
+.kpi em{font-style:normal;font-size:12px;font-weight:600}
+.kpi .new{align-self:flex-start;font-size:10px;font-weight:800;color:var(--accText);background:var(--accSoft);padding:1px 6px;border-radius:8px}
+.up{color:var(--accText)}.down{color:var(--badText)}.warn{color:var(--amber)}
+.pill{font-size:11.5px;font-weight:700;padding:2px 8px;border-radius:10px;white-space:nowrap;display:inline-block}
+.p-ok{background:var(--accSoft);color:var(--accText)}.p-gray{background:var(--soft);color:var(--mute)}
+.p-dark{background:var(--inv);color:var(--invInk)}.p-blue{background:var(--blueSoft);color:var(--blueText)}
+.p-warn{background:var(--warnSoft);color:var(--warnText)}.p-bad{background:var(--badSoft);color:var(--badText)}
+.bar{height:10px;border-radius:5px;background:var(--soft);overflow:hidden}
+.bar i{display:block;height:100%;border-radius:5px;background:var(--acc)}
+.bar.b-blue i{background:var(--blue)}.bar.b-gray i{background:var(--faint)}.bar.b-ink i{background:var(--ink)}
+.brow{display:grid;grid-template-columns:minmax(90px,150px) minmax(0,1fr) 72px;gap:10px;align-items:center}
+.brow .v{text-align:right;font-weight:600}
+.row{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:8px;color:var(--ink);text-decoration:none}
+.row:hover{background:var(--soft2)}
+.dot{width:8px;height:8px;border-radius:50%;flex:none}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12.5px}
+th,td{padding:10px;border-bottom:1px solid var(--line2);text-align:left;vertical-align:middle}
+thead th{color:var(--mute);font-weight:600;border-bottom-color:var(--line);white-space:nowrap}
+tbody th{font-weight:600}
+.r{text-align:right}.c{text-align:center}
+tr.sel{background:var(--accRow);box-shadow:inset 3px 0 0 var(--acc)}
+tr.clk{cursor:pointer}tr.clk:hover{background:var(--soft2)}
+.sub2{display:block;font-weight:400;font-size:11.5px;color:var(--mute)}
+input[type=text],input[type=search],input[type=date],input:not([type]),select,textarea{border:1px solid var(--ctl);border-radius:8px;background:var(--panel);padding:0 10px;height:32px;min-width:0}
+textarea{padding:8px 10px;height:auto;resize:vertical;line-height:1.5}
+.fld{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--mute)}
+.fld input,.fld select,.fld textarea{color:var(--ink);font-size:13px}
+.search{flex:1 1 260px;display:flex;align-items:center;gap:8px;height:34px;padding:0 10px;border:1px solid var(--ctl);border-radius:8px;background:var(--panel)}
+.search input{border:0;height:30px;padding:0;flex:1;outline:0;background:transparent}
+.mono{font-family:var(--mono);font-size:11.5px;word-break:break-all;padding:10px;border-radius:8px;background:var(--soft);color:var(--ink2)}
+.split{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-start}
+.split>.main{flex:999 1 560px;min-width:0}
+.split>.side{flex:1 1 320px;max-width:100%}
+dl.kv{margin:0;display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 14px;font-size:12.5px}
+dl.kv dt{color:var(--mute)}dl.kv dd{margin:0}
+.lib{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.lib div{padding:8px;border-radius:8px;background:var(--soft);display:flex;flex-direction:column;gap:2px}
+.lib b{font-size:15px}.lib small{font-size:11px;color:var(--mute)}
+.thumbs{display:flex;gap:6px;flex-wrap:wrap}
+.thumbs span{width:46px;height:34px;border-radius:6px;background:repeating-linear-gradient(45deg,var(--soft),var(--soft) 6px,var(--line) 6px,var(--line) 12px);display:flex;align-items:flex-end;justify-content:flex-start;font-size:9px;color:var(--mute);padding:1px 3px}
+.callout{display:flex;align-items:flex-start;gap:8px;padding:10px 14px;border-radius:10px;font-size:12.5px}
+.callout.w{background:var(--warnSoft);color:var(--warnText)}
+.callout.i{background:var(--accSoft);color:var(--ink)}
+.callout svg{flex:none;margin-top:2px}
+.stack{display:flex;height:30px;border-radius:8px;overflow:hidden;background:var(--soft)}.stack i{display:flex;align-items:center;padding-left:8px;font-style:normal;font-size:11.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden}
+.mini{display:grid;grid-template-columns:minmax(0,1fr) 64px;gap:8px;align-items:center}
+.funnel{display:flex;flex-direction:column;gap:6px}
+.frow{display:grid;grid-template-columns:130px minmax(0,1fr) 120px;gap:12px;align-items:center}
+.ftrack{height:30px;border-radius:6px;background:var(--soft);overflow:hidden}
+.ftrack i{height:100%;display:flex;align-items:center;padding-left:10px;font-style:normal;font-weight:700;font-size:12px;background:color-mix(in srgb,var(--acc) 28%,var(--panel));white-space:nowrap}
+.ftrack i.hl{background:var(--acc);color:var(--accInk)}
+.fconv{font-size:12px;font-weight:600;color:var(--mute)}
+.fconv.bad{color:var(--badText)}
+.vbars{display:flex;align-items:flex-end;gap:12px;height:150px;border-bottom:1px solid var(--line);position:relative;padding:0 4px}
+.vbars .col{flex:1;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:4px}
+.vbars .col span{font-size:10.5px;color:var(--ink2)}
+.vbars .col i{display:block;width:100%;max-width:26px;border-radius:4px 4px 0 0;background:var(--ink)}
+.vbars .col i.hot{background:var(--orange)}
+.vbars .lim{position:absolute;left:0;right:0;border-top:1px dashed var(--orange)}
+.vbars .lim b{position:absolute;right:0;top:-16px;font-size:10.5px;color:var(--amber);font-weight:600}
+.vlab{display:flex;gap:12px;padding:0 4px;font-size:10.5px;color:var(--mute)}
+.vlab span{flex:1;text-align:center}
+.chart text{fill:var(--mute);font-size:10px;font-family:var(--f)}
+.chart .grid line{stroke:var(--line2)}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:11.5px;color:var(--ink2)}
+.legend span{display:flex;align-items:center;gap:5px}
+.legend i{width:10px;height:3px;border-radius:2px;display:inline-block}
+.heat td.h{text-align:center;border-radius:6px;font-weight:600;border:0}
+.heat{border-collapse:separate;border-spacing:4px}
+.heat th,.heat td{border:0;padding:7px}
+.qlist{display:flex;flex-direction:column;border-radius:12px;border:1px solid var(--line);background:var(--panel);overflow:hidden}
+.qlist button{display:flex;flex-direction:column;gap:4px;align-items:flex-start;width:100%;padding:12px 14px;border:0;border-bottom:1px solid var(--line2);text-align:left;cursor:pointer;background:var(--panel)}
+.qlist button:last-child{border-bottom:0}
+.qlist button[aria-pressed="true"]{background:var(--accRow);box-shadow:inset 3px 0 0 var(--acc)}
+.qlist .t{display:flex;gap:8px;align-items:center;width:100%}
+.qlist .t small{margin-left:auto;color:var(--mute);font-size:11.5px}
+.qbody{padding:12px 14px;border-radius:10px;background:var(--soft);line-height:1.6;font-size:13px}
+.qans{padding:12px 14px;border-radius:10px;background:var(--accSoft);line-height:1.6}
+.rep{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line2)}
+.rep:last-child{border-bottom:0}
+.rep .th{width:64px;height:48px;border-radius:8px;background:var(--soft);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--mute)}
+.rep .acts{display:flex;flex-wrap:wrap;gap:6px}
+.banner{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;background:var(--inv);color:var(--invInk);font-size:12.5px}
+.banner b{font-size:11px;background:var(--acc);color:var(--accInk);padding:1px 7px;border-radius:6px}
+.banner small{margin-left:auto;opacity:.7}
+.plans{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.plan{padding:16px;border-radius:12px;border:1px solid var(--line);background:var(--panel);display:flex;flex-direction:column;gap:10px}
+.plan.hl{border:2px solid var(--acc);background:color-mix(in srgb,var(--acc) 5%,var(--panel))}
+.plan .top{display:flex;align-items:center;gap:8px}.plan .top .pill{margin-left:auto}
+.plan .price{font-size:20px;font-weight:800}
+.plan ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:4px;color:var(--ink2);flex:1}
+.check{display:flex;gap:10px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--line2);cursor:pointer}
+.check:last-child{border-bottom:0}
+.check input{margin-top:3px;accent-color:var(--acc)}
+.check b{display:block;font-weight:600}.check small{color:var(--mute)}
+.check.done b{text-decoration:line-through;color:var(--mute)}
+.tg{display:flex;gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line2);cursor:pointer}
+.tg:last-of-type{border-bottom:0}
+.tg span{flex:1}.tg b{display:block;font-weight:600}.tg small{color:var(--mute)}
+.sw{appearance:none;width:38px;height:22px;border-radius:11px;background:var(--ctl);position:relative;cursor:pointer;flex:none;transition:background .15s}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:transform .15s}
+.sw:checked{background:var(--acc)}.sw:checked::after{transform:translateX(16px)}
+.admin{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line2)}
+.admin:last-child{border-bottom:0}
+.admin .who{flex:1;min-width:0}.admin .who small{display:block;color:var(--mute);font-size:11.5px}
+.preset{padding:12px 14px;border-radius:10px;border:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.preset .hd{display:flex;align-items:center;gap:8px}
+.preset .hd .btn{margin-left:auto}
+.preset p{margin:0;color:var(--ink2);font-size:12px;line-height:1.6}
+
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;padding:16px;z-index:50}
+.sheet{width:min(460px,100%);max-height:calc(100vh - 32px);overflow:auto;background:var(--panel);border-radius:14px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.sheet h3{font-size:16px;font-weight:800}
+.sheet .foot{display:flex;justify-content:flex-end;gap:8px;margin-top:4px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--inv);color:var(--invInk);padding:10px 16px;border-radius:10px;font-size:12.5px;font-weight:600;z-index:60;max-width:calc(100vw - 32px)}
+
+@media (max-width:860px){
+ .app{flex-direction:column}
+ .nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;width:auto;height:auto;flex-direction:row;align-items:center;overflow-x:auto;border-right:0;border-bottom:1px solid var(--line);padding:8px max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px))}
+ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+ .brand{padding:0 8px 0 0}.brand div{display:none}
+ .nav .sep,.themebox,.nav .tag{display:none}
+ .topbar{margin-left:calc(-1 * max(16px,env(safe-area-inset-left,0px)));margin-right:calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));top:calc(env(safe-area-inset-top,0px) + 51px)}
+ .uname{display:none}
+ .nav a{height:34px}
+ main{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+ .frow{grid-template-columns:96px minmax(0,1fr) 64px}
+ .brow{grid-template-columns:96px minmax(0,1fr) 60px}
+ .rep{grid-template-columns:48px minmax(0,1fr)}.rep .acts{grid-column:1/-1}
+}
+@media (min-width:861px){.nt.mob{display:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="app">
+<nav class="nav" aria-label="관리자 메뉴">
+ <div class="brand"><i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></i><div><b>웹툰보드</b><small>관리자</small></div></div>
+ <a href="#dash" data-go="dash"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>대시보드</a>
+ <a href="#acq" data-go="acq"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>유입경로</a>
+ <a href="#members" data-go="members"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></svg>회원관리</a>
+ <a href="#stats" data-go="stats"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 20V10"/><path d="M10 20V4"/><path d="M16 20v-7"/><path d="M22 20H2"/></svg>통계</a>
+ <div class="sep"></div>
+ <a href="#billing" data-go="billing"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M2.5 10h19"/></svg>요금제<span class="tag">무료 운영</span></a>
+ <a href="#ops" data-go="ops"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>운영<span class="cnt" id="opsCnt">5</span></a>
+ <a href="#config" data-go="config"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M4.9 19.1 7 17M17 7l2.1-2.1"/></svg>설정</a>
+ <div class="themebox"><span class="note">화면 모드</span><div class="seg theme" role="group" aria-label="화면 모드"><button type="button" data-theme-set="light" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>라이트</button><button type="button" data-theme-set="dark" aria-pressed="false"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>다크</button></div></div>
+</nav>
+
+<main>
+ <header class="topbar"><span class="tbt" id="tbTitle">대시보드</span>
+  <div class="tbr">
+   <a class="svc" href="https://claude.ai/artifact/WrCsd8mpMgjPSNqM2JjVmn" target="_blank" rel="noopener" title="웹툰보드 서비스를 새 탭에서 열어요"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg><span>서비스 바로가기</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+   <span class="tbsep" aria-hidden="true"></span>
+   <div class="popwrap"><button class="ibtn" type="button" id="bellBtn" aria-label="알림" aria-haspopup="true" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="bdg" id="bellCnt">4</span></button>
+    <div class="pop" id="bellPop" hidden role="menu" aria-label="알림 목록"><div class="pophd"><b>알림</b><button class="lnk" type="button" id="readAll">모두 읽음</button></div>
+     <a class="nt un" href="#ops" data-tab="q" role="menuitem"><span class="dot" style="background:var(--orange)"></span><span><b>새 문의 · 구로다</b><small>AI 이미지를 더 만들 수 없나요? · 10분 전</small></span></a>
+     <a class="nt un" href="#stats" data-tab="ai" role="menuitem"><span class="dot" style="background:var(--amber)"></span><span><b>AI 비용 70% 도달</b><small>월 한도 ₩500,000 중 ₩348,000 · 오늘 09:00</small></span></a>
+     <a class="nt un" href="#ops" data-tab="r" role="menuitem"><span class="dot" style="background:var(--badText)"></span><span><b>캐릭터 시트 자동 감지</b><small>실존 인물 닮음 · fanart_k · 1시간 전</small></span></a>
+     <a class="nt un" href="#members" data-chip="라이브러리 한도 임박" role="menuitem"><span class="dot" style="background:var(--blue)"></span><span><b>라이브러리 한도 임박 12개 작품</b><small>500장의 90% 넘음 · 어제</small></span></a>
+     <a class="nt" href="#billing" role="menuitem"><span class="dot" style="background:var(--faint)"></span><span><b>프로 알림 신청 41명</b><small>목표 5%까지 20명 남음 · 2일 전</small></span></a>
+    </div></div>
+   <div class="popwrap"><button class="ubtn" type="button" id="userBtn" aria-haspopup="true" aria-expanded="false"><span class="av dark">GK</span><span class="uname"><b>GOLDKING</b><small>대표 · 전체 권한</small></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>
+    <div class="pop" id="userPop" hidden role="menu" aria-label="내 계정"><div class="pophd"><span><b>GOLDKING</b><small class="sub2">ad***@[도메인] · 2단계 인증 켜짐</small></span></div>
+     <a class="nt" href="#config" role="menuitem"><span>관리자 · 권한 설정</span></a>
+     <button class="nt" type="button" role="menuitem" data-toast="비밀번호 변경은 개발 단계에서 열려요"><span>비밀번호 바꾸기</span></button>
+     <div class="nt mob"><span>화면 모드</span><div class="seg theme" role="group" aria-label="화면 모드"><button type="button" data-theme-set="light" aria-pressed="false">라이트</button><button type="button" data-theme-set="dark" aria-pressed="false">다크</button></div></div>
+     <button class="nt" type="button" role="menuitem" data-toast="로그아웃했어요 (예시)"><span style="color:var(--badText)">로그아웃</span></button>
+    </div></div>
+  </div></header>
+ <div class="demo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>프로토타입 · 예시 데이터예요. 버튼을 눌러도 실제 회원이나 결제에는 아무 일도 일어나지 않아요.</div>
+
+<!-- ============ 대시보드 ============ -->
+<section class="view" id="v-dash" aria-labelledby="h-dash">
+ <header class="ph"><h1 id="h-dash">대시보드</h1><span class="sub" id="dashPer">2026.10.20 – 10.26 · 직전 7일과 비교</span>
+  <div class="act"><div class="seg" role="group" aria-label="기간" id="perSeg"><button type="button" aria-pressed="false" data-per="오늘">오늘</button><button type="button" aria-pressed="true" data-per="7일">7일</button><button type="button" aria-pressed="false" data-per="30일">30일</button></div><button class="btn" type="button" data-toast="대시보드 CSV를 만들었어요 (예시)">CSV 내보내기</button></div></header>
+ <div class="grid g-kpi">
+  <a class="kpi" href="#acq"><span>방문자</span><strong>12,480</strong><em class="up">▲ 8.2%</em></a>
+  <a class="kpi" href="#members"><span>신규 가입</span><strong>642</strong><em class="up">▲ 12.0%</em></a>
+  <a class="kpi" href="#stats" data-tab="make"><span>활성 제작자</span><strong>1,208</strong><em class="up">▲ 4.1%</em></a>
+  <a class="kpi" href="#acq"><span>첫 컷 완성률</span><strong>38%</strong><em class="down">▼ 2.0%p</em></a>
+  <a class="kpi" href="#stats" data-tab="flow"><span>캐릭터 시트를 만든 작품 <b class="new" style="margin-left:4px">새 기능</b></span><strong>23%</strong><em class="up">활성 작품 2,140개 중 492개</em></a>
+  <a class="kpi" href="#stats" data-tab="ai"><span>AI 이미지 (이번 주)</span><strong>3,860장</strong><em class="warn">시트 · 배경 18% · 장면 82%</em></a>
+  <a class="kpi" href="#billing"><span>맛보기 10장 다 쓴 회원</span><strong>96명</strong><em class="up">▲ 18명 · 유료 수요 신호</em></a>
+  <a class="kpi" href="#stats" data-tab="ai"><span>AI 비용 (이번 달)</span><strong>₩348,000</strong><em class="warn">월 한도 ₩500,000의 70%</em></a>
+ </div>
+ <div class="grid g-2">
+  <div class="card"><div class="hd"><h2>방문 · 가입 · 활성 제작자</h2><div class="legend r"><span><i style="background:var(--faint)"></i>방문자</span><span><i style="background:var(--acc)"></i>활성 제작자</span><span><i style="background:var(--blue)"></i>신규 가입</span></div></div>
+   <svg class="chart" viewBox="0 0 560 190" role="img" aria-label="7일간 방문자, 활성 제작자, 신규 가입 추이">
+    <g class="grid"><line x1="44" y1="20" x2="550" y2="20"/><line x1="44" y1="70" x2="550" y2="70"/><line x1="44" y1="120" x2="550" y2="120"/><line x1="44" y1="170" x2="550" y2="170"/></g>
+    <g text-anchor="end"><text x="36" y="24">2,400</text><text x="36" y="74">1,600</text><text x="36" y="124">800</text><text x="36" y="174">0</text></g>
+    <polyline fill="none" stroke="var(--faint)" stroke-width="2" points="60,62 140,58 220,50 300,66 380,40 460,34 540,28"/>
+    <polyline fill="none" stroke="var(--acc)" stroke-width="2.5" points="60,128 140,126 220,120 300,124 380,116 460,112 540,108"/>
+    <polyline fill="none" stroke="var(--blue)" stroke-width="2" points="60,160 140,157 220,156 300,160 380,152 460,150 540,148"/>
+    <circle cx="540" cy="108" r="3.5" fill="var(--acc)"/>
+    <g text-anchor="middle"><text x="60" y="186">10.20</text><text x="140" y="186">10.21</text><text x="220" y="186">10.22</text><text x="300" y="186">10.23</text><text x="380" y="186">10.24</text><text x="460" y="186">10.25</text><text x="540" y="186">10.26</text></g>
+   </svg></div>
+  <div class="card"><div class="hd"><h2>일별 AI 비용</h2><span class="note">하루 예산 ₩16,000 넘은 날은 주황 · 막대 안 옅은 부분은 시트 · 배경</span></div>
+   <div class="vbars" role="img" aria-label="7일간 일별 AI 비용">
+    <div class="lim" style="bottom:66.7%"><b>₩16,000</b></div>
+    <div class="col"><span>₩10.2k</span><i style="height:42%"></i></div>
+    <div class="col"><span>₩11.8k</span><i style="height:49%"></i></div>
+    <div class="col"><span>₩12.6k</span><i style="height:52%"></i></div>
+    <div class="col"><span>₩14.1k</span><i style="height:59%"></i></div>
+    <div class="col"><span>₩17.9k</span><i class="hot" style="height:75%"></i></div>
+    <div class="col"><span>₩19.4k</span><i class="hot" style="height:81%"></i></div>
+    <div class="col"><span>₩9.6k</span><i style="height:40%"></i></div>
+   </div>
+   <div class="vlab"><span>10.20</span><span>10.21</span><span>10.22</span><span>10.23</span><span>10.24</span><span>10.25</span><span>10.26</span></div>
+   <p class="note">10.24부터 캐릭터 시트 · 배경 만들기가 열려서 비용이 늘었어요. 시트를 만든 작품은 장면 재생성이 줄어 1주 뒤부터 비용이 내려갈 것으로 봐요.</p></div>
+ </div>
+ <div class="grid g-3">
+  <div class="card"><h2>할 일</h2>
+   <a class="row" href="#ops" data-tab="q"><span class="dot" style="background:var(--orange)"></span><span style="flex:1">답하지 않은 문의</span><strong id="todoQ">4건</strong></a>
+   <a class="row" href="#ops" data-tab="r"><span class="dot" style="background:var(--badText)"></span><span style="flex:1">처리 안 된 신고</span><strong id="todoR">1건</strong></a>
+   <a class="row" href="#members" data-chip="교육 인증 대기"><span class="dot" style="background:var(--blue)"></span><span style="flex:1">교육 인증 대기</span><strong>7건</strong></a>
+   <a class="row" href="#members" data-chip="라이브러리 한도 임박"><span class="dot" style="background:var(--amber)"></span><span style="flex:1">라이브러리 500장 한도 임박 작품</span><strong>12개</strong></a>
+   <a class="row" href="#members" data-chip="중복 가입 의심"><span class="dot" style="background:var(--faint)"></span><span style="flex:1">맛보기 받으려 중복 가입 의심</span><strong>3명</strong></a>
+  </div>
+  <div class="card"><div class="hd"><h2>유입 상위 채널</h2><a class="r" href="#acq" style="font-size:12px;font-weight:600">전체 보기</a></div>
+   <div class="brow"><span>네이버 검색</span><div class="bar"><i style="width:100%"></i></div><span class="v">4,120</span></div>
+   <div class="brow"><span>AI 서비스</span><div class="bar"><i style="width:48%"></i></div><span class="v">1,980</span></div>
+   <div class="brow"><span>인스타그램</span><div class="bar"><i style="width:40%"></i></div><span class="v">1,640</span></div>
+   <div class="brow"><span>직접 방문</span><div class="bar"><i style="width:37%"></i></div><span class="v">1,520</span></div>
+   <div class="brow"><span>유튜브</span><div class="bar"><i style="width:24%"></i></div><span class="v">980</span></div>
+  </div>
+  <div class="card"><div class="hd"><h2>최근 가입</h2><a class="r" href="#members" style="font-size:12px;font-weight:600">회원관리</a></div>
+   <a class="row" href="#members" data-mem="0"><span class="av">서</span><span style="flex:1;min-width:0"><b>서하나</b><span class="sub2">네이버 검색 · 3분 전</span></span><span class="pill p-ok">컷 12</span></a>
+   <a class="row" href="#members" data-mem="3"><span class="av">민</span><span style="flex:1;min-width:0"><b>minwoo.art</b><span class="sub2">인스타그램 · 18분 전</span></span><span class="pill p-gray">컷 0</span></a>
+   <a class="row" href="#members" data-mem="1"><span class="av">한</span><span style="flex:1;min-width:0"><b>한시우</b><span class="sub2">챗GPT · 42분 전</span></span><span class="pill p-ok">컷 5</span></a>
+   <a class="row" href="#members" data-mem="4"><span class="av">J</span><span style="flex:1;min-width:0"><b>jiyoon_toon</b><span class="sub2">직접 방문 · 1시간 전</span></span><span class="pill p-gray">컷 0</span></a>
+  </div>
+ </div>
+</section>
+
+<!-- ============ 유입경로 ============ -->
+<section class="view" id="v-acq" hidden aria-labelledby="h-acq">
+ <header class="ph"><h1 id="h-acq">유입경로</h1><span class="sub">최근 7일 · 첫 클릭 기준 · 봇 제외</span>
+  <div class="act"><select id="chSel" aria-label="채널 필터"><option value="">채널 전체</option><option>검색</option><option>AI 서비스</option><option>SNS</option><option>직접</option><option>공유 링크</option><option>광고</option></select><button class="btn" type="button" data-toast="유입경로 CSV를 만들었어요 (예시)">CSV 내보내기</button></div></header>
+ <div class="card"><div class="hd"><h2>제작 퍼널</h2><span class="sub">가장 큰 이탈은 <strong class="down">가입 → 첫 컷 추가 (−51%)</strong></span></div>
+  <div class="funnel">
+   <div class="frow"><span>방문</span><div class="ftrack"><i style="width:100%">12,480</i></div><span class="fconv"></span></div>
+   <div class="frow"><span>가입</span><div class="ftrack"><i style="width:23%">642</i></div><span class="fconv">← 5%</span></div>
+   <div class="frow"><span>첫 컷 추가</span><div class="ftrack"><i style="width:16%">314</i></div><span class="fconv bad">← 49%</span></div>
+   <div class="frow"><span>첫 내보내기</span><div class="ftrack"><i class="hl" style="width:14%">244</i></div><span class="fconv">← 78%</span></div>
+   <div class="frow"><span>7일 내 재제작</span><div class="ftrack"><i style="width:10%">131</i></div><span class="fconv">← 54%</span></div>
+   <div class="frow"><span>프로 알림 신청</span><div class="ftrack"><i style="width:6%">41</i></div><span class="fconv">← 31%</span></div>
+  </div>
+  <p class="note">오른쪽 숫자는 바로 앞 단계에서 넘어온 비율이에요. 막대 길이는 차이가 잘 보이게 제곱근으로 줄였어요.</p></div>
+ <div class="card"><h2>채널별 성과</h2>
+  <div class="tw"><table id="chTable" style="min-width:760px"><thead><tr><th scope="col">채널</th><th class="r" scope="col">방문</th><th class="r" scope="col">가입</th><th class="r" scope="col">가입률</th><th class="r" scope="col">첫 내보내기</th><th class="r" scope="col">활성화율</th><th class="r" scope="col">7일 재제작</th><th class="r" scope="col">프로 알림</th></tr></thead>
+  <tbody>
+   <tr data-ch="검색"><th scope="row">네이버 검색<span class="sub2">웹툰 컷 편집, 말풍선 만들기</span></th><td class="r">4,120</td><td class="r">214</td><td class="r">5.2%</td><td class="r">98</td><td class="r up"><b>46%</b></td><td class="r">52명</td><td class="r"><b>14명</b></td></tr>
+   <tr data-ch="AI 서비스"><th scope="row">AI 서비스<span class="sub2">챗GPT · 제미나이 · 클로드 · 퍼플렉시티</span></th><td class="r">1,980</td><td class="r">132</td><td class="r">6.7%</td><td class="r">62</td><td class="r up"><b>47%</b></td><td class="r">36명</td><td class="r"><b>11명</b></td></tr>
+   <tr data-ch="SNS"><th scope="row">인스타그램<span class="sub2">utm_source=instagram</span></th><td class="r">1,640</td><td class="r">96</td><td class="r">5.9%</td><td class="r">21</td><td class="r down"><b>22%</b></td><td class="r">9명</td><td class="r"><b>4명</b></td></tr>
+   <tr data-ch="직접"><th scope="row">직접 방문<span class="sub2">주소 입력 · 즐겨찾기</span></th><td class="r">1,520</td><td class="r">88</td><td class="r">5.8%</td><td class="r">31</td><td class="r">35%</td><td class="r">17명</td><td class="r"><b>6명</b></td></tr>
+   <tr data-ch="SNS"><th scope="row">유튜브<span class="sub2">튜토리얼 영상 설명란</span></th><td class="r">980</td><td class="r">54</td><td class="r">5.5%</td><td class="r">16</td><td class="r">30%</td><td class="r">8명</td><td class="r"><b>3명</b></td></tr>
+   <tr data-ch="공유 링크"><th scope="row">공유 링크<span class="sub2">회원이 공유한 작품 · 초대</span></th><td class="r">1,260</td><td class="r">38</td><td class="r">3.0%</td><td class="r">12</td><td class="r">32%</td><td class="r">6명</td><td class="r"><b>2명</b></td></tr>
+   <tr data-ch="광고"><th scope="row">광고<span class="sub2">검색광고 · SNS 광고 (집행 전)</span></th><td class="r">980</td><td class="r">20</td><td class="r">2.0%</td><td class="r">4</td><td class="r down"><b>20%</b></td><td class="r">3명</td><td class="r"><b>1명</b></td></tr>
+  </tbody></table></div></div>
+ <div class="grid g-2">
+  <div class="card"><h2>AI 서비스 유입</h2><p class="note">AI 답변에서 웹툰보드 링크를 눌러 들어온 방문이에요. 오른쪽은 첫 내보내기까지 간 비율이에요.</p>
+   <div class="brow"><span>챗GPT</span><div class="bar b-blue"><i style="width:100%"></i></div><span class="v">1,120 · 49%</span></div>
+   <div class="brow"><span>제미나이</span><div class="bar b-blue"><i style="width:38%"></i></div><span class="v">420 · 44%</span></div>
+   <div class="brow"><span>퍼플렉시티</span><div class="bar b-blue"><i style="width:23%"></i></div><span class="v">260 · 52%</span></div>
+   <div class="brow"><span>클로드</span><div class="bar b-blue"><i style="width:16%"></i></div><span class="v">180 · 41%</span></div>
+  </div>
+  <form class="card" id="utmForm"><h2>캠페인 링크 만들기</h2>
+   <div class="grid" style="grid-template-columns:repeat(2,minmax(0,1fr));gap:8px">
+    <label class="fld" for="utmS">채널 (source)<input id="utmS" value="instagram"></label>
+    <label class="fld" for="utmM">매체 (medium)<input id="utmM" value="social"></label>
+    <label class="fld" for="utmC" style="grid-column:span 2">캠페인 (campaign)<input id="utmC" value="char_sheet_2026_11"></label>
+   </div>
+   <div class="mono" id="utmOut"></div>
+   <div style="display:flex;gap:8px"><button class="btn pri lg" type="submit">링크 복사</button><span class="note" style="align-self:center">[웹툰보드 주소]는 도메인이 정해지면 바뀌어요</span></div>
+  </form>
+ </div>
+</section>
+
+<!-- ============ 회원관리 ============ -->
+<section class="view" id="v-members" hidden aria-labelledby="h-mem">
+ <header class="ph"><h1 id="h-mem">회원관리</h1><span class="sub">전체 4,812명 · 무료 운영 중 · 프로 알림 신청 41명</span>
+  <div class="act"><button class="btn" type="button" data-toast="회원 목록 CSV를 만들었어요 (예시)">CSV 내보내기</button></div></header>
+ <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+  <label class="search" for="memQ"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--mute)" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="memQ" placeholder="닉네임 · 이메일 검색" aria-label="회원 검색"></label>
+  <select id="memPlan" aria-label="등급"><option value="">등급 전체</option><option>무료</option><option>프로 알림</option><option>교육 대기</option></select>
+  <select id="memVia" aria-label="유입 채널"><option value="">유입 전체</option><option>네이버 검색</option><option>챗GPT</option><option>인스타그램</option><option>유튜브</option><option>직접 방문</option><option>공유 링크</option><option>AI 서비스</option></select>
+ </div>
+ <div class="chips" role="group" aria-label="저장된 필터" id="memChips">
+  <button class="chip" type="button" aria-pressed="true" data-c="전체">전체<span>4,812</span></button>
+  <button class="chip" type="button" aria-pressed="false" data-c="가입만 하고 컷 0개">가입만 하고 컷 0개<span>1,930</span></button>
+  <button class="chip" type="button" aria-pressed="false" data-c="맛보기 소진">맛보기 소진<span>96</span></button>
+  <button class="chip" type="button" aria-pressed="false" data-c="캐릭터 시트 사용">캐릭터 시트 사용<span>388</span></button>
+  <button class="chip" type="button" aria-pressed="false" data-c="라이브러리 한도 임박">라이브러리 한도 임박<span>12</span></button>
+  <button class="chip" type="button" aria-pressed="false" data-c="프로 알림 신청">프로 알림 신청<span>41</span></button>
+  <button class="chip" type="button" aria-pressed="false" data-c="중복 가입 의심">중복 가입 의심<span>3</span></button>
+  <button class="chip" type="button" aria-pressed="false" data-c="교육 인증 대기">교육 인증 대기<span>7</span></button>
+ </div>
+ <div class="split">
+  <section class="main card" style="padding:0;gap:0;overflow:hidden">
+   <div class="tw"><table style="min-width:820px"><thead><tr style="background:var(--soft2)"><th scope="col">회원</th><th scope="col">등급</th><th class="r" scope="col">맛보기 이미지</th><th class="r" scope="col">작품 · 컷</th><th class="r" scope="col">라이브러리</th><th scope="col">유입</th><th scope="col">최근 접속</th><th scope="col">상태</th></tr></thead>
+   <tbody id="memRows"></tbody></table></div>
+   <div style="display:flex;align-items:center;gap:8px;padding:10px 14px;color:var(--mute);font-size:12px;border-top:1px solid var(--line2)"><span id="memCount">1–8 / 4,812</span><div style="margin-left:auto;display:flex;gap:4px"><button class="btn sm" type="button" aria-label="이전 페이지" data-toast="예시 데이터는 한 쪽만 있어요">‹</button><button class="btn sm" type="button" aria-label="다음 페이지" data-toast="예시 데이터는 한 쪽만 있어요">›</button></div></div>
+  </section>
+  <aside class="side card" aria-label="회원 상세" id="memSide"></aside>
+ </div>
+</section>
+
+<!-- ============ 통계 ============ -->
+<section class="view" id="v-stats" hidden aria-labelledby="h-stats">
+ <header class="ph"><h1 id="h-stats">통계</h1><span class="sub">최근 30일</span><div class="act"><button class="btn" type="button" data-toast="통계 CSV를 만들었어요 (예시)">CSV 내보내기</button></div></header>
+ <div class="tabs" role="tablist" aria-label="통계 종류" id="statTabs">
+  <button type="button" role="tab" aria-selected="true" data-t="make">제작</button>
+  <button type="button" role="tab" aria-selected="false" data-t="flow">제작 단계 <span class="new">NEW</span></button>
+  <button type="button" role="tab" aria-selected="false" data-t="feat">기능 사용</button>
+  <button type="button" role="tab" aria-selected="false" data-t="ai">AI 사용</button>
+  <button type="button" role="tab" aria-selected="false" data-t="ret">리텐션</button>
+ </div>
+ <div data-pane="make" class="view">
+  <div class="grid g-kpi">
+   <div class="kpi"><span>새 작품</span><strong>1,126</strong></div><div class="kpi"><span>새 회차</span><strong>2,940</strong></div><div class="kpi"><span>새 컷</span><strong>38,210</strong></div><div class="kpi"><span>라이브러리에 쌓인 그림</span><strong>61,480장</strong><em class="up">작품당 평균 29장</em></div>
+  </div>
+  <div class="grid g-2">
+   <div class="card"><h2>컷 종류</h2>
+    <div class="brow"><span>이미지 컷</span><div class="bar"><i style="width:64%"></i></div><span class="v">64%</span></div>
+    <div class="brow"><span>콘티 박스 컷</span><div class="bar"><i style="width:15%"></i></div><span class="v">15%</span></div>
+    <div class="brow"><span>빈 컷</span><div class="bar"><i style="width:11%"></i></div><span class="v">11%</span></div>
+    <div class="brow"><span>레이아웃 컷</span><div class="bar"><i style="width:7%"></i></div><span class="v">7%</span></div>
+    <div class="brow"><span>표지 · 썸네일</span><div class="bar"><i style="width:3%"></i></div><span class="v">3%</span></div>
+   </div>
+   <div class="card"><h2>그림이 들어온 경로</h2><p class="note">컷에 들어간 그림이 어디서 왔는지 · 같은 그림을 여러 컷에 쓰면 한 번만 세요</p>
+    <div class="brow"><span>직접 올림</span><div class="bar b-ink"><i style="width:52%"></i></div><span class="v">52%</span></div>
+    <div class="brow"><span>AI 장면 (콘티 보고)</span><div class="bar"><i style="width:26%"></i></div><span class="v">26%</span></div>
+    <div class="brow"><span>AI 장면 (콘티 없이)</span><div class="bar"><i style="width:9%"></i></div><span class="v">9%</span></div>
+    <div class="brow"><span>한꺼번에 넣기 (S# 자리)</span><div class="bar b-blue"><i style="width:13%"></i></div><span class="v">13%</span></div>
+   </div>
+  </div>
+ </div>
+ <div data-pane="flow" class="view" hidden>
+  <div class="callout i"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 2l3 7h7l-5.5 4 2 7-6.5-4.5L5.5 20l2-7L2 9h7z"/></svg><span>콘티·AI 탭의 5단계(시놉시스 → 콘티 → 캐릭터·배경 → 이미지 → 대사)를 이번 주 회차 기준으로 셌어요. <b>캐릭터·배경 단계를 건너뛴 회차가 61%</b>예요. 콘티를 만든 직후에 시트 만들기를 권하면 좋겠어요.</span></div>
+  <div class="card"><div class="hd"><h2>회차 제작 단계</h2><span class="note">이번 주 콘티·AI 탭을 연 회차 1,840개</span></div>
+   <div class="funnel">
+    <div class="frow"><span>① 시놉시스</span><div class="ftrack"><i style="width:100%">1,840</i></div><span class="fconv"></span></div>
+    <div class="frow"><span>② 콘티</span><div class="ftrack"><i style="width:84%">1,302</i></div><span class="fconv">← 71%</span></div>
+    <div class="frow"><span>③ 캐릭터 · 배경</span><div class="ftrack"><i style="width:49%">508</i></div><span class="fconv bad">← 39%</span></div>
+    <div class="frow"><span>④ 이미지</span><div class="ftrack"><i class="hl" style="width:72%">962</i></div><span class="fconv">콘티의 74%</span></div>
+    <div class="frow"><span>⑤ 대사</span><div class="ftrack"><i style="width:63%">744</i></div><span class="fconv">← 77%</span></div>
+   </div>
+   <p class="note">③을 건너뛰고 ④로 바로 가도 돼서 ④가 ③보다 많아요. ④의 비율은 콘티를 만든 회차 대비예요.</p></div>
+  <div class="grid g-2">
+   <div class="card"><h2>캐릭터 시트가 있으면</h2><p class="note">같은 장면을 다시 만든 비율 · 낮을수록 한 번에 마음에 든 것</p>
+    <div class="brow"><span>시트 있는 인물</span><div class="bar"><i style="width:18%"></i></div><span class="v">18%</span></div>
+    <div class="brow"><span>시트 없는 인물</span><div class="bar b-gray"><i style="width:41%"></i></div><span class="v">41%</span></div>
+    <div class="brow"><span>배경 참고 있음</span><div class="bar"><i style="width:22%"></i></div><span class="v">22%</span></div>
+    <div class="brow"><span>배경 참고 없음</span><div class="bar b-gray"><i style="width:35%"></i></div><span class="v">35%</span></div>
+   </div>
+   <div class="card"><h2>장면 만들기 설정</h2><p class="note">② 장면 만들기에서 고른 샷 크기 · 앵글</p>
+    <div class="brow"><span>미디엄</span><div class="bar b-ink"><i style="width:38%"></i></div><span class="v">38%</span></div>
+    <div class="brow"><span>바스트</span><div class="bar b-ink"><i style="width:24%"></i></div><span class="v">24%</span></div>
+    <div class="brow"><span>클로즈업</span><div class="bar b-ink"><i style="width:17%"></i></div><span class="v">17%</span></div>
+    <div class="brow"><span>풀숏 · 롱숏</span><div class="bar b-ink"><i style="width:21%"></i></div><span class="v">21%</span></div>
+    <div class="brow"><span>눈높이 외 앵글</span><div class="bar b-blue"><i style="width:29%"></i></div><span class="v">29%</span></div>
+   </div>
+  </div>
+ </div>
+ <div data-pane="feat" class="view" hidden>
+  <div class="card"><div class="hd"><h2>기능 사용 순위</h2><span class="note">쓴 회원 수 기준 · 회색은 활성 제작자의 5% 미만 · <b class="up">초록 글씨</b>는 이번 달 새 기능</span></div>
+   <div class="tw"><table style="min-width:520px"><tbody>
+    <tr><td style="width:30px;color:var(--mute)">1</td><th scope="row" style="width:190px">말풍선</th><td><div class="bar"><i style="width:100%"></i></div></td><td class="r" style="width:80px">1,104명</td></tr>
+    <tr><td style="color:var(--mute)">2</td><th scope="row">내보내기 (JPG)</th><td><div class="bar"><i style="width:96%"></i></div></td><td class="r">1,062명</td></tr>
+    <tr><td style="color:var(--mute)">3</td><th scope="row">나레이션 · 자막</th><td><div class="bar"><i style="width:74%"></i></div></td><td class="r">820명</td></tr>
+    <tr><td style="color:var(--mute)">4</td><th scope="row" class="up">라이브러리에서 끌어 넣기</th><td><div class="bar"><i style="width:66%"></i></div></td><td class="r">731명</td></tr>
+    <tr><td style="color:var(--mute)">5</td><th scope="row">그림 편집</th><td><div class="bar"><i style="width:55%"></i></div></td><td class="r">604명</td></tr>
+    <tr><td style="color:var(--mute)">6</td><th scope="row" class="up">AI 이미지 만들기</th><td><div class="bar"><i style="width:47%"></i></div></td><td class="r">522명</td></tr>
+    <tr><td style="color:var(--mute)">7</td><th scope="row" class="up">캐릭터 시트 만들기</th><td><div class="bar"><i style="width:35%"></i></div></td><td class="r">388명</td></tr>
+    <tr><td style="color:var(--mute)">8</td><th scope="row" class="up">이미지 한꺼번에 넣기</th><td><div class="bar"><i style="width:28%"></i></div></td><td class="r">309명</td></tr>
+    <tr><td style="color:var(--mute)">9</td><th scope="row">ZIP · 규격 세트</th><td><div class="bar"><i style="width:27%"></i></div></td><td class="r">296명</td></tr>
+    <tr><td style="color:var(--mute)">10</td><th scope="row" class="up">넣을 순서 바꾸기</th><td><div class="bar"><i style="width:17%"></i></div></td><td class="r">184명</td></tr>
+    <tr><td style="color:var(--mute)">11</td><th scope="row">GIF 만들기</th><td><div class="bar"><i style="width:11%"></i></div></td><td class="r">118명</td></tr>
+    <tr><td style="color:var(--mute)">12</td><th scope="row">빈 컷 비율 바꾸기</th><td><div class="bar b-gray"><i style="width:4%"></i></div></td><td class="r">46명</td></tr>
+   </tbody></table></div></div>
+ </div>
+ <div data-pane="ai" class="view" hidden>
+  <div class="callout w"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3 2 21h20z"/><path d="M12 10v4M12 17h.01"/></svg><span>이번 달 AI 비용이 월 한도 ₩500,000의 70%예요. 80%를 넘으면 대시보드에 경고가 뜨고, 100%면 장면 재생성부터 멈춰요. 캐릭터 시트 · 배경은 마지막까지 열어 둬요.</span></div>
+  <div class="card"><h2>기능별 AI 사용</h2>
+   <div class="tw"><table style="min-width:720px"><thead><tr><th scope="col">기능</th><th scope="col">모델</th><th class="r" scope="col">호출</th><th class="r" scope="col">차감 (회 · 장)</th><th class="r" scope="col">추정 비용</th><th class="r" scope="col">1회 비용</th><th class="r" scope="col">실패율</th></tr></thead><tbody>
+    <tr><th scope="row" colspan="7" style="color:var(--mute);font-size:11.5px;background:var(--soft2)">글 AI</th></tr>
+    <tr><th scope="row">시놉시스 · 기획 초안</th><td>Claude</td><td class="r">1,460</td><td class="r">1,460</td><td class="r"><b>₩29,000</b></td><td class="r">₩20</td><td class="r">0.6%</td></tr>
+    <tr><th scope="row">콘티 만들기</th><td>Claude</td><td class="r">2,480</td><td class="r">1,240</td><td class="r"><b>₩48,000</b></td><td class="r">₩19</td><td class="r">0.8%</td></tr>
+    <tr><th scope="row">이미지 프롬프트 만들기</th><td>Claude</td><td class="r">1,910</td><td class="r">1,910</td><td class="r"><b>₩19,000</b></td><td class="r">₩10</td><td class="r">1.2%</td></tr>
+    <tr><th scope="row">대사 다듬기 · 말투</th><td>Claude</td><td class="r">5,320</td><td class="r">5,320</td><td class="r"><b>₩32,000</b></td><td class="r">₩6</td><td class="r">0.4%</td></tr>
+    <tr><th scope="row" colspan="7" style="color:var(--mute);font-size:11.5px;background:var(--soft2)">이미지 AI</th></tr>
+    <tr><th scope="row" class="up">캐릭터 시트</th><td>나노바나나 2 · 1K</td><td class="r">612</td><td class="r">612</td><td class="r"><b>₩42,000</b></td><td class="r">₩69</td><td class="r">3.1%</td></tr>
+    <tr><th scope="row" class="up">주요 배경</th><td>나노바나나 2 · 1K</td><td class="r">418</td><td class="r">418</td><td class="r"><b>₩27,000</b></td><td class="r">₩65</td><td class="r">2.4%</td></tr>
+    <tr><th scope="row" class="up">장면 · 콘티 보고</th><td>나노바나나 2 · 1K</td><td class="r">2,140</td><td class="r">2,140</td><td class="r"><b>₩108,000</b></td><td class="r">₩50</td><td class="r">5.4%</td></tr>
+    <tr><th scope="row" class="up">장면 · 콘티 없이</th><td>나노바나나 2 · 1K</td><td class="r">690</td><td class="r">690</td><td class="r"><b>₩34,000</b></td><td class="r">₩49</td><td class="r"><b class="down">6.8%</b></td></tr>
+    <tr><th scope="row">컷 이미지 한꺼번에</th><td>나노바나나 2 · 1K</td><td class="r">180</td><td class="r">180</td><td class="r"><b>₩9,000</b></td><td class="r">₩50</td><td class="r">4.0%</td></tr>
+   </tbody></table></div>
+   <p class="note">참고 이미지가 붙은 장면 생성 비율은 64%예요. 실패율은 안전 필터 · 시간 초과를 합친 값이에요. 실패한 생성은 맛보기에서 빼지 않아요.</p></div>
+  <div class="card"><div class="hd"><h2>회원이 쓴 AI 비용</h2><span class="note">회원 활동으로 생긴 AI 원가 · 글 AI와 이미지 AI 합계</span><div class="seg r" role="group" aria-label="비교 기준" id="costSeg"><button type="button" aria-pressed="true" data-k="a">이번 달</button><button type="button" aria-pressed="false" data-k="t">누적</button></div></div>
+   <div class="grid g-kpi">
+    <div class="kpi"><span>이번 달 (10.01 – 10.26)</span><strong>₩348,000</strong><em class="warn">누적의 31% · 26일 만에</em></div>
+    <div class="kpi"><span>누적 (08.01 오픈부터)</span><strong>₩1,126,000</strong><em>8월 ₩182k · 9월 ₩596k · 10월 ₩348k</em></div>
+    <div class="kpi"><span>이번 달 AI를 쓴 회원</span><strong>1,402명</strong><em>1인당 평균 ₩248 · 중앙값 ₩90</em></div>
+    <div class="kpi"><span>상위 10% 회원 비중</span><strong>46%</strong><em class="warn">이번 달 비용의 절반 가까이</em></div>
+   </div>
+   <div style="display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;align-items:baseline;gap:8px"><b>누적 대비 이번 달</b><span class="note">막대 전체가 누적 ₩1,126,000</span></div>
+    <div class="stack" role="img" aria-label="누적 AI 비용 중 8월 16%, 9월 53%, 10월 31%"><i style="width:16%;background:var(--faint)">8월 16%</i><i style="width:53%;background:color-mix(in srgb,var(--acc) 40%,var(--panel))">9월 53%</i><i style="width:31%;background:var(--acc);color:var(--accInk)">10월 31%</i></div>
+    <p class="note">10월은 26일까지라 월말이면 약 ₩415,000(누적의 34%)으로 예상해요. 9월은 무료 오픈 이벤트로 가입이 몰린 달이에요.</p>
+   </div>
+   <div style="display:flex;flex-direction:column;gap:6px"><b>비용 구간별 회원 <span class="note" id="bandNote" style="font-weight:500">이번 달 기준</span></b><div id="bands"></div></div>
+   <div class="tw"><table style="min-width:720px"><thead><tr><th scope="col">회원</th><th class="r" scope="col">이번 달</th><th class="r" scope="col">누적</th><th scope="col" style="width:26%">이번 달 / 누적</th><th class="r" scope="col">전체 회원 중 비중</th><th class="r" scope="col">평균 대비</th><th scope="col">주로 쓴 곳</th></tr></thead><tbody id="costRows"></tbody></table></div>
+   <p class="note">회원을 누르면 회원관리 상세로 가요. 예시 8명과 「그 외 회원」 합계로 전체를 맞췄어요.</p></div>
+ </div>
+ <div data-pane="ret" class="view" hidden>
+  <div class="card"><div class="hd"><h2>가입 주간별 재제작률</h2><span class="note">가입 뒤 N주째에 컷을 다시 만든 비율 · 진할수록 높음</span></div>
+   <div class="tw"><table class="heat" style="min-width:560px"><thead><tr><th scope="col">가입 주</th><th class="c" scope="col">가입</th><th class="c" scope="col">1주</th><th class="c" scope="col">2주</th><th class="c" scope="col">4주</th><th class="c" scope="col">8주</th></tr></thead><tbody id="heatRows"></tbody></table></div>
+   <p class="note">10월 4주부터 캐릭터 시트가 열렸어요. 시트를 만든 회원의 1주 재제작률은 58%로, 안 만든 회원(44%)보다 높아요.</p></div>
+ </div>
+</section>
+
+<!-- ============ 요금제 ============ -->
+<section class="view" id="v-billing" hidden aria-labelledby="h-bill">
+ <header class="ph"><h1 id="h-bill">요금제</h1><span class="pill p-dark">무료 운영 중</span><span class="sub">결제는 반응을 보고 연결해요</span></header>
+ <div class="card" style="flex-direction:row;flex-wrap:wrap;align-items:center;gap:12px">
+  <div style="flex:1 1 360px"><b>지금은 모든 회원이 무료 요금제예요</b><p class="note" style="margin-top:4px">AI 이미지는 가입 때 맛보기 10장만 주고, 「프로 알림 받기」 신청으로 유료 의향을 재요. 결제 연결 전에는 회원에게 가격이 보이지 않아요.</p></div>
+  <label class="tg" style="border:0;padding:0" for="payOn"><span><b>결제 켜기</b><small id="payNote">아래 준비 항목 6개를 마치면 켤 수 있어요</small></span><input class="sw" type="checkbox" id="payOn" disabled></label>
+ </div>
+ <div class="grid g-kpi">
+  <div class="kpi"><span>프로 알림 신청</span><strong>41명</strong><em>활성 제작자의 3.4% · 목표 5%</em></div>
+  <div class="kpi"><span>맛보기 10장 다 쓴 회원</span><strong>96명</strong><em>누적 · 유료 수요 신호</em></div>
+  <div class="kpi"><span>맛보기를 시트 · 배경에 쓴 비율</span><strong>18%</strong><em class="warn">시트만 쓰고 장면을 못 만든 회원 31명</em></div>
+  <div class="kpi"><span>활성 제작자 1인당 AI 비용</span><strong>₩288</strong><em>프로 가격의 4%</em></div>
+ </div>
+ <div class="grid g-2">
+  <div class="card"><div class="hd"><h2>크레딧 규칙</h2><span class="pill p-ok">지금 적용 중</span><button class="btn sm r" type="button" id="ruleEdit">편집</button></div>
+   <dl class="kv" id="ruleList">
+    <dt>이미지 맛보기 (가입 시 1회)</dt><dd data-rule="free">10장 · 1K</dd>
+    <dt>캐릭터 시트 · 배경</dt><dd data-rule="ref">1장 차감 · 맛보기에서 첫 시트 1장은 무료</dd>
+    <dt>장면 만들기</dt><dd data-rule="scene">후보 수만큼 차감 (1 · 2 · 4장)</dd>
+    <dt>글 AI (시놉시스 · 콘티 · 대사)</dt><dd data-rule="txt">매월 30회 충전</dd>
+    <dt>라이브러리 보관</dt><dd data-rule="lib">작품당 500장 · 넘으면 오래된 안 쓴 그림부터 정리 안내</dd>
+    <dt>무료 지급 조건</dt><dd>카카오 · 네이버 로그인 또는 휴대폰 인증</dd>
+    <dt>2K · Pro 이미지</dt><dd>유료 전용</dd>
+    <dt>월 AI 비용 한도</dt><dd data-rule="cap">₩500,000</dd>
+   </dl>
+   <p class="note">시트를 먼저 만든 회원이 장면 재생성을 덜 해서, 첫 시트 1장은 무료로 두는 쪽을 추천해요. 맛보기를 시트에 다 써 버리는 일을 막아요.</p></div>
+  <div class="card"><h2>결제 연결 준비 <span class="note" id="chkN" style="font-weight:500">0 / 6</span></h2>
+   <div id="checks">
+    <label class="check"><input type="checkbox"><span><b>유료 의향 확인</b><small>프로 알림 신청이 활성 제작자의 5% 또는 300명</small></span></label>
+    <label class="check"><input type="checkbox"><span><b>사업자등록 · 통신판매업 신고</b><small>유료 판매 전에 필요해요</small></span></label>
+    <label class="check"><input type="checkbox"><span><b>결제 대행사 계약</b><small>토스페이먼츠 · 포트원 중 선택, 정기결제 지원 확인</small></span></label>
+    <label class="check"><input type="checkbox"><span><b>이용약관 · 환불 정책</b><small>디지털 콘텐츠 청약철회 기준 반영</small></span></label>
+    <label class="check"><input type="checkbox"><span><b>개인정보 처리방침 갱신</b><small>결제 정보 처리 위탁 추가</small></span></label>
+    <label class="check"><input type="checkbox"><span><b>가격 확정</b><small>아래 추천 요금제를 신청자 반응으로 조정</small></span></label>
+   </div></div>
+ </div>
+ <div class="card"><div class="hd"><h2>추천 요금제</h2><span class="pill p-gray">공개 전</span><span class="note">결제를 켜면 이 가격으로 열려요 · 무료 오픈 회원은 첫 달 50% 쿠폰</span></div>
+  <div class="plans">
+   <div class="plan"><div class="top"><strong>무료</strong><span class="pill p-dark">지금 운영 중</span></div><div><div class="price">₩0</div><span class="note">모든 회원</span></div><ul><li>AI 이미지 맛보기 10장 (가입 시 1회)</li><li>첫 캐릭터 시트 1장 무료</li><li>글 AI 매월 30회 · 작품 3개</li><li>라이브러리 작품당 500장</li></ul><button class="btn" type="button" data-plan="무료">가격 · 혜택 편집</button></div>
+   <div class="plan hl"><div class="top"><strong>프로</strong><span class="pill p-ok">추천</span></div><div><div class="price">₩6,900 / 월</div><span class="note">연 결제 ₩69,000 (2개월 무료)</span></div><ul><li>매월 400 크레딧 (이미지 1K 약 40장)</li><li>캐릭터 시트 · 배경 무제한 다시 만들기</li><li>2K 이미지 · 글 AI 무제한</li><li>라이브러리 작품당 3,000장</li></ul><button class="btn" type="button" data-plan="프로">가격 · 혜택 편집</button></div>
+   <div class="plan"><div class="top"><strong>팀</strong><span class="pill p-gray">공개 전</span></div><div><div class="price">₩9,900 / 석 · 월</div><span class="note">2석부터</span></div><ul><li>석당 매월 400 크레딧</li><li>캐릭터 시트 · 배경을 팀이 같이 써요</li><li>작품 공유 · 함께 편집</li></ul><button class="btn" type="button" data-plan="팀">가격 · 혜택 편집</button></div>
+   <div class="plan"><div class="top"><strong>교육</strong><span class="pill p-gray">공개 전</span></div><div><div class="price">₩0</div><span class="note">교사 인증 시</span></div><ul><li>프로와 같은 기능</li><li>학교 이메일 인증</li><li>1년마다 재인증</li></ul><button class="btn" type="button" data-plan="교육">가격 · 혜택 편집</button></div>
+  </div>
+  <p class="note"><b>크레딧 추가 구매</b> · 100 크레딧 ₩1,900 · 500 크레딧 ₩7,900 · 결제 수수료 약 3%를 뺀 금액이 이미지 1장 원가의 3배 이상 남도록 잡았어요.</p></div>
+ <div class="card"><div class="hd"><h2>프로 알림 신청자</h2><span class="note">결제를 켜면 이분들께 먼저 알려요</span><button class="btn sm r" type="button" data-toast="신청자 CSV를 만들었어요 (예시)">CSV 내보내기</button></div>
+  <div class="tw"><table style="min-width:620px"><thead><tr><th scope="col">회원</th><th scope="col">신청일</th><th scope="col">신청한 곳</th><th class="r" scope="col">맛보기 사용</th><th class="r" scope="col">시트 · 배경</th><th class="r" scope="col">누적 컷</th></tr></thead><tbody>
+   <tr><th scope="row">구로다</th><td>10.24</td><td>맛보기 소진 안내</td><td class="r">10 / 10</td><td class="r">3 · 2</td><td class="r">412</td></tr>
+   <tr><th scope="row">서하나</th><td>10.25</td><td>캐릭터 시트 다시 만들기</td><td class="r">9 / 10</td><td class="r">2 · 1</td><td class="r">128</td></tr>
+   <tr><th scope="row">오세린</th><td>10.22</td><td>작품 4번째 만들기</td><td class="r">6 / 10</td><td class="r">0 · 0</td><td class="r">77</td></tr>
+   <tr><th scope="row">lunar.cut</th><td>10.21</td><td>맛보기 소진 안내</td><td class="r">10 / 10</td><td class="r">1 · 0</td><td class="r">230</td></tr>
+   <tr><th scope="row">jiyoon_toon</th><td>10.20</td><td>요금제 안내 페이지</td><td class="r">2 / 10</td><td class="r">0 · 0</td><td class="r">44</td></tr>
+  </tbody></table></div></div>
+</section>
+
+<!-- ============ 운영 ============ -->
+<section class="view" id="v-ops" hidden aria-labelledby="h-ops">
+ <header class="ph"><h1 id="h-ops">운영</h1><span class="sub" id="opsSub">답할 문의 4건 · 처리할 신고 1건</span></header>
+ <div class="tabs" role="tablist" aria-label="운영 메뉴" id="opsTabs">
+  <button type="button" role="tab" aria-selected="true" data-t="q">문의 <span class="cnt" id="qCnt">4</span></button>
+  <button type="button" role="tab" aria-selected="false" data-t="r">신고 <span class="cnt" id="rCnt">1</span></button>
+  <button type="button" role="tab" aria-selected="false" data-t="n">공지 · 배너</button>
+  <button type="button" role="tab" aria-selected="false" data-t="p">프리셋 · 규격</button>
+ </div>
+ <div data-pane="q" class="split">
+  <div class="side qlist" aria-label="문의 목록" id="qList" style="flex:1 1 300px"></div>
+  <div class="main card" id="qView" style="flex:2 1 460px"></div>
+ </div>
+ <div data-pane="r" class="card" hidden>
+  <div class="hd"><h2>신고</h2><span class="note">공유 링크로 공개된 작품만 신고돼요 · 신고된 작품을 열면 열람 기록이 남아요</span></div>
+  <div class="rep" data-rep="0"><div class="th">썸네일</div><div><b>밤의 골목</b> <span class="note">by nightcut</span> <span class="pill p-warn" data-st>대기</span><div class="note">사유: 선정적인 내용 · 신고 3건 · 오늘 10:12</div></div><div class="acts"><button class="btn sm" type="button" data-toast="열람 기록을 남기고 작품을 열었어요 (예시)">작품 열람</button><button class="btn sm" type="button" data-rep-do="문제없음">문제없음</button><button class="btn sm" type="button" data-rep-do="링크 비공개">링크 비공개</button><button class="btn sm danger" type="button" data-rep-do="회원 정지">회원 정지</button></div></div>
+  <div class="rep" data-rep="1"><div class="th">썸네일</div><div><b>패러디 단편</b> <span class="note">by toonfan</span> <span class="pill p-ok" data-st>처리 완료</span><div class="note">사유: 저작권 침해 의심 · 신고 1건 · 10.20 · 링크 비공개 처리</div></div><div class="acts"><button class="btn sm" type="button" data-toast="열람 기록을 남기고 작품을 열었어요 (예시)">작품 열람</button></div></div>
+  <div class="rep" data-rep="2"><div class="th">시트</div><div><b>캐릭터 시트 · 실존 인물 닮음</b> <span class="note">by fanart_k</span> <span class="pill p-gray" data-st>자동 감지</span><div class="note">AI 안전 필터가 실존 인물 얼굴 업로드를 감지했어요 · 공개 전이라 확인만 필요해요</div></div><div class="acts"><button class="btn sm" type="button" data-rep-do="문제없음">문제없음</button><button class="btn sm danger" type="button" data-rep-do="시트 삭제">시트 삭제</button></div></div>
+ </div>
+ <div data-pane="n" class="grid g-2" hidden>
+  <div class="card"><div class="hd"><h2>공지 · 배너</h2><button class="btn sm pri r" type="button" id="newNotice">새 공지</button></div>
+   <div id="notices">
+    <div class="row"><span class="pill p-dark">띠</span><span style="flex:1;min-width:0"><b>캐릭터 시트 · 배경 만들기 열렸어요</b><span class="sub2">10.24 – 11.07 · 대상 전체</span></span><span class="pill p-ok">게시 중</span></div>
+    <div class="row"><span class="pill p-dark">띠</span><span style="flex:1;min-width:0"><b>웹툰보드 무료 오픈 안내</b><span class="sub2">11.01 – 11.30 · 대상 전체</span></span><span class="pill p-blue">예약</span></div>
+    <div class="row"><span class="pill p-gray">팝업</span><span style="flex:1;min-width:0"><b>첫 캐릭터 시트 1장 무료</b><span class="sub2">11.01 – 11.07 · 대상 콘티를 만든 회원</span></span><span class="pill p-blue">예약</span></div>
+    <div class="row"><span class="pill p-gray">팝업</span><span style="flex:1;min-width:0"><b>서버 점검 안내</b><span class="sub2">09.14 · 대상 전체</span></span><span class="pill p-gray">종료</span></div>
+   </div></div>
+  <div class="card"><h2>홈 상단 띠 미리보기</h2>
+   <div class="banner"><b>공지</b><span id="bnPrev">캐릭터 시트 · 배경 만들기가 열렸어요. 먼저 만들어 두면 컷마다 같은 얼굴 · 장소로 나와요.</span><small>닫기</small></div>
+   <label class="fld" for="bnText">문구<input id="bnText" value="캐릭터 시트 · 배경 만들기가 열렸어요. 먼저 만들어 두면 컷마다 같은 얼굴 · 장소로 나와요."></label>
+   <div class="grid" style="grid-template-columns:1fr 1fr;gap:8px"><label class="fld" for="bnS">시작<input type="date" id="bnS" value="2026-10-24"></label><label class="fld" for="bnE">끝<input type="date" id="bnE" value="2026-11-07"></label></div>
+   <label class="fld" for="bnTo">대상<select id="bnTo"><option>전체 회원</option><option>처음 온 방문자</option><option>콘티를 만든 회원</option><option>맛보기 소진 회원</option></select></label>
+   <button class="btn pri lg" type="button" data-toast="띠 문구를 저장했어요 (예시)" style="align-self:flex-start">저장</button></div>
+ </div>
+ <div data-pane="p" class="view" hidden>
+  <div class="card"><div class="hd"><h2>플랫폼 규격</h2><span class="note">표지 · 썸네일 만들기에 쓰여요 · 플랫폼이 규격을 바꾸면 여기서 고쳐요</span><select class="r" aria-label="플랫폼"><option>네이버 웹툰</option><option>플랫폼 추가…</option></select></div>
+   <div class="tw"><table style="min-width:520px"><thead><tr><th scope="col">이름</th><th scope="col">묶음</th><th class="r" scope="col">크기 (px)</th><th class="r" scope="col">용량 한도</th><th scope="col"><span style="position:absolute;left:-9999px">편집</span></th></tr></thead><tbody>
+    <tr><td>포스터형 대표 이미지</td><td>작품</td><td class="r">480 × 623</td><td class="r">1MB</td><td class="r"><button class="btn sm" type="button" data-toast="규격 편집은 개발 단계에서 열려요">편집</button></td></tr>
+    <tr><td>가로형 대표 이미지</td><td>작품</td><td class="r">434 × 330</td><td class="r">1MB</td><td class="r"><button class="btn sm" type="button" data-toast="규격 편집은 개발 단계에서 열려요">편집</button></td></tr>
+    <tr><td>회차 대표 이미지</td><td>회차</td><td class="r">202 × 120</td><td class="r">195KB</td><td class="r"><button class="btn sm" type="button" data-toast="규격 편집은 개발 단계에서 열려요">편집</button></td></tr>
+    <tr><td>SNS 공유용</td><td>회차</td><td class="r">600 × 315</td><td class="r">195KB</td><td class="r"><button class="btn sm" type="button" data-toast="규격 편집은 개발 단계에서 열려요">편집</button></td></tr>
+    <tr><td>오프닝 간지</td><td>원고</td><td class="r">690 × 900</td><td class="r">—</td><td class="r"><button class="btn sm" type="button" data-toast="규격 편집은 개발 단계에서 열려요">편집</button></td></tr>
+    <tr><td>엔딩 컷</td><td>원고</td><td class="r">690 × 520</td><td class="r">—</td><td class="r"><button class="btn sm" type="button" data-toast="규격 편집은 개발 단계에서 열려요">편집</button></td></tr>
+    <tr><td>기타 83×90 외 5종</td><td>기타</td><td class="r">83 × 90 …</td><td class="r">195KB</td><td class="r"><button class="btn sm" type="button" data-toast="규격 편집은 개발 단계에서 열려요">편집</button></td></tr>
+   </tbody></table></div></div>
+  <div class="grid g-3">
+   <div class="preset"><div class="hd"><b>그림체 프리셋</b><span class="note">6개</span><button class="btn sm" type="button" data-toast="프리셋 관리는 개발 단계에서 열려요">관리</button></div><p>웹툰 기본 · 시네마틱 반실사 · 다크 세피아 · 로맨스 파스텔 · 흑백 만화 · 수채 일러스트</p></div>
+   <div class="preset"><div class="hd"><b>샷 크기 · 앵글</b><span class="pill p-ok">새로</span><button class="btn sm" type="button" data-toast="프리셋 관리는 개발 단계에서 열려요">관리</button></div><p>샷 6: 익스트림 클로즈업 · 클로즈업 · 바스트 · 미디엄 · 풀숏 · 롱숏<br>앵글 5: 눈높이 · 하이 · 로우 · 부감 · 기울임</p></div>
+   <div class="preset"><div class="hd"><b>컷 비율</b><span class="pill p-ok">새로</span><button class="btn sm" type="button" data-toast="프리셋 관리는 개발 단계에서 열려요">관리</button></div><p>9:16 · 2:3 · 3:4 · 4:5 · 1:1 · 4:3 · 3:2 · 16:9 · 빈 컷 · 콘티 박스 · AI 장면에 같이 쓰여요</p></div>
+   <div class="preset"><div class="hd"><b>말풍선 모양</b><span class="note">12개</span><button class="btn sm" type="button" data-toast="프리셋 관리는 개발 단계에서 열려요">관리</button></div><p>기본 타원 · 각진 · 손그림 · 구름 · 몽글 구름 · 물결 외침 · 폭발 · 번쩍 · 가시 · 떨림 · 거친 떨림 · 낙서</p></div>
+   <div class="preset"><div class="hd"><b>대사 말투</b><span class="note">18개</span><button class="btn sm" type="button" data-toast="프리셋 관리는 개발 단계에서 열려요">관리</button></div><p>존댓말 · 반말 · 양아치 · 초딩 · 전라도 · 경상도 · 충청도 · 강원도 · 제주 · 북한 · 연변 · 교포 외</p></div>
+   <div class="preset"><div class="hd"><b>효과음 · 폰트</b><span class="note">14개</span><button class="btn sm" type="button" data-toast="프리셋 관리는 개발 단계에서 열려요">관리</button></div><p>둥근 코믹 · 호러 · 손글씨 의성어 외 · 폰트별 라이선스 표기 포함</p></div>
+  </div>
+ </div>
+</section>
+
+<!-- ============ 설정 ============ -->
+<section class="view" id="v-config" hidden aria-labelledby="h-cfg">
+ <header class="ph"><h1 id="h-cfg">설정</h1><span class="sub">관리자 · 권한 · 보안 · 감사 로그</span></header>
+ <div class="grid g-2">
+  <div class="card"><div class="hd"><h2>관리자</h2><button class="btn sm r" type="button" id="invite">관리자 초대</button></div>
+   <div id="admins">
+    <div class="admin"><span class="av dark">GK</span><span class="who"><b>GOLDKING</b><small>ad***@[도메인] · 최근 지금</small></span><span class="pill p-ok">2단계 인증</span><select aria-label="GOLDKING 역할"><option selected>대표</option><option>운영(CS)</option><option>마케팅</option></select></div>
+    <div class="admin"><span class="av">CS</span><span class="who"><b>[CS 담당자]</b><small>cs***@[도메인] · 초대 대기</small></span><span class="pill p-bad">설정 전</span><select aria-label="CS 담당자 역할"><option>대표</option><option selected>운영(CS)</option><option>마케팅</option></select></div>
+   </div></div>
+  <div class="card"><h2>보안 · 운영 설정</h2>
+   <label class="tg" for="t1"><span><b>관리자 2단계 인증 필수</b><small>설정하지 않은 관리자는 로그인할 수 없어요</small></span><input class="sw" type="checkbox" id="t1" checked data-log="관리자 2단계 인증 필수"></label>
+   <label class="tg" for="t2"><span><b>신규 가입 받기</b><small>끄면 가입 버튼 대신 대기 명단을 받아요</small></span><input class="sw" type="checkbox" id="t2" checked data-log="신규 가입 받기"></label>
+   <label class="tg" for="t3"><span><b>AI 이미지 켜기</b><small>끄면 모든 회원의 시트 · 배경 · 장면 생성이 멈춰요 (비용 급증 시 비상용)</small></span><input class="sw" type="checkbox" id="t3" checked data-log="AI 이미지 켜기"></label>
+   <label class="tg" for="t4"><span><b>장면 후보 최대 4장</b><small>끄면 회원이 후보를 2장까지만 고를 수 있어요 · 비용을 줄일 때</small></span><input class="sw" type="checkbox" id="t4" checked data-log="장면 후보 최대 4장"></label>
+   <label class="tg" for="t5"><span><b>AI 비용 80% 알림</b><small>월 한도의 80%에 닿으면 이메일로 알려요</small></span><input class="sw" type="checkbox" id="t5" checked data-log="AI 비용 80% 알림"></label>
+   <label class="tg" for="t6"><span><b>점검 모드</b><small>회원 화면에 점검 안내를 띄우고 편집을 막아요</small></span><input class="sw" type="checkbox" id="t6" data-log="점검 모드"></label>
+   <div class="grid" style="grid-template-columns:1fr 1fr;gap:8px;margin-top:4px"><label class="fld" for="autoOut">자동 로그아웃<select id="autoOut"><option>15분</option><option selected>30분</option><option>1시간</option></select></label><label class="fld" for="capIn">월 AI 비용 한도<input id="capIn" value="₩500,000"></label></div>
+  </div>
+ </div>
+ <div class="card"><h2>역할별 권한</h2>
+  <div class="tw"><table style="min-width:560px"><thead><tr><th scope="col">할 수 있는 일</th><th class="c" scope="col">대표</th><th class="c" scope="col">운영(CS)</th><th class="c" scope="col">마케팅</th></tr></thead><tbody>
+   <tr><th scope="row">대시보드 · 통계 보기</th><td class="c up"><b>가능</b></td><td class="c up"><b>가능</b></td><td class="c up"><b>가능</b></td></tr>
+   <tr><th scope="row">회원 이메일 · 개인정보 열람</th><td class="c up"><b>가능</b></td><td class="c warn">사유 입력</td><td class="c" style="color:var(--faint)">—</td></tr>
+   <tr><th scope="row">이미지 · 크레딧 지급 · 회수</th><td class="c up"><b>가능</b></td><td class="c warn">1회 5장까지</td><td class="c" style="color:var(--faint)">—</td></tr>
+   <tr><th scope="row">회원 캐릭터 시트 · 라이브러리 열람</th><td class="c warn">신고 건만</td><td class="c warn">신고 건만</td><td class="c" style="color:var(--faint)">—</td></tr>
+   <tr><th scope="row">이용 정지 · 탈퇴 처리</th><td class="c up"><b>가능</b></td><td class="c warn">정지만</td><td class="c" style="color:var(--faint)">—</td></tr>
+   <tr><th scope="row">문의 답변 · 신고 처리</th><td class="c up"><b>가능</b></td><td class="c up"><b>가능</b></td><td class="c" style="color:var(--faint)">—</td></tr>
+   <tr><th scope="row">공지 · 배너 · 캠페인 링크</th><td class="c up"><b>가능</b></td><td class="c" style="color:var(--faint)">—</td><td class="c up"><b>가능</b></td></tr>
+   <tr><th scope="row">요금제 · 크레딧 규칙 · 결제 켜기</th><td class="c up"><b>가능</b></td><td class="c" style="color:var(--faint)">—</td><td class="c" style="color:var(--faint)">—</td></tr>
+  </tbody></table></div></div>
+ <div class="card"><div class="hd"><h2>감사 로그</h2><span class="note">관리자가 한 일은 모두 남고 지울 수 없어요</span><button class="btn sm r" type="button" data-toast="감사 로그 CSV를 만들었어요 (예시)">CSV 내보내기</button></div>
+  <div class="chips" role="group" aria-label="작업 종류" id="logChips"><button class="chip" type="button" aria-pressed="true" data-c="전체">전체</button><button class="chip" type="button" aria-pressed="false" data-c="크레딧">크레딧</button><button class="chip" type="button" aria-pressed="false" data-c="회원 상태">회원 상태</button><button class="chip" type="button" aria-pressed="false" data-c="개인정보 열람">개인정보 열람</button><button class="chip" type="button" aria-pressed="false" data-c="설정 변경">설정 변경</button></div>
+  <div class="tw"><table style="min-width:640px"><thead><tr><th scope="col">시각</th><th scope="col">관리자</th><th scope="col">작업</th><th scope="col">대상</th><th scope="col">사유 · 내용</th></tr></thead><tbody id="logRows"></tbody></table></div></div>
+</section>
+</main>
+</div>
+
+<div class="modal" id="modal" hidden><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mT" id="mSheet"></div></div>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+/* ---- 작은 도우미 ---- */
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+let tT;function toast(t){const el=$('#toast');el.textContent=t;el.hidden=false;clearTimeout(tT);tT=setTimeout(()=>el.hidden=true,2400);}
+function openModal(html,onOk){const m=$('#modal');$('#mSheet').innerHTML=html;m.hidden=false;const f=m.querySelector('input,select,textarea,button');f&&f.focus();
+ m.onclick=e=>{if(e.target===m||e.target.closest('[data-x]'))m.hidden=true;const ok=e.target.closest('[data-ok]');if(ok&&onOk){if(onOk()!==false)m.hidden=true;}};}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#modal').hidden=true;});
+document.addEventListener('click',e=>{const t=e.target.closest('[data-toast]');if(t){e.preventDefault();toast(t.dataset.toast);}});
+
+/* ---- 화면 전환 (해시: dash · acq · members · stats · billing · ops · config) ---- */
+const VIEWS=['dash','acq','members','stats','billing','ops','config'];
+function go(v){if(!VIEWS.includes(v))v='dash';VIEWS.forEach(x=>{$('#v-'+x).hidden=x!==v;});$$('.nav a').forEach(a=>a.toggleAttribute('aria-current',a.dataset.go===v));if(document.querySelector('.nav a[aria-current]'))document.querySelector('.nav a[aria-current]').setAttribute('aria-current','page');window.scrollTo(0,0);const tt=document.getElementById('tbTitle');if(tt)tt.textContent=({dash:'대시보드',acq:'유입경로',members:'회원관리',stats:'통계',billing:'요금제',ops:'운영',config:'설정'})[v];}
+window.addEventListener('hashchange',()=>go(location.hash.slice(1)));
+document.addEventListener('click',e=>{const a=e.target.closest('a[href^="#"]');if(!a)return;const v=a.getAttribute('href').slice(1);
+ if(a.dataset.tab){setTimeout(()=>{const tb=document.querySelector(`#v-${v} .tabs [data-t="${a.dataset.tab}"]`);tb&&tb.click();},0);}
+ if(a.dataset.mem!=null){SEL=+a.dataset.mem;CHIP='전체';setTimeout(renderMembers,0);}
+ if(a.dataset.chip){CHIP=a.dataset.chip;setTimeout(renderMembers,0);}});
+go(location.hash.slice(1));
+
+/* ---- 헤더: 알림 · 내 계정 · 화면 모드 ---- */
+function closePops(except){[['#bellBtn','#bellPop'],['#userBtn','#userPop']].forEach(([b,p])=>{if(p!==except){$(p).hidden=true;$(b).setAttribute('aria-expanded','false');}});}
+[['#bellBtn','#bellPop'],['#userBtn','#userPop']].forEach(([b,p])=>$(b).addEventListener('click',e=>{e.stopPropagation();const open=$(p).hidden;closePops(p);$(p).hidden=!open;$(b).setAttribute('aria-expanded',open);}));
+document.addEventListener('click',e=>{if(!e.target.closest('.pop'))closePops();else if(e.target.closest('a.nt,button.nt')){const n=e.target.closest('.nt');n.classList.remove('un');bellSync();closePops();}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closePops();});
+function bellSync(){const n=$$('#bellPop .nt.un').length;$('#bellCnt').textContent=n;$('#bellCnt').hidden=!n;$('#bellBtn').setAttribute('aria-label',n?`알림 ${n}개 안 읽음`:'알림');}
+$('#readAll').addEventListener('click',e=>{e.stopPropagation();$$('#bellPop .nt.un').forEach(x=>x.classList.remove('un'));bellSync();toast('알림을 모두 읽음으로 바꿨어요');});
+bellSync();
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);$$('[data-theme-set]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.themeSet===t));try{localStorage.setItem('wca-theme',t);}catch(_){}}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-theme-set]');if(b){e.stopPropagation();setTheme(b.dataset.themeSet);}});
+{let t=null;try{t=localStorage.getItem('wca-theme');}catch(_){}setTheme(t||(matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light'));}
+
+/* ---- 대시보드 기간 ---- */
+$('#perSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('#perSeg button').forEach(x=>x.setAttribute('aria-pressed',x===b));$('#dashPer').textContent={'오늘':'2026.10.26 · 어제와 비교','7일':'2026.10.20 – 10.26 · 직전 7일과 비교','30일':'2026.09.27 – 10.26 · 직전 30일과 비교'}[b.dataset.per];toast(`${b.dataset.per} 기준으로 바꿨어요 · 예시 화면은 숫자가 그대로예요`);});
+
+/* ---- 탭 공통 ---- */
+function bindTabs(tabsSel,root){$(tabsSel).addEventListener('click',e=>{const b=e.target.closest('[role=tab]');if(!b)return;$$(tabsSel+' [role=tab]').forEach(x=>x.setAttribute('aria-selected',x===b));$$(root+' > [data-pane]').forEach(p=>p.hidden=p.dataset.pane!==b.dataset.t);});}
+bindTabs('#statTabs','#v-stats');bindTabs('#opsTabs','#v-ops');
+
+/* ---- 유입경로 ---- */
+$('#chSel').addEventListener('change',e=>{const v=e.target.value;$$('#chTable tbody tr').forEach(r=>r.hidden=!!v&&r.dataset.ch!==v);});
+function utm(){$('#utmOut').textContent=`[웹툰보드 주소]/?utm_source=${encodeURIComponent($('#utmS').value)}&utm_medium=${encodeURIComponent($('#utmM').value)}&utm_campaign=${encodeURIComponent($('#utmC').value)}`;}
+['#utmS','#utmM','#utmC'].forEach(s=>$(s).addEventListener('input',utm));utm();
+$('#utmForm').addEventListener('submit',e=>{e.preventDefault();const t=$('#utmOut').textContent;try{navigator.clipboard.writeText(t).then(()=>toast('링크를 복사했어요'),()=>{selectOut();toast('링크를 선택해 두었어요 · Ctrl+C로 복사하세요');});}catch(_){selectOut();toast('링크를 선택해 두었어요 · Ctrl+C로 복사하세요');}});
+function selectOut(){const r=document.createRange();r.selectNodeContents($('#utmOut'));const s=getSelection();s.removeAllRanges();s.addRange(r);}
+
+/* ---- 회원관리 ---- */
+const M=[
+ {i:'서',n:'서하나',ca:4120,ct:9860,cu:'장면 · 시트',e:'ha***@naver.com',l:'네이버',p:'프로 알림',cr:1,u:9,w:3,c:128,lib:186,mb:142,sh:2,bg:1,via:'네이버 검색',last:'오늘 14:02',st:'정상',j:'2026.08.12',mk:'동의',works:[['현상','12화 · 어제 수정'],['명월사진관 외전','2화 · 3일 전']],ai:[['캐릭터 시트',2],['배경',1],['장면 · 콘티 보고',6]],h:[['08.12','가입 맛보기 이미지','+10장'],['10.23','관리자 지급 · 오류 보상','+5장']],tags:['캐릭터 시트 사용','프로 알림 신청']},
+ {i:'한',n:'한시우',ca:380,ct:380,cu:'장면',e:'si***@gmail.com',l:'구글',p:'무료',cr:7,u:3,w:1,c:5,lib:9,mb:6,sh:0,bg:0,via:'챗GPT',last:'오늘 11:40',st:'정상',j:'2026.10.24',mk:'미동의',works:[['테스트 작품','1화 · 오늘']],ai:[['장면 · 콘티 없이',3]],h:[['10.24','가입 맛보기 이미지','+10장']],tags:[]},
+ {i:'구',n:'구로다',ca:6940,ct:21300,cu:'시트 · 배경',e:'ku***@kakao.com',l:'카카오',p:'프로 알림',cr:0,u:10,w:3,c:412,lib:488,mb:396,sh:3,bg:2,via:'유튜브',last:'어제',st:'정상',j:'2026.03.02',mk:'동의',works:[['밤의 사진관','24화 · 어제'],['단편 모음','6화 · 1주 전']],ai:[['캐릭터 시트',3],['배경',2],['장면 · 콘티 보고',5]],h:[['03.02','가입 맛보기 이미지','+10장'],['10.24','맛보기 소진','0장 남음']],tags:['맛보기 소진','캐릭터 시트 사용','라이브러리 한도 임박','프로 알림 신청']},
+ {i:'민',n:'minwoo.art',ca:0,ct:0,cu:'—',e:'mi***@gmail.com',l:'구글',p:'무료',cr:0,u:0,w:0,c:0,lib:0,mb:0,sh:0,bg:0,via:'인스타그램',last:'10.21',st:'인증 전',j:'2026.10.21',mk:'동의',works:[],ai:[],h:[],tags:['가입만 하고 컷 0개']},
+ {i:'J',n:'jiyoon_toon',ca:1260,ct:1260,cu:'시트 · 배경',e:'ji***@naver.com',l:'이메일',p:'교육 대기',cr:8,u:2,w:2,c:44,lib:31,mb:22,sh:1,bg:1,via:'직접 방문',last:'10.20',st:'인증 대기',j:'2026.10.19',mk:'동의',works:[['수업 예시','3화 · 4일 전']],ai:[['캐릭터 시트',1],['배경',1]],h:[['10.19','가입 맛보기 이미지','+10장']],tags:['교육 인증 대기','캐릭터 시트 사용','프로 알림 신청']},
+ {i:'박',n:'박도윤',ca:0,ct:2480,cu:'—',e:'do***@daum.net',l:'카카오',p:'무료',cr:0,u:10,w:1,c:9,lib:14,mb:9,sh:4,bg:0,via:'네이버 검색',last:'09.02',st:'30일 미접속',j:'2026.08.30',mk:'미동의',works:[['첫 작품','1화 · 8주 전']],ai:[['캐릭터 시트',4],['장면 · 콘티 없이',6]],h:[['08.30','가입 맛보기 이미지','+10장']],tags:['맛보기 소진','캐릭터 시트 사용']},
+ {i:'L',n:'lunar.cut',ca:2150,ct:11900,cu:'장면',e:'lu***@gmail.com',l:'구글',p:'프로 알림',cr:0,u:10,w:3,c:230,lib:212,mb:170,sh:1,bg:0,via:'AI 서비스',last:'오늘 09:15',st:'정지',j:'2026.06.11',mk:'동의',works:[['달빛 단편','9화 · 오늘']],ai:[['캐릭터 시트',1],['장면 · 콘티 보고',9]],h:[['10.21','같은 휴대폰으로 계정 4개 · 정지','−']],tags:['맛보기 소진','중복 가입 의심','프로 알림 신청']},
+ {i:'오',n:'오세린',ca:1030,ct:4720,cu:'글 AI',e:'se***@naver.com',l:'네이버',p:'프로 알림',cr:4,u:6,w:3,c:77,lib:96,mb:61,sh:0,bg:0,via:'공유 링크',last:'어제',st:'정상',j:'2026.07.27',mk:'동의',works:[['오늘의 일기툰','31화 · 어제']],ai:[['장면 · 콘티 없이',6]],h:[['07.27','가입 맛보기 이미지','+10장'],['10.19','관리자 지급 · 기능 제안 감사','+5장']],tags:['프로 알림 신청']}
+];
+let SEL=0,CHIP='전체';
+const planCls={'프로 알림':'p-dark','교육 대기':'p-blue','무료':'p-gray'};
+const stCls=s=>s==='정상'?'up':s==='정지'?'down':s==='인증 전'?'':'warn';
+function shown(){const q=$('#memQ').value.trim().toLowerCase(),pl=$('#memPlan').value,vi=$('#memVia').value;return M.map((m,i)=>[m,i]).filter(([m])=>(!q||(m.n+m.e).toLowerCase().includes(q))&&(!pl||m.p===pl)&&(!vi||m.via===vi)&&(CHIP==='전체'||m.tags.includes(CHIP)));}
+function renderMembers(){$$('#memChips .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.c===CHIP));
+ const L=shown();if(L.length&&!L.some(([,i])=>i===SEL))SEL=L[0][1];
+ $('#memRows').innerHTML=L.length?L.map(([m,i])=>`<tr class="clk${i===SEL?' sel':''}" data-i="${i}" tabindex="0"><td><span style="display:flex;align-items:center;gap:10px"><span class="av">${m.i}</span><span><b>${m.n}</b><span class="sub2">${m.e} · ${m.l}</span></span></span></td><td><span class="pill ${planCls[m.p]}">${m.p}</span></td><td class="r">${m.cr}장 남음<span class="sub2">${m.u}장 사용</span></td><td class="r">${m.w} · ${m.c}</td><td class="r">${m.lib}장<span class="sub2">${m.lib>=450?'<b class="warn">한도 임박</b>':m.mb+'MB'}</span></td><td>${m.via}</td><td>${m.last}</td><td><b class="${stCls(m.st)}" style="font-size:12px">${m.st}</b></td></tr>`).join(''):`<tr><td colspan="8" class="c" style="padding:28px;color:var(--mute)">조건에 맞는 회원이 없어요</td></tr>`;
+ $('#memCount').textContent=`${L.length}명 표시 · 예시 8명 / 전체 4,812`;renderSide();}
+function renderSide(){const m=M[SEL],tot=m.cr+m.u,maxAi=Math.max(1,...m.ai.map(a=>a[1]));
+ $('#memSide').innerHTML=`<div style="display:flex;align-items:center;gap:12px"><span class="av dark" style="width:44px;height:44px;font-size:16px">${m.i}</span><div style="min-width:0"><strong style="font-size:16px">${m.n}</strong><div class="note">${m.e}</div></div><span class="pill ${planCls[m.p]}" style="margin-left:auto">${m.p}</span></div>
+ <dl class="kv"><dt>가입</dt><dd>${m.j} · ${m.l}</dd><dt>유입</dt><dd>${m.via}</dd><dt>최근 접속</dt><dd>${m.last}</dd><dt>마케팅 수신</dt><dd>${m.mk}</dd></dl>
+ <div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:baseline"><b>AI 이미지 맛보기</b><span class="note" style="margin-left:auto" id="crTxt">${m.cr}장 남음 · ${m.u}장 사용</span></div><div class="bar"><i style="width:${tot?Math.round(m.cr/tot*100):0}%;background:${m.cr===0?'var(--orange)':'var(--acc)'}"></i></div>
+  ${m.ai.length?m.ai.map(([k,v])=>`<div class="brow" style="grid-template-columns:110px minmax(0,1fr) 36px"><span class="note">${k}</span><div class="bar ${/시트|배경/.test(k)?'b-blue':''}" style="height:6px"><i style="width:${Math.round(v/maxAi*100)}%"></i></div><span class="v" style="font-size:12px">${v}</span></div>`).join(''):'<span class="note">아직 AI 이미지를 만들지 않았어요</span>'}</div>
+ <div style="display:flex;flex-direction:column;gap:6px"><div style="display:flex;align-items:baseline"><b>AI 비용</b><a href="#stats" data-tab="ai" class="note" style="margin-left:auto;color:var(--accText);font-weight:600">통계에서 보기</a></div>
+  <div class="lib" style="grid-template-columns:1fr 1fr"><div><b>₩${m.ca.toLocaleString()}</b><small>이번 달</small></div><div><b>₩${m.ct.toLocaleString()}</b><small>누적</small></div></div>
+  <div class="mini"><div class="bar" style="height:8px"><i style="width:${m.ct?Math.round(m.ca/m.ct*100):0}%"></i></div><span class="note">${m.ct?Math.round(m.ca/m.ct*100)+'% 이번 달':'사용 없음'}</span></div>
+  <span class="note">${m.ca?`전체 회원 이번 달 비용의 ${(m.ca/348000*100).toFixed(2)}% · 평균(₩248)의 ${(m.ca/248).toFixed(1)}배`:'이번 달에는 AI를 쓰지 않았어요'}</span></div>
+ <div style="display:flex;flex-direction:column;gap:6px"><b>라이브러리 · 준비물</b><div class="lib"><div><b>${m.lib}</b><small>그림 / 작품당 500</small></div><div><b>${m.sh}</b><small>캐릭터 시트</small></div><div><b>${m.bg}</b><small>주요 배경</small></div></div>
+  ${m.sh+m.bg?`<div class="thumbs" aria-hidden="true">${Array.from({length:Math.min(6,m.sh+m.bg)},(_,k)=>`<span>${k<m.sh?'시트':'배경'}</span>`).join('')}</div>`:''}
+  <span class="note">그림 내용은 열지 않고 개수만 보여요 · 신고가 들어온 작품만 열람할 수 있어요</span></div>
+ <div style="display:flex;flex-direction:column;gap:6px"><b>작품 ${m.w}개</b>${m.works.map(([t,d])=>`<div style="display:flex;gap:8px;padding:8px 10px;border-radius:8px;background:var(--soft);font-size:12.5px"><b>${t}</b><span class="note" style="margin-left:auto">${d}</span></div>`).join('')||'<span class="note">아직 작품이 없어요</span>'}</div>
+ <div style="display:flex;flex-direction:column;gap:6px"><b>크레딧 내역</b><div id="hist">${m.h.map(([d,t,a])=>`<div style="display:flex;gap:8px;font-size:12.5px;padding:2px 0"><span class="note">${d}</span><span>${t}</span><b style="margin-left:auto">${a}</b></div>`).join('')||'<span class="note">카카오 · 네이버 로그인이나 휴대폰 인증 전이라 맛보기를 아직 받지 않았어요</span>'}</div></div>
+ <div class="grid" style="grid-template-columns:1fr 1fr;gap:6px"><button class="btn pri lg" type="button" id="giveBtn">이미지 추가 지급</button><button class="btn lg" type="button" id="eduBtn"${m.p==='교육 대기'?'':' disabled'}>교육 인증 처리</button><button class="btn lg" type="button" data-toast="안내 메일 초안을 열었어요 (예시)">안내 메일</button><button class="btn lg danger" type="button" id="banBtn">${m.st==='정지'?'정지 풀기':'이용 정지'}</button></div>
+ <label class="fld" for="memo" style="font-weight:700;color:var(--ink);font-size:13px">관리자 메모<textarea id="memo" rows="3" placeholder="이 회원에 대한 메모 · 다른 관리자도 봐요" style="font-weight:400"></textarea></label>
+ <span class="note">지급 · 정지 · 개인정보 열람은 모두 감사 로그에 남아요.</span>`;}
+$('#memRows').addEventListener('click',e=>{const r=e.target.closest('tr[data-i]');if(!r)return;SEL=+r.dataset.i;renderMembers();});
+$('#memRows').addEventListener('keydown',e=>{if(e.key==='Enter'){const r=e.target.closest('tr[data-i]');if(r){SEL=+r.dataset.i;renderMembers();}}});
+$('#memChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;CHIP=c.dataset.c;renderMembers();});
+['#memQ','#memPlan','#memVia'].forEach(s=>$(s).addEventListener('input',renderMembers));
+$('#memSide').addEventListener('click',e=>{const m=M[SEL];
+ if(e.target.closest('#giveBtn'))openModal(`<h3 id="mT">${m.n}님께 이미지 지급</h3><label class="fld" for="gN">장 수<select id="gN"><option>1</option><option>3</option><option selected>5</option><option>10</option></select></label><label class="fld" for="gW">사유 · 감사 로그에 남아요<select id="gW"><option>오류 보상</option><option>기능 제안 감사</option><option>캐릭터 시트 다시 만들기 지원</option><option>이벤트</option></select></label><div class="foot"><button class="btn" type="button" data-x>취소</button><button class="btn pri" type="button" data-ok>지급</button></div>`,()=>{const n=+$('#gN').value,w=$('#gW').value;m.cr+=n;m.h.push(['10.26','관리자 지급 · '+w,'+'+n+'장']);addLog('크레딧',m.n,`이미지 +${n}장 · ${w}`);renderMembers();toast(`${m.n}님께 이미지 ${n}장을 드렸어요 · 감사 로그에 남았어요`);});
+ if(e.target.closest('#eduBtn')){m.p='무료';m.st='정상';m.tags=m.tags.filter(t=>t!=='교육 인증 대기');addLog('회원 상태',m.n,'교육 인증 승인');renderMembers();toast('교육 인증을 처리했어요');}
+ if(e.target.closest('#banBtn')){const un=m.st==='정지';openModal(`<h3 id="mT">${m.n}님을 ${un?'정지 해제':'이용 정지'}할까요?</h3><label class="fld" for="bW">사유<input id="bW" placeholder="${un?'오해가 풀림 · 소명 확인':'같은 휴대폰으로 맛보기 계정 여러 개'}"></label><div class="foot"><button class="btn" type="button" data-x>취소</button><button class="btn ${un?'pri':'danger'}" type="button" data-ok>${un?'정지 풀기':'정지'}</button></div>`,()=>{const w=$('#bW').value.trim();if(!w){$('#bW').focus();toast('사유를 적어 주세요');return false;}m.st=un?'정상':'정지';addLog('회원 상태',m.n,(un?'정지 해제 · ':'이용 정지 · ')+w);renderMembers();toast(un?'정지를 풀었어요':'이용 정지했어요');});}
+});
+
+/* ---- 통계 · 회원별 AI 비용 ---- */
+const CT={a:348000,t:1126000,users:1402,avg:248};let CK='a';
+const won=v=>'₩'+v.toLocaleString();
+function renderCost(){$$('#costSeg button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.k===CK));
+ const L=M.map((m,i)=>[m,i]).sort((x,y)=>y[0]['c'+CK]-x[0]['c'+CK]);const tot=CT[CK],sumA=M.reduce((s,m)=>s+m.ca,0),sumT=M.reduce((s,m)=>s+m.ct,0);
+ $('#costRows').innerHTML=L.map(([m,i])=>{const r=m.ct?Math.round(m.ca/m.ct*100):0,v=m['c'+CK],sh=(v/tot*100),x=CK==='a'?m.ca/CT.avg:m.ct/(CT.t/4812);return `<tr class="clk" data-go-mem="${i}" tabindex="0"><th scope="row"><span style="display:flex;align-items:center;gap:8px"><span class="av">${m.i}</span>${m.n}</span></th><td class="r"><b>${won(m.ca)}</b></td><td class="r">${won(m.ct)}</td><td><div class="mini"><div class="bar" style="height:8px"><i style="width:${r}%"></i></div><span class="note">${m.ct?r+'%':'—'}</span></div></td><td class="r">${v?sh.toFixed(2)+'%':'—'}</td><td class="r ${x>=10?'warn':''}">${v?(x>=1?x.toFixed(1)+'배':'평균 이하'):'—'}</td><td>${m.cu}</td></tr>`;}).join('')+
+ `<tr><th scope="row" style="color:var(--mute)">그 외 회원 4,804명</th><td class="r">${won(CT.a-sumA)}</td><td class="r">${won(CT.t-sumT)}</td><td><div class="mini"><div class="bar b-gray" style="height:8px"><i style="width:${Math.round((CT.a-sumA)/(CT.t-sumT)*100)}%"></i></div><span class="note">${Math.round((CT.a-sumA)/(CT.t-sumT)*100)}%</span></div></td><td class="r">${(((CK==='a'?CT.a-sumA:CT.t-sumT))/tot*100).toFixed(1)}%</td><td class="r">—</td><td>—</td></tr>
+ <tr style="background:var(--soft2)"><th scope="row">전체</th><td class="r"><b>${won(CT.a)}</b></td><td class="r"><b>${won(CT.t)}</b></td><td><div class="mini"><div class="bar b-ink" style="height:8px"><i style="width:31%"></i></div><span class="note">31%</span></div></td><td class="r">100%</td><td class="r">—</td><td>—</td></tr>`;
+ const B=CK==='a'?[['₩0 (안 씀)',3410],['₩1 – 300',1036],['₩301 – 1,000',248],['₩1,001 – 3,000',86],['₩3,000 넘음',32]]:[['₩0 (안 씀)',2120],['₩1 – 300',1688],['₩301 – 1,000',672],['₩1,001 – 3,000',228],['₩3,000 넘음',104]];const mx=Math.max(...B.map(b=>b[1]));
+ $('#bands').innerHTML=B.map(([l,n],k)=>`<div class="brow"><span>${l}</span><div class="bar ${k===4?'':'b-ink'}" style="height:8px"><i style="width:${Math.max(1,Math.round(n/mx*100))}%;${k===4?'background:var(--orange)':''}"></i></div><span class="v">${n.toLocaleString()}명</span></div>`).join('');
+ $('#bandNote').textContent=(CK==='a'?'이번 달':'누적')+' 기준 · 주황은 원가가 프로 요금(₩6,900)의 절반을 넘을 수 있는 회원';}
+$('#costSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;CK=b.dataset.k;renderCost();});
+$('#costRows').addEventListener('click',e=>{const r=e.target.closest('[data-go-mem]');if(!r)return;SEL=+r.dataset.goMem;CHIP='전체';location.hash='members';renderMembers();});
+
+/* ---- 통계 · 리텐션 ---- */
+const CO=[['9월 4주',548,[43,31,23,16]],['10월 1주',590,[45,33,24,null]],['10월 2주',604,[44,34,null,null]],['10월 3주',631,[47,null,null,null]],['10월 4주 · 시트 오픈',642,[52,null,null,null]]];
+$('#heatRows').innerHTML=CO.map(([w,n,v])=>`<tr><th scope="row">${w}</th><td class="c" style="color:var(--ink2)">${n}</td>${v.map(x=>x==null?'<td class="h" style="background:var(--soft2);color:var(--faint)">–</td>':`<td class="h" style="background:color-mix(in srgb,var(--acc) ${Math.round(12+Math.min(1,x/55)*58)}%,var(--panel))">${x}%</td>`).join('')}</tr>`).join('');
+
+/* ---- 요금제 ---- */
+function chk(){const L=$$('#checks input'),n=L.filter(x=>x.checked).length;$$('#checks .check').forEach(c=>c.classList.toggle('done',c.querySelector('input').checked));$('#chkN').textContent=`${n} / ${L.length}`;$('#payOn').disabled=n<L.length;$('#payNote').textContent=n<L.length?`아래 준비 항목 ${L.length-n}개를 더 마치면 켤 수 있어요`:'이제 켤 수 있어요 · 켜면 신청자 41명에게 먼저 알려요';}
+$('#checks').addEventListener('change',chk);chk();
+$('#payOn').addEventListener('change',e=>{if(e.target.checked){e.target.checked=false;openModal(`<h3 id="mT">결제를 켤까요?</h3><p class="note" style="font-size:13px">회원에게 요금제가 보이고, 프로 알림 신청자 41명에게 첫 달 50% 쿠폰 안내가 가요. 프로토타입이라 실제로는 아무 일도 일어나지 않아요.</p><div class="foot"><button class="btn" type="button" data-x>취소</button><button class="btn pri" type="button" data-ok>결제 켜기</button></div>`,()=>{$('#payOn').checked=true;addLog('설정 변경','결제','결제 켜기');toast('결제를 켰어요 (예시)');});}});
+$('#ruleEdit').addEventListener('click',()=>{const g=k=>$(`[data-rule="${k}"]`).textContent;openModal(`<h3 id="mT">크레딧 규칙 편집</h3>
+ <label class="fld" for="rF">이미지 맛보기<input id="rF" value="${g('free')}"></label><label class="fld" for="rR">캐릭터 시트 · 배경<input id="rR" value="${g('ref')}"></label><label class="fld" for="rS">장면 만들기<input id="rS" value="${g('scene')}"></label><label class="fld" for="rL">라이브러리 보관<input id="rL" value="${g('lib')}"></label><label class="fld" for="rC">월 AI 비용 한도<input id="rC" value="${g('cap')}"></label>
+ <div class="foot"><button class="btn" type="button" data-x>취소</button><button class="btn pri" type="button" data-ok>저장</button></div>`,()=>{[['free','#rF'],['ref','#rR'],['scene','#rS'],['lib','#rL'],['cap','#rC']].forEach(([k,s])=>{const v=$(s).value.trim(),el=$(`[data-rule="${k}"]`);if(v&&v!==el.textContent){addLog('설정 변경','크레딧 규칙',`${el.previousElementSibling.textContent}: ${el.textContent} → ${v}`);el.textContent=v;}});toast('크레딧 규칙을 저장했어요 · 감사 로그에 남았어요');});});
+document.addEventListener('click',e=>{const p=e.target.closest('[data-plan]');if(p)toast(`「${p.dataset.plan}」 가격 · 혜택 편집은 결제 연결 단계에서 열려요`);});
+
+/* ---- 운영 · 문의 ---- */
+const Q=[
+ {m:'구로다',k:'크레딧',t:'AI 이미지를 더 만들 수 없나요?',w:'10분 전',st:'대기',env:'크롬 · 윈도우',cr:'0장',b:'연재 준비 중인데 캐릭터 시트 3장, 배경 2장을 만들고 나니 장면은 5장밖에 못 만들었어요. 시트가 있으니 얼굴은 잘 맞는데, 추가로 받을 방법이 있을까요? 유료로 열리면 바로 결제할게요.',a:''},
+ {m:'서하나',k:'오류',t:'콘티 보고 만들기에서 배경이 자동으로 안 골라져요',w:'1시간 전',st:'대기',env:'사파리 · 맥',cr:'1장',b:'S#2 장면에 「사진관」이라고 썼는데 주요 배경 「명월사진관」이 자동으로 선택되지 않아요. 이름을 정확히 똑같이 써야 하나요?',a:''},
+ {m:'jiyoon_toon',k:'교육',t:'교사 인증은 언제 처리되나요?',w:'어제',st:'대기',env:'크롬 · 윈도우',cr:'8장',b:'학교 이메일로 교육 인증 신청했는데 아직 대기 중이에요. 다음 주 수업에서 학생들과 캐릭터 시트부터 만들어 보려고 해요.',a:''},
+ {m:'한시우',k:'사용법',t:'이미지 한꺼번에 넣기 순서를 바꾸고 싶어요',w:'어제',st:'대기',env:'크롬 · 맥',cr:'7장',b:'s01, s02… 이름으로 올렸는데 S#3과 S#4에 들어갈 그림이 바뀌었어요. 넣기 전에 순서를 바꿀 수 있나요?',a:''},
+ {m:'오세린',k:'제안',t:'세로 스크롤 미리보기 속도 조절',w:'3일 전',st:'답변 완료',env:'모바일 · 안드로이드',cr:'4장',b:'미리보기에서 자동 스크롤 속도를 바꿀 수 있으면 좋겠어요.',a:'좋은 제안 고마워요. 다음 업데이트에 미리보기 속도 조절을 넣을게요. 감사의 뜻으로 AI 이미지 5장을 더 드렸어요.'}
+];
+const TPL={'맛보기 · 프로 알림 안내':'맛보기 10장을 모두 쓰셨어요. 결제가 열리면 가장 먼저 알려 드릴게요. 「프로 알림 받기」를 신청해 두시면 첫 달 50% 쿠폰도 드려요.','오류 확인 중':'불편을 드려 죄송해요. 말씀하신 상황을 재현해 보고 있어요. 고치는 대로 다시 알려 드릴게요.','교육 인증 안내':'교육 인증은 학교 이메일 확인 뒤 1~2일 안에 처리돼요. 처리되면 메일로 알려 드릴게요.','넣을 순서 안내':'라이브러리 팝업 아래 「넣을 순서」에서 썸네일을 끌거나 ‹ › 로 옮기면 들어갈 S# 자리가 같이 바뀌어요. 바꾼 뒤 「제자리에 넣기」를 누르세요.','배경 이름 안내':'장면 설명에 주요 배경 이름이 그대로 들어가야 자동으로 골라져요. 지금은 「명월사진관」처럼 전체 이름을 써 주시고, 비슷한 이름도 찾도록 고치고 있어요.'};
+let QS=0;
+const qCls=s=>s==='대기'?'p-warn':'p-ok';
+function renderQ(){const open=Q.filter(q=>q.st==='대기').length,rOpen=$$('.rep [data-st]').filter(x=>x.textContent==='대기'||x.textContent==='자동 감지').length;
+ $('#qCnt').textContent=open;$('#qCnt').hidden=!open;$('#rCnt').textContent=rOpen;$('#rCnt').hidden=!rOpen;$('#opsCnt').textContent=open+rOpen;$('#opsCnt').hidden=!(open+rOpen);$('#opsSub').textContent=`답할 문의 ${open}건 · 처리할 신고 ${rOpen}건`;$('#todoQ').textContent=open+'건';$('#todoR').textContent=rOpen+'건';
+ $('#qList').innerHTML=Q.map((q,i)=>`<button type="button" aria-pressed="${i===QS}" data-q="${i}"><span class="t"><b>${q.m}</b><span class="pill ${qCls(q.st)}">${q.st}</span><small>${q.w}</small></span><span>[${q.k}] ${q.t}</span></button>`).join('');
+ const q=Q[QS];$('#qView').innerHTML=`<div class="hd"><h2 style="font-size:15px">${q.t}</h2><span class="pill ${qCls(q.st)}">${q.st}</span><a class="r" href="#members" data-mem="${Math.max(0,M.findIndex(m=>m.n===q.m))}" style="font-size:12px;font-weight:600">${q.m} · 회원 정보 보기</a></div>
+  <div class="chips"><span class="pill p-gray">${q.k}</span><span class="pill p-gray">${q.env}</span><span class="pill p-gray">맛보기 남음 ${q.cr}</span></div>
+  <div class="qbody">${q.b}</div>${q.a?`<div class="qans"><b style="display:block;margin-bottom:4px">보낸 답변 · GOLDKING</b>${q.a}</div>`:''}
+  ${q.st==='대기'?`<div style="display:flex;flex-direction:column;gap:8px"><div class="chips"><span class="note" style="align-self:center">자주 쓰는 답변</span>${Object.keys(TPL).map(k=>`<button class="chip" type="button" data-tpl="${k}" aria-pressed="false">${k}</button>`).join('')}</div>
+  <label class="fld" for="ans">답변<textarea id="ans" rows="4" placeholder="답변을 적으면 회원 이메일과 웹툰보드 알림으로 가요"></textarea></label>
+  <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn lg" type="button" id="qGive">이미지 보상 지급</button><button class="btn pri lg" type="button" id="qSend">답변 보내기</button></div></div>`:''}`;}
+$('#qList').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;QS=+b.dataset.q;renderQ();});
+$('#qView').addEventListener('click',e=>{const t=e.target.closest('[data-tpl]');if(t){$('#ans').value=TPL[t.dataset.tpl];$('#ans').focus();return;}
+ const q=Q[QS];if(e.target.closest('#qSend')){const v=$('#ans').value.trim();if(!v){$('#ans').focus();toast('답변을 적어 주세요');return;}q.a=v;q.st='답변 완료';renderQ();toast(`${q.m}님께 답변을 보냈어요 (예시)`);}
+ if(e.target.closest('#qGive')){const m=M.find(x=>x.n===q.m);if(m){m.cr+=5;m.h.push(['10.26','관리자 지급 · 문의 보상','+5장']);}addLog('크레딧',q.m,'이미지 +5장 · 문의 보상');toast(`${q.m}님께 이미지 5장을 드렸어요`);}});
+$('#v-ops').addEventListener('click',e=>{const b=e.target.closest('[data-rep-do]');if(!b)return;const r=b.closest('.rep'),st=r.querySelector('[data-st]');st.textContent='처리 완료';st.className='pill p-ok';r.querySelector('.note:last-child').textContent+=' · '+b.dataset.repDo+' 처리';r.querySelectorAll('[data-rep-do]').forEach(x=>x.remove());addLog('회원 상태',r.querySelector('b').textContent,'신고 처리 · '+b.dataset.repDo);renderQ();toast(`「${b.dataset.repDo}」로 처리했어요`);});
+$('#bnText').addEventListener('input',e=>$('#bnPrev').textContent=e.target.value);
+$('#newNotice').addEventListener('click',()=>openModal(`<h3 id="mT">새 공지</h3><label class="fld" for="nT">제목<input id="nT" placeholder="예) 배경 만들기 개선 안내"></label><div class="grid" style="grid-template-columns:1fr 1fr;gap:8px"><label class="fld" for="nK">종류<select id="nK"><option>띠</option><option>팝업</option></select></label><label class="fld" for="nTo">대상<select id="nTo"><option>전체</option><option>처음 온 방문자</option><option>콘티를 만든 회원</option><option>맛보기 소진 회원</option></select></label></div><div class="foot"><button class="btn" type="button" data-x>취소</button><button class="btn pri" type="button" data-ok>예약</button></div>`,()=>{const t=$('#nT').value.trim();if(!t){$('#nT').focus();toast('제목을 적어 주세요');return false;}const k=$('#nK').value;$('#notices').insertAdjacentHTML('afterbegin',`<div class="row"><span class="pill ${k==='띠'?'p-dark':'p-gray'}">${k}</span><span style="flex:1;min-width:0"><b>${t.replace(/</g,'&lt;')}</b><span class="sub2">11.01 – 11.07 · 대상 ${$('#nTo').value}</span></span><span class="pill p-blue">예약</span></div>`);toast('공지를 예약했어요');}));
+
+/* ---- 설정 · 감사 로그 ---- */
+const LOG=[['10.26 10:20','GOLDKING','설정 변경','프리셋','샷 크기 6 · 앵글 5 · 컷 비율 8 추가'],['10.25 15:40','GOLDKING','설정 변경','크레딧 규칙','캐릭터 시트 · 배경 1장 차감 · 첫 시트 무료'],['10.24 14:10','GOLDKING','크레딧','서하나','이미지 +5장 · 내보내기 오류 보상 (문의 답변)'],['10.24 11:02','GOLDKING','설정 변경','월 AI 비용 한도','₩400,000 → ₩500,000'],['10.23 18:40','GOLDKING','개인정보 열람','jiyoon_toon','교육 인증 학교 이메일 확인'],['10.21 09:30','GOLDKING','회원 상태','lunar.cut','이용 정지 · 같은 휴대폰으로 맛보기 계정 4개'],['10.19 10:05','GOLDKING','크레딧','오세린','이미지 +5장 · 기능 제안 감사']];
+let LC='전체';const kc={'크레딧':'p-ok','회원 상태':'p-bad','개인정보 열람':'p-warn','설정 변경':'p-blue'};
+function addLog(k,target,why){const d=new Date(),t=`${d.getMonth()+1}.${String(d.getDate()).padStart(2,'0')} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;LOG.unshift([t,'GOLDKING',k,target,why]);renderLog();}
+function renderLog(){$$('#logChips .chip').forEach(c=>c.setAttribute('aria-pressed',c.dataset.c===LC));$('#logRows').innerHTML=LOG.filter(r=>LC==='전체'||r[2]===LC).map(([t,w,k,tg,y])=>`<tr><td style="white-space:nowrap">${t}</td><td>${w}</td><td><span class="pill ${kc[k]}">${k}</span></td><td>${tg}</td><td>${y}</td></tr>`).join('')||'<tr><td colspan="5" class="c" style="color:var(--mute);padding:24px">기록이 없어요</td></tr>';}
+$('#logChips').addEventListener('click',e=>{const c=e.target.closest('.chip');if(!c)return;LC=c.dataset.c;renderLog();});
+$$('.sw[data-log]').forEach(s=>s.addEventListener('change',()=>{addLog('설정 변경',s.dataset.log,s.checked?'켬':'끔');toast(`「${s.dataset.log}」을 ${s.checked?'켰':'껐'}어요 · 감사 로그에 남았어요`);}));
+$('#capIn').addEventListener('change',e=>{addLog('설정 변경','월 AI 비용 한도',e.target.value);toast('월 AI 비용 한도를 바꿨어요');});
+$('#invite').addEventListener('click',()=>openModal(`<h3 id="mT">관리자 초대</h3><label class="fld" for="iE">이메일<input id="iE" placeholder="name@[도메인]"></label><label class="fld" for="iR">역할<select id="iR"><option>운영(CS)</option><option>마케팅</option><option>대표</option></select></label><p class="note">초대받은 사람은 2단계 인증을 설정해야 로그인할 수 있어요.</p><div class="foot"><button class="btn" type="button" data-x>취소</button><button class="btn pri" type="button" data-ok>초대 보내기</button></div>`,()=>{const v=$('#iE').value.trim();if(!/.+@.+/.test(v)){$('#iE').focus();toast('이메일을 확인해 주세요');return false;}$('#admins').insertAdjacentHTML('beforeend',`<div class="admin"><span class="av">${v[0].toUpperCase()}</span><span class="who"><b>${v.replace(/</g,'&lt;')}</b><small>초대 대기</small></span><span class="pill p-bad">설정 전</span><select aria-label="역할"><option>${$('#iR').value}</option></select></div>`);addLog('설정 변경','관리자 초대',v+' · '+$('#iR').value);toast('초대를 보냈어요 (예시)');}));
+
+renderMembers();renderQ();renderLog();renderCost();
+</script>
