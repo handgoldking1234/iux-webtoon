@@ -16,3 +16,6 @@
 - AI 이미지는 현재 예시 이미지로 대신 그려요.
 - 테스트 모드(`AI_TEST=true`)에서는 작품을 열 때마다 AI 사용 횟수가 초기화돼요. 출시 때 `false`로 바꿔요.
 - 작업 데이터는 브라우저(IndexedDB · localStorage)에 저장돼요.
+
+## 이어서 작업하기
+결정사항·코드 지도·수정 방법은 [CLAUDE.md](CLAUDE.md), 전체 프로젝트 목록은 [IUX 프로젝트 목록](https://github.com/handgoldking1234/iux-app/blob/main/docs/PROJECTS.md)에 있습니다.
