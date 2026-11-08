@@ -3272,7 +3272,7 @@ async function sbAct(act,b){
    if(L&&L.length)sbGen(L);break;}
   case'sb-copy':if(c&&c.sb&&c.sb.prompt)copyTx(c.sb.prompt,`S#${c.sb.no} 프롬프트를 복사했어요`);break;
   case'sb-copy-all':copyTx(sbAllText(e),'프롬프트를 모두 복사했어요');break;
-  case'sb-txt':saveFile(`${S.settings.prefix||'webtoon'}_ep${pad(e.num,2)}_prompts.txt`,new Blob([sbAllText(e)],{type:'text/plain'}));break;
+  case'sb-txt':saveFile(`${filePre()}_ep${pad(e.num,2)}_prompts.txt`,new Blob([sbAllText(e)],{type:'text/plain'}));break;
   case'sb-img':if(c&&c.sb)libOpen({cid:c.id,sb:true});break;
   case'sb-fit-reset':if(c&&c.sb){baseCache.delete(c.id);mutate(()=>{c.sb.scale=1;c.sb.ix=0;c.sb.iy=0;});}break;
   case'sb-img-del':if(c&&c.sb){baseCache.delete(c.id);mutate(()=>{c.sb.img=null;});}break;
@@ -3301,8 +3301,10 @@ $('#sbTx').addEventListener('input',()=>{clearTimeout(window.__sbT);window.__sbT
 $('#sbIn').addEventListener('change',ev=>{const f=ev.target.files[0];ev.target.value='';const c=cutById(sbTarget);sbTarget=null;if(f&&c)sbSetImg(c,f);});
 $('#sbBulkIn').addEventListener('change',ev=>{const fs=[...ev.target.files].filter(f=>/^image\//.test(f.type)||!f.type||f.type==='application/octet-stream'||/\.(jpe?g|png|webp|gif|heic|heif)$/i.test(f.name));ev.target.value='';if(fs.length)sbBulk(fs);});
 
+/* 파일 이름 앞부분 — 접두어를 직접 정하지 않았으면 작품 제목을 따라가요 */
+function filePre(){const s=S.settings||{};let p=(s.prefix||'').trim();if(!p||(p==='hyeonsang'&&!s.prefixSet))p=(s.workTitle||'').trim();p=p.replace(/[\\/:*?"<>|#%]+/g,'').replace(/\s+/g,'_').replace(/^\.+/,'').slice(0,40);return p||'webtoon';}
 /* ---------------- 상태 ---------------- */
-const DEF={edLinkV:true,edLinkH:true,padLink:true,cropLink:true,prefix:'hyeonsang',pattern:'{prefix}_ep{ep}_c{n}',digits:2,fmt:'jpg',q:.92,width:690,gap:0,gifDelay:600,gifW:690,gifColors:256,gifDither:true,gifLoop:true,mergeH:0,mergeByCut:true,mergeGap:0,mergeGapColor:'#ffffff'};
+const DEF={edLinkV:true,edLinkH:true,padLink:true,cropLink:true,prefix:'',pattern:'{prefix}_ep{ep}_c{n}',digits:2,fmt:'jpg',q:.92,width:690,gap:0,gifDelay:600,gifW:690,gifColors:256,gifDither:true,gifLoop:true,mergeH:0,mergeByCut:true,mergeGap:0,mergeGapColor:'#ffffff'};
 let S={episodes:[],cur:null,settings:{...DEF}};
 const blobs=new Map(),imgs=new Map(),urls=new Map();
 let activeCut=null,activeItem=null,view='edit',tab='text';
@@ -3515,7 +3517,7 @@ async function renderCut(c,targetW,cv,useCache){
 function extOf(c){return c.kind==='gif'?'gif':S.settings.fmt;}
 function fname(e,i,c){if(specOf(c)&&specOf(c).grp!=='ms')return specFile(c);
  const s=S.settings,d=Math.max(1,s.digits|0);
- let n=(s.pattern||'{prefix}_ep{ep}_c{n}').replace(/\{prefix\}/g,s.prefix||'webtoon').replace(/\{ep\}/g,pad(e.num,2)).replace(/\{n\}/g,pad(i+1,d)).replace(/\{title\}/g,e.title||'');
+ let n=(s.pattern||'{prefix}_ep{ep}_c{n}').replace(/\{prefix\}/g,filePre()).replace(/\{ep\}/g,pad(e.num,2)).replace(/\{n\}/g,pad(i+1,d)).replace(/\{title\}/g,e.title||'');
  n=n.replace(/[\\/:*?"<>|]+/g,'_').trim()||'cut_'+pad(i+1,d);
  return n+'.'+extOf(c);
 }
@@ -3924,7 +3926,7 @@ function renderInspector(){
  <div class="sec"><h2>미리보기</h2>${rng('컷 사이 간격','data-set','gap',0,1000,5,s.gap,'px')}</div>`;return;}
  box.innerHTML=TABS+`
  <div class="sec"><h2>파일 이름 (순서대로 자동 번호)</h2>
-  <div class="fld"><span>접두어</span><input type="text" data-set="prefix" value="${esc(s.prefix)}"></div>
+  <div class="fld"><span>접두어</span><input type="text" data-set="prefix" value="${esc(s.prefix==="hyeonsang"&&!s.prefixSet?"":s.prefix||"")}" placeholder="비우면 작품 제목 (${esc(filePre())})"></div>
   <div class="fld"><span>규칙</span><input type="text" data-set="pattern" value="${esc(s.pattern)}"></div>
   <div class="fld"><span>번호 자릿수</span><select data-set="digits"><option value="2"${s.digits==2?' selected':''}>2자리 (01)</option><option value="3"${s.digits==3?' selected':''}>3자리 (001)</option></select></div>
   <p class="note">쓸 수 있는 값: {prefix} {ep} {n} {title} — 순서를 바꾸면 이름도 따라 바뀌어요.</p>
@@ -5255,7 +5257,7 @@ function specAdd(key,epId){const P=SPEC[key];const e=epId?S.episodes.find(x=>x.i
  if(ex){if(S.cur!==cv.id)switchEp(cv.id);setActive(ex.id,null);setTimeout(()=>{const el=cardEls.get(ex.id);if(el)el.scrollIntoView({block:'center',behavior:'smooth'});},60);return;}
  const c=mkSpecCut(key,e);mutate(()=>{const C=ensureCover();const order=Object.keys(SPEC);C.cuts.push(c);C.cuts.sort((a,b)=>{const ea=a.epId?S.episodes.findIndex(x=>x.id===a.epId):-1,eb=b.epId?S.episodes.findIndex(x=>x.id===b.epId):-1;return ea-eb||order.indexOf(a.role)-order.indexOf(b.role);});});
  const C=coverEp();if(S.cur!==C.id)switchEp(C.id);setActive(c.id,null);setTimeout(()=>{const el=cardEls.get(c.id);if(el)el.scrollIntoView({block:'center',behavior:'smooth'});},60);}
-function specFile(c){const P=specOf(c)||{label:c.name,w:dims(c).W0,h:dims(c).H0};const e=c.epId&&S.episodes.find(x=>x.id===c.epId);const pre=S.settings.prefix||'webtoon';
+function specFile(c){const P=specOf(c)||{label:c.name,w:dims(c).W0,h:dims(c).H0};const e=c.epId&&S.episodes.find(x=>x.id===c.epId);const pre=filePre();
  return `${pre}_${e?`ep${pad(e.num,2)}_`:''}${(P.label||'image').replace(/\s+/g,'')}_${P.w}x${P.h}.${S.settings.specFmt||'jpg'}`;}
 /* 규격 저장 설정: 형식 · 용량 제한(플랫폼 기준/직접/없음) · 시작 품질 */
 function specLimitKb(c){const s=S.settings,m=s.specLimit||'plat';if(m==='none')return 0;if(m==='custom')return Math.max(0,s.specKb|0);const P=specOf(c);return P&&P.kb||0;}
@@ -5267,7 +5269,7 @@ async function specBlob(c){const P=specOf(c),{W0,H0}=dims(c);const W=P?P.w:W0,H=
 async function specZip(){const C=coverEp();const list=(C?C.cuts:[]);if(!list.length){toast('먼저 표지나 썸네일을 만들어 주세요');return;}prog('규격 이미지 만드는 중');const files=[];const info=[];
  for(let i=0;i<list.length;i++){if(cancelFlag){progEnd();return;}progSet(i/list.length,`${i+1}/${list.length}`);const c=list[i],b=await specBlob(c);if(!b)continue;const n=specFile(c);files.push({name:n,data:new Uint8Array(await b.arrayBuffer())});{const kb=specLimitKb(c);info.push(`${n}\t${Math.round(b.size/1024)}KB${kb&&b.size>kb*1024?`\t(${kb}KB 초과 — ${(S.settings.specFmt||'jpg')==='png'?'PNG는 용량을 줄일 수 없어요. JPG로 바꿔 보세요':'그림을 단순하게 해 주세요'})`:''}`);}await sleep(0);}
  files.push({name:'규격_목록.txt',data:new TextEncoder().encode((S.settings.platform==='custom'?'직접 정한 규격':'네이버 웹툰 CREATOR\'S')+' 업로드용 이미지\n\n'+info.join('\n')+'\n\n'+((S.settings.specLimit||'plat')==='plat'?'※ 포스터형·가로형은 1MB 이하, 기타·회차 이미지는 200KB 이하로 맞췄어요.':(S.settings.specLimit==='custom'?`※ 모든 이미지를 ${S.settings.specKb|0}KB 이하로 맞췄어요.`:'※ 용량 제한 없이 저장했어요.'))+` 형식 ${(S.settings.specFmt||'jpg').toUpperCase()}. 규격은 바뀔 수 있으니 업로드 화면 안내를 함께 확인하세요.\n`)});
- progSet(1,'묶는 중…');const zip=makeZip(files);progEnd();await saveFile(`${S.settings.prefix||'webtoon'}_표지_썸네일_${S.settings.platform==='custom'?'직접규격':'네이버규격'}.zip`,zip);}
+ progSet(1,'묶는 중…');const zip=makeZip(files);progEnd();await saveFile(`${filePre()}_표지_썸네일_${S.settings.platform==='custom'?'직접규격':'네이버규격'}.zip`,zip);}
 function coverPanel(C){const has=(k,eid)=>C&&C.cuts.some(x=>x.role===k&&(x.epId||null)===(eid||null));
  const B=(k,eid,lab,noSz)=>`<button class="tbtn sz${has(k,eid)?' done':''}" data-act="spec-add" data-k="${k}"${eid?` data-ep="${eid}"`:''} title="${SPEC[k].label} ${SPEC[k].w}×${SPEC[k].h}">${ic(has(k,eid)?'check':'plus',13)}<span>${lab||SPEC[k].label}</span>${noSz?'':`<small>${SPEC[k].w}×${SPEC[k].h}</small>`}</button>`;
  const eps=S.episodes.filter(e=>e.kind!=='cover');const pl=S.settings.platform||'naver';
@@ -5578,7 +5580,7 @@ async function saveProject(){
  const meta={app:'webtoon-cut-studio',version:1,saved:new Date().toISOString(),cur:S.cur,settings:S.settings,episodes:S.episodes,types:Object.fromEntries(keys.map(k=>[k,(blobs.get(k)||{}).type||'']))};
  files.unshift({name:'project.json',data:new TextEncoder().encode(JSON.stringify(meta))});
  progSet(1,'묶는 중…');await sleep(0);const zip=makeZip(files);progEnd();
- const d=new Date();await saveFile(`${S.settings.prefix||'webtoon'}_프로젝트_${d.getFullYear()}${pad(d.getMonth()+1,2)}${pad(d.getDate(),2)}_${pad(d.getHours(),2)}${pad(d.getMinutes(),2)}.zip`,zip);
+ const d=new Date();await saveFile(`${filePre()}_프로젝트_${d.getFullYear()}${pad(d.getMonth()+1,2)}${pad(d.getDate(),2)}_${pad(d.getHours(),2)}${pad(d.getMinutes(),2)}.zip`,zip);
 }
 async function loadProject(entries){
  const pj=entries.find(e=>e.name==='project.json'||e.name.endsWith('/project.json'));const meta=JSON.parse(new TextDecoder().decode(pj.data));
@@ -5674,7 +5676,7 @@ async function zipEpisodes(all){
  list.push({name:'순서표.txt',data:new TextEncoder().encode(man.join('\n'))});
  progSet(1,'묶는 중…');await sleep(0);
  const zip=makeZip(list);progEnd();
- const s=S.settings;await saveFile(all?`${s.prefix||'webtoon'}_전체회차.zip`:`${s.prefix||'webtoon'}_ep${pad(eps[0].num,2)}.zip`,zip);
+ const s=S.settings;await saveFile(all?`${filePre()}_전체회차.zip`:`${filePre()}_ep${pad(eps[0].num,2)}.zip`,zip);
 }
 
 /* 이어붙이기 */
@@ -5759,7 +5761,7 @@ async function runMerge(){
  const src=M.parts.map(p=>p.cut);if(!src.length){progEnd();return;}
  const outs=await longOuts(src,progSet);if(!outs){progEnd();return;}
  progEnd();
- const base=`${s.prefix||'webtoon'}_ep${pad(e.num,2)}_long`;
+ const base=`${filePre()}_ep${pad(e.num,2)}_long`;
  if(outs.length===1)await saveFile(`${base}.${s.fmt}`,outs[0]);
  else{const list=[];for(let i=0;i<outs.length;i++)list.push({name:`${base}_${pad(i+1,2)}.${s.fmt}`,data:new Uint8Array(await outs[i].arrayBuffer())});await saveFile(`${base}.zip`,makeZip(list));}
 }
@@ -5804,7 +5806,7 @@ function renderExp(){
    :`<b>ZIP 1개</b> 안에 이미지 ${nCuts}장${EX.scope==='all'?' (회차마다 폴더)':''} + 순서표(txt)<br><code>${esc(nm)} …</code>`;
  }else{
   const n=groups.reduce((a,g)=>a+exLongCount(g.cuts),0);
-  const nm=first?`${s.prefix||'webtoon'}_ep${pad(first.e.num,2)}_long${n>1?'_01':''}.${ext}`:'';
+  const nm=first?`${filePre()}_ep${pad(first.e.num,2)}_long${n>1?'_01':''}.${ext}`:'';
   sum=(n===1?`<b>긴 이미지 1장</b>을 바로 저장해요.`:`<b>ZIP 1개</b> 안에 긴 이미지 ${n}장${EX.scope==='all'?' (회차마다 따로 이어붙임)':''}`)
    +`<br>나누기: ${s.mergeH>0?`${s.mergeH}px마다${s.mergeByCut?' · 컷 경계에서':''}`:'나누지 않음 (아주 길면 자동으로 나눠요)'} · 컷 사이 ${s.mergeGap}px<br><code>${esc(nm)}</code>`;
  }
@@ -5871,7 +5873,7 @@ async function runExport(){
  const groups=exGroups();if(!groups.length){toast('저장할 컷이 없어요');return;}
  if(!DL){saveFile('x',new Blob());return;}
  $('#mExp').hidden=true;
- const s=S.settings,multi=EX.scope==='all',pre=s.prefix||'webtoon';
+ const s=S.settings,multi=EX.scope==='all',pre=filePre();
  const g0=groups[0].e,zname=multi?`${pre}_전체회차${EX.mode==='long'?'_long':''}.zip`:`${pre}_ep${pad(g0.num,2)}${EX.scope==='sel'?'_선택':''}${EX.mode==='long'?'_long':''}.zip`;
  if(EX.mode==='cuts'){
   const total=groups.reduce((a,g)=>a+g.cuts.length,0);prog(total>1?'ZIP 만드는 중':'이미지 만드는 중');
@@ -6163,7 +6165,7 @@ document.addEventListener('click',async ev=>{
    gAfterItem();break;}
   case'gif-frame':if(!$('#gPvImg').hidden)showLive();pv.playing=false;pv.i=+b.dataset.k;startPv();break;
   case'gif-drop':{const k=+b.dataset.k;const[f]=G.frames.splice(k,1);G.items=G.items.filter(i=>i.frame!==f.key);if(G.sel&&!G.items.find(i=>i.id===G.sel))G.sel=null;if(G.tab==='txt')renderGTxt();prepPreview(Math.max(0,Math.min(k,G.frames.length-1)));break;}
-  case'gif-save':if(gifBlob){const f0=G.frames.find(f=>f.from);const i0=f0?e.cuts.findIndex(c=>c.id===f0.from):-1;saveFile(`${S.settings.prefix||'webtoon'}_ep${pad(e.num,2)}_`+(i0>=0?`c${pad(i0+1,2)}_`:'')+'anim.gif',gifBlob);}break;
+  case'gif-save':if(gifBlob){const f0=G.frames.find(f=>f.from);const i0=f0?e.cuts.findIndex(c=>c.id===f0.from):-1;saveFile(`${filePre()}_ep${pad(e.num,2)}_`+(i0>=0?`c${pad(i0+1,2)}_`:'')+'anim.gif',gifBlob);}break;
   case'gif-insert':if(gifBlob){stopPv();const idxs=G.frames.map(f=>e.cuts.findIndex(c=>c.id===f.from)).filter(i=>i>=0);const last=idxs.length?Math.max(...idxs):e.cuts.length-1;const n=await cutFromBlob(gifBlob,`anim_${pad(last+1,2)}.gif`);mutate(()=>e.cuts.splice(last+1,0,n));$('#mGif').hidden=true;toast('GIF를 컷으로 넣었어요 · 쓰지 않을 원본 컷은 지워도 돼요');}break;
   case'merge-open':openMerge();break;
   case'lp-up':LIBT=null;$('#libIn').click();break;
@@ -6294,7 +6296,7 @@ const inspInput=ev=>{
  const t=ev.target;const sib=t.closest('.rng')&&t.closest('.rng').querySelector(t.type==='range'?'input.rnum':'input[type=range]');if(sib&&(t.type==='range'||t.type==='number')){if(t.type==='number'&&t.value==='')return;sib.value=t.value;}
  if(t.dataset.set){const k=t.dataset.set;let v=t.value;if(['q','width','gap','digits'].includes(k))v=+v;S.settings[k]=v;save();
   if(k==='gap'){document.documentElement.style.setProperty('--gap',v+'px');return;}
-  if(k==='prefix'||k==='pattern'||k==='digits'){renderStrip();const e=ep();const nm=$('.names');if(nm&&e)nm.innerHTML=e.cuts.length?e.cuts.slice(0,3).map((c,i)=>esc(fname(e,i,c))).join('<br>')+(e.cuts.length>3?'<br>…':''):'';}
+  if(k==='prefix')S.settings.prefixSet=!!String(v).trim();if(k==='prefix'||k==='pattern'||k==='digits'){renderStrip();const e=ep();const nm=$('.names');if(nm&&e)nm.innerHTML=e.cuts.length?e.cuts.slice(0,3).map((c,i)=>esc(fname(e,i,c))).join('<br>')+(e.cuts.length>3?'<br>…':''):'';}
   if(k==='width')renderStrip();if(k==='platform'){renderInspector();renderSBar();}return;}
  if(t.dataset.ep){const e=ep();if(t.dataset.ep==='num')e.num=Math.max(0,parseInt(t.value)||0);else e.title=t.value;renderEps();renderStrip();save();return;}
  const c=cutById(activeCut);if(!c)return;
@@ -6751,6 +6753,7 @@ document.addEventListener('pointerdown',ev=>{const m=$('#hMenu');if(!m.hidden&&!
 $('#hQ').addEventListener('input',e=>{HV.q=e.target.value;renderHome();});
 $('#hSort').addEventListener('change',e=>{HV.sort=e.target.value;hvSave();renderHome();});
 $('#wTitle').addEventListener('input',e=>{S.settings.workTitle=e.target.value;save();lpmSync();});
+$('#wTitle').addEventListener('change',()=>{if(filePre()!==(S.settings.prefix||'').trim())renderStrip();});
 $('#wTitle').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='Escape')e.target.blur();e.stopPropagation();});
 
 /* ---------------- 시작 ---------------- */
