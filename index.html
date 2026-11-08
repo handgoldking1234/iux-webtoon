@@ -788,7 +788,8 @@ body.picking,body.picking *{cursor:crosshair!important}
 .plevl>li{grid-template-columns:44px minmax(0,1fr) auto}.plevact{display:flex;gap:0;align-items:center;flex-wrap:nowrap}.plevact .btn{width:28px;height:28px;padding:0}.plevaddc{margin-top:8px}
 .wkprog{display:flex;flex-direction:column;gap:6px;margin-top:10px}.wkpc{display:flex;align-items:center;gap:10px;width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--panel);text-align:left;cursor:pointer;font-family:inherit;color:var(--ink)}.wkpc:hover{border-color:var(--ink)}.wkpc.ok .wkn{background:var(--accent);color:#fff}.wkpt{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.wkpt b{font-size:13px}.wkpt small{font-size:11.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.wkpb{display:block;height:4px;border-radius:2px;background:var(--panel2);overflow:hidden}.wkpb i{display:block;height:100%;background:var(--accent)}
 .plevsum{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 10px;padding:8px 10px;border-radius:10px;background:color-mix(in srgb,var(--accent) 8%,var(--panel));font-size:12.5px}.plevsum>svg{color:var(--accent)}.plevsum span{flex:1;min-width:160px}.plevsum.none{background:var(--panel2)}
-.wkepsel{display:inline-flex;align-items:center;flex:none}#mWork .wkepsel select{appearance:none!important;-webkit-appearance:none!important;height:36px!important;padding:0 36px 0 14px!important;border:1px solid var(--line)!important;border-radius:10px!important;background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center!important;color:var(--ink);font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;max-width:420px;width:auto!important;box-shadow:none}#mWork .wkepsel select:hover{border-color:var(--ink)!important}#mWork .wkepsel select:focus{outline:0;border-color:var(--accent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
+.wkepsel{display:inline-flex;align-items:center;flex:none}
+#wkEps .wkepadd{margin-left:0;height:36px;border-radius:10px;padding:0 12px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:4px}#mWork .wkepsel select{appearance:none!important;-webkit-appearance:none!important;height:36px!important;padding:0 36px 0 14px!important;border:1px solid var(--line)!important;border-radius:10px!important;background:var(--panel) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center!important;color:var(--ink);font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;max-width:420px;width:auto!important;box-shadow:none}#mWork .wkepsel select:hover{border-color:var(--ink)!important}#mWork .wkepsel select:focus{outline:0;border-color:var(--accent)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 18%,transparent)}
 .mtabs{display:inline-flex;gap:2px;padding:3px;border-radius:10px;background:var(--panel2);vertical-align:middle}.mtabs button{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 14px;border:0;border-radius:8px;background:none;color:var(--muted);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}.mtabs button:hover{color:var(--ink)}.mtabs button[aria-selected=true]{background:var(--panel);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}.mtabs button[aria-selected=true] svg{color:var(--accent)}#plT,#wkT{margin:0;display:flex}
 .wkeps{display:flex;gap:6px;overflow-x:auto;flex:1;min-width:0;padding:2px;scrollbar-width:thin}.wkeps button{flex:none;position:relative;height:30px;min-width:46px;padding:0 11px;border:1px solid var(--line);border-radius:999px;background:var(--panel);color:var(--ink);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer}.wkeps button i{position:absolute;top:3px;right:4px;width:6px;height:6px;border-radius:50%}.wkeps i.pk{background:var(--accent)}.wkeps i.syn{background:var(--muted);opacity:.5}.wkeps button[aria-pressed=true]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
 .wksheet .pltabs{display:flex!important}.wkn{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;background:var(--panel2);font-size:11px;font-weight:800;margin-right:2px;flex:none}.pltabs button[aria-selected=true] .wkn{background:var(--accent);color:#fff}.plsh4 h4 .wkn{margin-right:8px;background:var(--ink);color:var(--bg)}
@@ -1300,6 +1301,7 @@ body.home-on .app{visibility:hidden}
 .nvlogo:hover .hm,.lpm-logo:hover .hm{display:block}
 .lpm-logo .hm{width:15px;height:15px}
 .nvlogo svg{width:18px;height:18px}
+.nvi{position:relative}.nvbeta{position:absolute;top:-5px;right:-9px;padding:1px 4px;border-radius:5px;background:#7c3aed;color:#fff;font-style:normal;font-size:8px;font-weight:800;line-height:1.3;letter-spacing:.02em;pointer-events:none;box-shadow:0 0 0 2px var(--bg)}
 .nvsep{width:24px;height:1px;background:var(--line);margin:6px 0;flex:none}
 .nvb{width:52px;border:0;background:transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 5px;color:var(--ink);font:inherit;font-size:10.5px;font-weight:600;border-radius:8px;flex:none}
 .nvb .nvi{width:34px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center}
@@ -1714,10 +1716,11 @@ body.reader .stundo{display:none!important}
   <nav id="nav" aria-label="패널">
    <button class="nvlogo" data-act="go-home" title="홈 · 작품 목록으로" aria-label="홈 · 작품 목록으로"><i class="lg" data-ic="book"></i><svg class="hm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20h5v-6h4v6h5V9.5"/></svg></button>
    <button class="nvb" data-nav="file" title="회차 · 레이어"><span class="nvi"><i data-ic="files"></i></span>회차</button>
-   <button class="nvb" data-nav="plan" title="작품 기획 · 인물 · 회차 시놉시스"><span class="nvi"><i data-ic="list"></i></span>기획</button>
    <button class="nvb" data-nav="assets" title="말풍선 · 글자 스타일 · 색 · 글꼴"><span class="nvi"><i data-ic="droplet"></i></span>스타일</button>
-   <button class="nvb" data-nav="ai" title="콘티 만들기 · 대사 넣기 · AI 프롬프트"><span class="nvi"><i data-ic="wand"></i></span>콘티·AI</button>
    <button class="nvb nvlib" data-nav="lib" title="라이브러리 — AI로 만든 그림 · 올린 그림"><span class="nvi"><i data-ic="images"></i></span>라이브러리</button>
+   <span class="nvsep" aria-hidden="true"></span>
+   <button class="nvb" data-nav="plan" title="작품 기획 · 인물 · 회차 시놉시스 (베타)"><span class="nvi"><i data-ic="list"></i><em class="nvbeta">BETA</em></span>기획</button>
+   <button class="nvb" data-nav="ai" title="콘티 만들기 · 대사 넣기 · AI 프롬프트 (베타)"><span class="nvi"><i data-ic="wand"></i><em class="nvbeta">BETA</em></span>콘티·AI</button>
   </nav>
   <div class="lcol" id="lcol">
    <div class="lhead"><div class="lh1"><span id="lhTitle" class="lhslot"></span><button class="lpx" data-act="lp-toggle" title="왼쪽 패널 접기" aria-label="왼쪽 패널 접기"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2.5"/><path d="M9 4v16"/></svg></button></div></div>
@@ -2151,7 +2154,7 @@ function paywall(kind){let m=$('#mPay');if(m)m.remove();m=document.createElement
  document.body.appendChild(m);m.addEventListener('click',ev=>{const x=ev.target.closest('[data-pay]');if(x||ev.target===m){if(x&&x.dataset.pay==='r'){aiTestReset(true);save();renderAll();if($('#mPlan'))planRender();stuRender();toast('테스트 · AI 횟수를 다시 채웠어요');}if(x&&x.dataset.pay==='1'){S.settings.proNotify=true;save();toast('알림을 신청했어요 · 프로가 열리면 가장 먼저 알려 드려요');}m.remove();}});
  m.addEventListener('keydown',ev=>{if(ev.key==='Escape'){ev.stopPropagation();m.remove();}});setTimeout(()=>m.querySelector('[data-pay="1"]').focus(),0);}
 /* ---------- 작품 기획 · 인물 · 회차 시놉시스 ---------- */
-const PLF=[['logline','로그라인','한 줄로 — 예) 1944년 경성, 유리건판에 갇힌 혼을 보는 견습 사진사',1],['genre','장르','공포 · 시대극 · 미스터리',1],['tone','톤','진지 70 · 코믹 30, 서늘하고 쓸쓸하게',1],['target','타깃','20~30대 · 네이버 웹툰 독자',1],['world','세계관 · 배경','시대 · 장소 · 규칙 (예: 사진관 암실에서만 혼이 보인다)',4],['story','전체 줄거리','기 · 승 · 전 · 결 / 큰 사건 / 결말 방향',6]];
+const PLF=[['logline','로그라인','한 문장으로 — 예) 혼을 보는 견습 사진사가 사라진 스승을 찾아 나서지만, 스승을 가둔 유리건판이 하나씩 깨져 가고, 마지막 한 장마저 깨지면 경성의 혼이 모두 풀려난다',1],['genre','장르','공포 · 시대극 · 미스터리',1],['tone','톤','진지 70 · 코믹 30, 서늘하고 쓸쓸하게',1],['target','타깃','20~30대 · 네이버 웹툰 독자',1],['world','세계관 · 배경','시대 · 장소 · 규칙 (예: 사진관 암실에서만 혼이 보인다)',4],['story','전체 줄거리','기 · 승 · 전 · 결 / 큰 사건 / 결말 방향',6]];
 function plan(){return S.settings.plan=S.settings.plan||{};}
 function planFill(){const P=plan();return PLF.filter(([k])=>(P[k]||'').trim()).length+((S.settings.sbCharList||[]).some(c=>c.name)?1:0);}
 function planCtx(e){const P=plan(),L=[];if((P.idea||'').trim())L.push(`하고 싶은 이야기(작가 메모): ${P.idea.trim().slice(0,800)}`);if(P.format)L.push(`연재 형식: ${P.format}`);PLF.forEach(([k,l])=>{if((P[k]||'').trim())L.push(`${l}: ${P[k].trim().slice(0,k==='story'?1800:600)}`);});if(P.eps)L.push(`계획 화수: ${P.eps}화`);
@@ -2271,14 +2274,14 @@ async function planAIFull(){const P=plan();if(!SM){toast('여기서는 Claude를
 하고 싶은 이야기: ${(P.idea||'').trim()}
 ${planCtx(null)}
 Answer JSON only:
-{"logline":"(한 문장)","ll_who":"","ll_want":"","ll_but":"","ll_stake":"","tone":"","target":"","intent":"(기획의도 3-4문장)","selling":"(셀링 포인트 3개, 줄바꿈)","world":"(세계관 3-5문장)","locs":[{"name":"","desc":"(그림 AI용 장소 묘사)"}],
+{"logline":"(한 문장 50-80자 · 주인공은 이름 대신 특징으로)","ll_when":"(계기 · 배경, 없으면 빈칸)","ll_who":"","ll_want":"","ll_but":"","ll_stake":"","tone":"","target":"","intent":"(기획의도 3-4문장)","selling":"(셀링 포인트 3개, 줄바꿈)","world":"(세계관 3-5문장)","locs":[{"name":"","desc":"(그림 AI용 장소 묘사)"}],
 "chars":[{"name":"","cat":"주연|조연|단역","role":"(역할 · 나이)","group":"","intro":"","want":"","secret":"","pers":"","voice":"(말투)","look":"(외모, 그림 AI용으로 구체적으로)","outfit":""}],
 "rels":[{"a":"(이름)","b":"(이름)","t":"가족|연인|친구|동료|라이벌|적대|스승·제자|기타","call":"(호칭 · 존댓말/반말)"}],
 "struct":"3act","acts":[{"step":"설정|대립|해결","from":1,"to":0,"t":"(단계 줄거리 3-5문장)"}],"story":"(전체 줄거리 요약)","eps":<계획 화수 숫자>}
 Use 3-6 characters, 2-5 locations, every main pair in rels. acts must cover 1..eps without gaps.`,{cache:false});
   progSet(.8,'기획에 채우는 중…');
   mutate(()=>{const put=(k,v)=>{if(v!=null&&String(v).trim()&&!(P[k]||'').toString().trim())P[k]=String(v).trim();};
-   ['logline','ll_who','ll_want','ll_but','ll_stake','tone','target','intent','selling','world','story'].forEach(k=>{const was=(P[k]||'').toString().trim();put(k,res[k]);if(!was&&(P[k]||'').toString().trim())plMark(k,1);});if(!P.eps&&res.eps)P.eps=+res.eps||'';
+   ['logline','ll_when','ll_who','ll_want','ll_but','ll_stake','tone','target','intent','selling','world','story'].forEach(k=>{const was=(P[k]||'').toString().trim();put(k,res[k]);if(!was&&(P[k]||'').toString().trim())plMark(k,1);});if(!P.eps&&res.eps)P.eps=+res.eps||'';
    const LO=S.settings.locs=S.settings.locs||[];(res.locs||[]).forEach(l=>{if(!l||!l.name)return;const o=LO.find(x=>x.name===l.name);if(o){if(!o.desc&&l.desc)o.desc=l.desc;}else LO.push({id:uid(),name:l.name,desc:l.desc||'',refs:[]});});
    const L=plChars();(res.chars||[]).forEach(c=>{if(!c||!c.name)return;let o=L.find(x=>x.name===c.name);if(!o){o={id:uid(),name:c.name,refs:[]};L.push(o);}if(!o.id)o.id=uid();['cat','role','group','intro','want','secret','pers','voice','look','outfit'].forEach(k=>{if(c[k]&&!(o[k]||'').trim()){o[k]=c[k];o._ai=o._ai||{};o._ai[k]=1;}});});
    S.settings.sbChars=sbCharsText(L);
@@ -2320,9 +2323,20 @@ function plRfBox(k){if(!PLREF||PLREF.k!==k)return'';const R=PLREF,q=txtAi();
   <div class="plrfseg" role="radiogroup" aria-label="다듬는 방식">${MD.map(([m,l])=>`<button type="button" role="radio" data-placts="rfmode" data-v="${m}" aria-checked="${R.mode===m}" aria-pressed="${R.mode===m}">${l}</button>`).join('')}</div>
   ${R.mode==='ask'?`<textarea data-rfreq rows="2" class="plrfreq" placeholder="예) 더 어둡게 · 중반에 반전 추가 · 주인공을 더 능동적으로">${esc(R.req||'')}</textarea>`:`<p class="plrfhint">${cm[2]}</p>`}
   <div class="plrfF"><span class="plrfcost">${ic('wand',12)}<span>글 AI 1회 · 남은 무료 <b>${q.left}</b>/${TXT_FREE}회</span></span><button class="btn sm pri" data-placts="rfgo"${R.busy?' disabled':''}>${R.busy?'만드는 중…':'✦ 제안 받기'}</button></div></div>`;}
-function plRfSchema(k){return({ov:'{"tone":"","target":""}',ll:'{"options":["(결이 다른 로그라인 5개)"],"ll_who":"","ll_want":"","ll_but":"","ll_stake":""}',why:'{"intent":"(3-4문장)","selling":"(3개, 줄바꿈)"}',
+function plRfSchema(k){return({ov:'{"tone":"","target":""}',ll:'{"options":["(결이 다른 로그라인 5개 · 각각 한 문장 50-80자 · 주인공은 이름 대신 특징 · 목표 · 장애물 · 대가가 모두 들어가게)"],"ll_when":"","ll_who":"","ll_want":"","ll_but":"","ll_stake":""}',why:'{"intent":"(3-4문장)","selling":"(3개, 줄바꿈)"}',
  world:'{"world":"(3-5문장)","locs":[{"name":"","desc":"(그림 AI용 장소 묘사)"}]}',ch:'{"chars":[{"name":"(기존 이름 그대로, 새 인물만 새 이름)","cat":"주연|조연|단역","role":"","group":"","intro":"","want":"","secret":"","pers":"","voice":"","look":"(그림 AI용 외모)","outfit":""}]}',
  rel:'{"rels":[{"a":"(이름)","b":"(이름)","t":"가족|연인|친구|동료|라이벌|적대|스승·제자|기타","call":"(호칭 · 존댓말/반말)"}]}',plot:'{"struct":"3act|ki","acts":[{"step":"(단계 이름)","from":1,"to":10,"t":"(3-5문장)"}],"story":"(전체 요약)"}'})[k];}
+async function plLlPolish(){const P=plan();const parts=[P.ll_when,P.ll_who,P.ll_want,P.ll_but,P.ll_stake].map(x=>(x||'').trim()).filter(Boolean);const cur=(P.logline||'').trim();
+ if(!cur&&!parts.length){toast('로그라인이나 칸을 먼저 적어 주세요');return;}if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}if(!txtAi().left){paywall('txt');return;}
+ prog('AI가 로그라인을 다듬는 중');
+ try{const res=await SM.json(`You are a veteran Korean webtoon planner. Rewrite this webtoon logline as ONE natural Korean sentence of about 50-80 characters. Describe the protagonist by a defining trait instead of a name. It must contain the protagonist, their goal, the obstacle and what is at stake (and the trigger/setting if given). Keep the creator's meaning; do not add new plot facts.
+지금 로그라인: ${cur||'(없음)'}
+칸: 계기·배경=${(P.ll_when||'').trim()} / 누가=${(P.ll_who||'').trim()} / 원하는 것=${(P.ll_want||'').trim()} / 막는 것=${(P.ll_but||'').trim()} / 잃는 것=${(P.ll_stake||'').trim()}
+${planCtx(null)}
+Answer JSON only: {"logline":"(한 문장)"}`,{cache:false});
+  progEnd();const v=String(res&&res.logline||'').trim();if(!v){toast('AI가 답하지 못했어요 · 사용 횟수는 줄지 않았어요');return;}
+  txtAiUse(1);mutate(()=>{P.logline=v;plMark('logline',1);});plSave();planRender();toast('로그라인을 다듬었어요 · 실행 취소로 되돌릴 수 있어요');}
+ catch(x){progEnd();toast((SM_ERR[x&&x.code]||'AI가 답하지 못했어요')+' · 사용 횟수는 줄지 않았어요');}}
 async function plRfGo(){const R=PLREF,P=plan(),k=R.k;if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}if(!txtAi().left){paywall('txt');return;}
  if(R.mode==='ask'&&!(R.req||'').trim()){toast('어떻게 고칠지 한 줄로 적어 주세요');$('#mPlan [data-rfreq]')?.focus();return;}
  R.busy=true;planRender();
@@ -2337,7 +2351,7 @@ Answer JSON only: ${plRfSchema(k)}`,{cache:false});
 function plRfBuild(res){const R=PLREF,P=plan(),k=R.k,fill=R.mode==='fill',items=[];const add=(label,cur,next,apply,isNew)=>{next=(next==null?'':String(next)).trim();cur=(cur==null?'':String(cur)).trim();if(!next||next===cur)return;if(fill&&cur)return;items.push({label,cur,next,apply,on:true,isNew});};
  const pf=(key,label)=>add(label,P[key],res[key],v=>{P[key]=v;plMark(key,1);});
  if(k==='ov'){pf('tone','톤');pf('target','타깃');}
- if(k==='ll'){R.opts=(res.options||[]).filter(Boolean).slice(0,5);R.pick=R.opts.length?0:-1;[['ll_who','누가'],['ll_want','무엇을 원하는데'],['ll_but','무엇이 막고'],['ll_stake','실패하면 잃는 것']].forEach(([a,b])=>pf(a,b));}
+ if(k==='ll'){R.opts=(res.options||[]).filter(Boolean).slice(0,5);R.pick=R.opts.length?0:-1;[['ll_when','계기 · 배경'],['ll_who','누가'],['ll_want','무엇을 원하는데'],['ll_but','무엇이 막고'],['ll_stake','실패하면 잃는 것']].forEach(([a,b])=>pf(a,b));}
  if(k==='why'){pf('intent','기획의도');pf('selling','셀링 포인트');}
  if(k==='world'){pf('world','세계관 · 배경');const LO=S.settings.locs=S.settings.locs||[];(res.locs||[]).forEach(l=>{if(!l||!l.name)return;const o=LO.find(x=>x.name===l.name);if(o)add(`장소 · ${o.name}`,o.desc,l.desc,v=>{o.desc=v;});else add(`장소 · ${l.name}`,'',l.desc||l.name,v=>{LO.push({id:uid(),name:l.name,desc:l.desc||'',refs:[]});},true);});}
  if(k==='ch'){const L=plChars(),F=[['cat','분류'],['role','역할'],['group','소속'],['intro','소개'],['want','욕망'],['secret','비밀'],['pers','성격'],['voice','말투'],['look','외모'],['outfit','고정 의상']];
@@ -2359,10 +2373,12 @@ function plSecHTML(k){const P=plan(),q=txtAi();
  let h='';
  if(k==='ov'){h=`<div class="plsh4"><h4>톤 · 타깃</h4>${plRfBtn('ov')}</div>${plRfBox('ov')}<p class="sub">제목 · 장르 · 형식 · 화수는 위 「빠른 시작」에서 정해요.</p>
   <div class="pl2">${F('tone','톤','진지 70 · 코믹 30, 서늘하고 쓸쓸하게')}${F('target','타깃','20~30대 · 네이버 웹툰 독자')}</div>`;}
- else if(k==='ll'){h=`<div class="plsh4"><h4>로그라인</h4>${plRfBtn('ll')}</div>${plRfBox('ll')}<p class="sub">네 칸을 채우고 합치면 한 문장이 돼요. 바로 한 줄로 써도 돼요.</p>
-  <div class="pl2">${F('ll_who','누가','예) 혼을 보는 견습 사진사 해원이')}${F('ll_want','무엇을 원하는데','예) 사라진 스승을 찾으려 하지만')}${F('ll_but','무엇이 막고','예) 스승을 가둔 유리건판이 하나씩 깨지고')}${F('ll_stake','실패하면 무엇을 잃나','예) 마지막 장이 깨지면 경성의 혼이 모두 풀려난다')}</div>
+ else if(k==='ll'){h=`<div class="plsh4"><h4>로그라인</h4>${plRfBtn('ll')}</div>${plRfBox('ll')}<p class="sub">칸을 채우고 합치면 한 문장이 돼요. 바로 한 줄로 써도 돼요. 주인공은 이름보다 특징으로 쓰면 처음 읽는 사람도 바로 알아봐요.</p>
+  ${F('ll_when','계기 · 배경','예) 1944년 경성, 스승이 사라진 밤',1,'선택')}
+  <div class="pl2">${F('ll_who','누가','예) 혼을 보는 견습 사진사가')}${F('ll_want','무엇을 원하는데','예) 사라진 스승을 찾아 나서지만')}${F('ll_but','무엇이 막고','예) 스승을 가둔 유리건판이 하나씩 깨져 가고')}${F('ll_stake','실패하면 무엇을 잃나','예) 마지막 한 장마저 깨지면 경성의 혼이 모두 풀려난다')}</div>
   <button class="btn sm" data-placts="assemble">${ic('rows',13)}한 문장으로 합치기</button>
-  ${F('logline','로그라인','한 줄로 — 예) 1944년 경성, 유리건판에 갇힌 혼을 보는 견습 사진사',2)}
+  ${F('logline','로그라인','예) 혼을 보는 견습 사진사가 사라진 스승을 찾아 나서지만, 스승을 가둔 유리건판이 하나씩 깨져 가고, 마지막 한 장마저 깨지면 경성의 혼이 모두 풀려난다',2,`${(P.logline||'').trim().length}자 · 한 문장 50~80자 안팎`)}
+  <div class="plrow"><button class="btn sm" data-placts="llpolish">✦ AI로 한 문장 다듬기</button></div>
   <div class="plrow"><button class="btn sm" data-placts="draft">✦ 로그라인으로 나머지 빈칸 초안 채우기</button></div>${cost}`;}
  else if(k==='why'){h=`<div class="plsh4"><h4>기획의도 · 셀링 포인트</h4>${plRfBtn('why')}</div>${plRfBox('why')}<p class="sub">공모전 · 플랫폼 투고 기획서에 그대로 들어가요.</p>
   ${F('intent','기획의도','왜 지금 이 이야기인가 · 독자가 얻는 것',5)}${F('selling','셀링 포인트','다른 작품과 다른 점 3가지 · 첫 화에서 붙잡는 장면',5)}`;}
@@ -2459,7 +2475,7 @@ function plInput(ev){const t=ev.target,P=plan();
  if(t.dataset.rfi!=null){if(PLREF&&PLREF.items[+t.dataset.rfi])PLREF.items[+t.dataset.rfi].on=t.checked;return;}
  if(t.name==='plrfo'){if(PLREF)PLREF.pick=+t.value;return;}
  if(ev.type==='input'){if(t.dataset.plk&&plAI(t.dataset.plk)){plMark(t.dataset.plk,0);const tag=t.closest('.plf')?.querySelector('.aitag');tag&&tag.remove();}if(t.classList.contains('aif')){t.classList.remove('aif');if(t.dataset.plc!=null){const c=plChars()[+t.dataset.plc];if(c&&c._ai)delete c._ai[t.dataset.f];}if(t.dataset.plact){const a=(P.acts||{})[t.dataset.plact];if(a)delete a._ai;}}}
- if(t.dataset.plk){P[t.dataset.plk]=t.value;if(t.dataset.plk==='genre'){} plSave();plProg();return;}
+ if(t.dataset.plk){P[t.dataset.plk]=t.value;if(t.dataset.plk==='genre'){}if(t.dataset.plk==='logline'){const sm=t.closest('.plf')?.querySelector('span small');if(sm)sm.textContent=`${t.value.trim().length}자 · 한 문장 50~80자 안팎`;} plSave();plProg();return;}
  if(t.hasAttribute('data-plstyle')){S.settings.sbStyle=t.value;plSave();return;}
  if(t.dataset.plset){S.settings[t.dataset.plset]=t.value;plSave();if(typeof lpmSync==='function')lpmSync();return;}
  if(t.dataset.plc!=null){const c=plChars()[+t.dataset.plc];if(!c)return;if(!c.id)c.id=uid();c[t.dataset.f]=t.value;S.settings.sbChars=sbCharsText(plChars());plSave();plProg();if(t.dataset.f==='name'){const a=t.closest('.plchar')?.querySelector('.plava span');if(a)a.textContent=(t.value||'?').slice(0,1);}return;}
@@ -2475,7 +2491,8 @@ async function plClick(ev){const t=ev.target,m=$('#mPlan'),P=plan();if(t===m||t.
  const sx=t.closest('[data-plstruct]');if(sx){P.struct=sx.dataset.plstruct;plSave();planRender();return;}
  const nd=t.closest('[data-plnode]');if(nd){if(PLRDRAGGED)return;const v=nd.dataset.plnode;PLFOCUS=v&&v!==PLFOCUS?v:null;planRender();return;}
  const b=t.closest('[data-placts]');if(!b)return;const a=b.dataset.placts,C=plChars();
- if(a==='assemble'){const s=[P.ll_who,P.ll_want,P.ll_but,P.ll_stake].map(x=>(x||'').trim()).filter(Boolean);if(!s.length){toast('네 칸 중 하나라도 적어 주세요');return;}P.logline=s.join(' ').replace(/\s+/g,' ').replace(/([^.!?])$/,'$1.');plSave();planRender();toast('로그라인으로 합쳤어요 · 자연스럽게 다듬어 주세요');}
+ if(a==='assemble'){const w=(P.ll_when||'').trim();const s=[w&&!/[,.!?…]$/.test(w)?w+',':w,P.ll_who,P.ll_want,P.ll_but,P.ll_stake].map(x=>(x||'').trim()).filter(Boolean);if(!s.length){toast('칸 중 하나라도 적어 주세요');return;}P.logline=s.join(' ').replace(/\s+/g,' ').replace(/([^.!?])$/,'$1.');plSave();planRender();toast('로그라인으로 합쳤어요 · 「AI로 한 문장 다듬기」로 매끄럽게 만들 수 있어요');}
+ else if(a==='llpolish'){await plLlPolish();}
  else if(a==='draft'){await planAI('draft');planRender();}
  else if(a==='full'){await planAIFull();}
  else if(a==='detail'){P.detail=true;P.qsFold=false;plSave();PLT='ov';planRender();plGo('ov',true);}
@@ -2639,7 +2656,7 @@ function wkGo(k,sm){const M=$('#wkMain'),sec=M&&M.querySelector(`[data-wks="${k}
 function wkSpy(){if(!WKSPY)return;const M=$('#wkMain');if(!M)return;let cur=WK_SEC[0][0];const top=M.scrollTop+90;M.querySelectorAll('[data-wks]').forEach(x=>{if(x.offsetTop<=top)cur=x.dataset.wks;});if(M.scrollTop+M.clientHeight>=M.scrollHeight-4)cur=WK_SEC[WK_SEC.length-1][0];if(cur!==WK.sec){WK.sec=cur;wkNav();}}
 function wkNav(){const e=wkEp(),w=wkStat(e);const T=$('#wkTabs');if(T)T.innerHTML=WK_SEC.map(([k,l],i)=>`<button type="button" data-wkgo="${k}" aria-selected="${WK.sec===k}"><span class="wkn">${i+1}</span>${l}<i class="${wkDone(k,w)?'ok':''}">${wkDone(k,w)?ic('check',10):''}</i></button>`).join('')+`<p class="wknote">작품 설정 · 회차 시놉시스는 <span class="lnk" role="button" tabindex="0" data-act="wk-plan">기획</span>에서 고쳐요</p>`;}
 function wkRender(){const m=$('#mWork');if(!m)return;const e=wkEp();PLEPV.id=e&&e.id;const E=libEpList();
- $('#wkEps').innerHTML=E.length?`<label class="wkepsel"><select data-wkepsel aria-label="회차 고르기">${E.map(x=>{const s2=pkStat(x),n=x.cuts.filter(c=>c.sb).length;return `<option value="${x.id}"${e&&x.id===e.id?' selected':''}>${x.num}화${x.title&&x.title!==x.num+'화'?' · '+esc(x.title):''}${s2?` — 패키지 ${s2.n}컷`:(x.syn||'').trim()?' — 시놉시스만':' — 비어 있음'}${n?` · 원고 ${n}컷`:''}${ep()&&ep().id===x.id?' (지금 회차)':''}</option>`;}).join('')}</select></label>`:'';
+ $('#wkEps').innerHTML=E.length?`<label class="wkepsel"><select data-wkepsel aria-label="회차 고르기">${E.map(x=>{const s2=pkStat(x),n=x.cuts.filter(c=>c.sb).length;return `<option value="${x.id}"${e&&x.id===e.id?' selected':''}>${x.num}화${x.title&&x.title!==x.num+'화'?' · '+esc(x.title):''}${s2?` — 패키지 ${s2.n}컷`:(x.syn||'').trim()?' — 시놉시스만':' — 비어 있음'}${n?` · 원고 ${n}컷`:''}${ep()&&ep().id===x.id?' (지금 회차)':''}</option>`;}).join('')}</select></label>`:'';$('#wkEps').insertAdjacentHTML('beforeend',`<button type="button" class="btn sm wkepadd" data-act="wk-epadd" title="새 회차를 만들고 기획의 계획 화수 · 줄거리 구간도 함께 늘려요">${ic('plus',13)}회차 추가</button>`);
  wkNav();const M=$('#wkMain'),st0=M.scrollTop;if(!e){M.innerHTML='<div class="plempty">회차가 없어요</div>';return;}
  const w=wkStat(e),st=w.pk,a=plActOf(e.num),L=e.cuts.filter(c=>c.sb);
  const none=(what)=>`<div class="plevnone">${ic('wand',18)}<b>${e.num}화 패키지가 아직 없어요</b><small>시놉시스를 읽고 콘티 · 컷별 이미지 프롬프트 · 말풍선을 한 번에 만들어요 · 글 AI 1회${what?` · 또는 ${what}`:''}</small><button class="btn sm pri" data-placts="pkone" data-v="${e.id}">${ic('wand',13)}${e.num}화 패키지 만들기</button></div>`;
@@ -2658,6 +2675,11 @@ function wkRender(){const m=$('#mWork');if(!m)return;const e=wkEp();PLEPV.id=e&&
    :`<p class="note">${st?'패키지에 말풍선이 없어요':'패키지를 만들면 컷마다 말풍선이 여기 나와요'}</p><div class="plrow"><button class="btn sm" data-act="wk-scmodal">${ic('msg',12)}대사 창에서 쓰기 · 다른 AI 붙여넣기</button></div>`);
  M.innerHTML=S1+S2+S3+S4+S5+'<div class="plend"></div>';M.scrollTop=st0;}
 function sbHistPush(c,by){if(!c||!c.sb||!(c.sb.prompt||'').trim())return;const H=c.sb.hist=c.sb.hist||[];if(H[0]&&H[0].p===c.sb.prompt)return;H.unshift({p:c.sb.prompt,at:Date.now(),by:by||''});if(H.length>10)H.length=10;}
+/* 콘티·AI에서 회차 추가 — 새 회차를 만들고 기획(계획 화수 · 줄거리 마지막 구간)도 함께 늘려요 */
+function wkAddEp(){const E=libEpList(),n=Math.max(0,...E.map(e=>+e.num||0))+1,e={id:uid(),num:n,title:'새 회차',cuts:[]},P=plan(),old=+P.eps||0;let grew=false;
+ mutate(()=>{S.episodes.push(e);if(n>old){P.eps=n;grew=true;const A=P.acts||{};let last=null;for(const[st]of PL_STRUCT[P.struct||'3act']){const a=A[st];if(a&&+a.to&&(!last||+a.to>=+last.to))last=a;}if(last&&+last.to>=Math.max(old,n-1))last.to=n;}});
+ switchEp(e.id);WK.ep=e.id;wkRender();const M=$('#wkMain');if(M)M.scrollTop=0;wkGo('syn',false);
+ toast(`${n}화를 만들었어요${grew?` · 기획 계획 화수도 ${n}화로`:''}`);}
 function wkChange(ev){const t=ev.target;if(t.matches&&t.matches('[data-wkepsel]')){WK.ep=t.value;if(ep()&&ep().id!==WK.ep&&typeof switchEp==='function')switchEp(WK.ep);wkRender();$('#wkMain').scrollTop=0;return;}if(t.dataset&&t.dataset.wkpr){const c=cutById(t.dataset.wkpr);if(!c||!c.sb||c.sb.prompt===t.value)return;sbHistPush(c,'직접 수정 전');c.sb.prompt=t.value;c.sb.ok=!!t.value.trim();save();wkRender();return;}plInput(ev);}
 async function wkClick(ev){const t=ev.target;if(t===ev.currentTarget){wkClose();return;}if(t.closest('[data-wkx]')){wkClose();return;}
  const g=t.closest('[data-wkgo]');if(g){wkGo(g.dataset.wkgo,true);return;}
@@ -3203,6 +3225,7 @@ async function sbAct(act,b){
   case'sb-open':openSb();break;
   case'sb-apply':sbApply();break;
   case'wk-open':wkOpen(b.dataset.sec||null,b.dataset.ep||null);break;
+  case'wk-epadd':wkAddEp();break;
   case'wk-plan':{const id=WK.ep;wkClose();planOpen('ep',id);break;}
   case'wk-planch':wkClose();planOpen('ch');break;
   case'wk-sbmodal':{const e=wkEp();wkClose();if(e&&ep()!==e)switchEp(e.id);setNav('ai');openSb();break;}
@@ -3249,7 +3272,7 @@ async function sbAct(act,b){
    if(L&&L.length)sbGen(L);break;}
   case'sb-copy':if(c&&c.sb&&c.sb.prompt)copyTx(c.sb.prompt,`S#${c.sb.no} 프롬프트를 복사했어요`);break;
   case'sb-copy-all':copyTx(sbAllText(e),'프롬프트를 모두 복사했어요');break;
-  case'sb-txt':saveFile(`${S.settings.prefix||'webtoon'}_ep${pad(e.num,2)}_prompts.txt`,new Blob([sbAllText(e)],{type:'text/plain'}));break;
+  case'sb-txt':saveFile(`${filePre()}_ep${pad(e.num,2)}_prompts.txt`,new Blob([sbAllText(e)],{type:'text/plain'}));break;
   case'sb-img':if(c&&c.sb)libOpen({cid:c.id,sb:true});break;
   case'sb-fit-reset':if(c&&c.sb){baseCache.delete(c.id);mutate(()=>{c.sb.scale=1;c.sb.ix=0;c.sb.iy=0;});}break;
   case'sb-img-del':if(c&&c.sb){baseCache.delete(c.id);mutate(()=>{c.sb.img=null;});}break;
@@ -3278,8 +3301,10 @@ $('#sbTx').addEventListener('input',()=>{clearTimeout(window.__sbT);window.__sbT
 $('#sbIn').addEventListener('change',ev=>{const f=ev.target.files[0];ev.target.value='';const c=cutById(sbTarget);sbTarget=null;if(f&&c)sbSetImg(c,f);});
 $('#sbBulkIn').addEventListener('change',ev=>{const fs=[...ev.target.files].filter(f=>/^image\//.test(f.type)||!f.type||f.type==='application/octet-stream'||/\.(jpe?g|png|webp|gif|heic|heif)$/i.test(f.name));ev.target.value='';if(fs.length)sbBulk(fs);});
 
+/* 파일 이름 앞부분 — 접두어를 직접 정하지 않았으면 작품 제목을 따라가요 */
+function filePre(){const s=S.settings||{};let p=(s.prefix||'').trim();if(!p||(p==='hyeonsang'&&!s.prefixSet))p=(s.workTitle||'').trim();p=p.replace(/[\\/:*?"<>|#%]+/g,'').replace(/\s+/g,'_').replace(/^\.+/,'').slice(0,40);return p||'webtoon';}
 /* ---------------- 상태 ---------------- */
-const DEF={edLinkV:true,edLinkH:true,padLink:true,cropLink:true,prefix:'hyeonsang',pattern:'{prefix}_ep{ep}_c{n}',digits:2,fmt:'jpg',q:.92,width:690,gap:0,gifDelay:600,gifW:690,gifColors:256,gifDither:true,gifLoop:true,mergeH:0,mergeByCut:true,mergeGap:0,mergeGapColor:'#ffffff'};
+const DEF={edLinkV:true,edLinkH:true,padLink:true,cropLink:true,prefix:'',pattern:'{prefix}_ep{ep}_c{n}',digits:2,fmt:'jpg',q:.92,width:690,gap:0,gifDelay:600,gifW:690,gifColors:256,gifDither:true,gifLoop:true,mergeH:0,mergeByCut:true,mergeGap:0,mergeGapColor:'#ffffff'};
 let S={episodes:[],cur:null,settings:{...DEF}};
 const blobs=new Map(),imgs=new Map(),urls=new Map();
 let activeCut=null,activeItem=null,view='edit',tab='text';
@@ -3492,7 +3517,7 @@ async function renderCut(c,targetW,cv,useCache){
 function extOf(c){return c.kind==='gif'?'gif':S.settings.fmt;}
 function fname(e,i,c){if(specOf(c)&&specOf(c).grp!=='ms')return specFile(c);
  const s=S.settings,d=Math.max(1,s.digits|0);
- let n=(s.pattern||'{prefix}_ep{ep}_c{n}').replace(/\{prefix\}/g,s.prefix||'webtoon').replace(/\{ep\}/g,pad(e.num,2)).replace(/\{n\}/g,pad(i+1,d)).replace(/\{title\}/g,e.title||'');
+ let n=(s.pattern||'{prefix}_ep{ep}_c{n}').replace(/\{prefix\}/g,filePre()).replace(/\{ep\}/g,pad(e.num,2)).replace(/\{n\}/g,pad(i+1,d)).replace(/\{title\}/g,e.title||'');
  n=n.replace(/[\\/:*?"<>|]+/g,'_').trim()||'cut_'+pad(i+1,d);
  return n+'.'+extOf(c);
 }
@@ -3901,7 +3926,7 @@ function renderInspector(){
  <div class="sec"><h2>미리보기</h2>${rng('컷 사이 간격','data-set','gap',0,1000,5,s.gap,'px')}</div>`;return;}
  box.innerHTML=TABS+`
  <div class="sec"><h2>파일 이름 (순서대로 자동 번호)</h2>
-  <div class="fld"><span>접두어</span><input type="text" data-set="prefix" value="${esc(s.prefix)}"></div>
+  <div class="fld"><span>접두어</span><input type="text" data-set="prefix" value="${esc(s.prefix==="hyeonsang"&&!s.prefixSet?"":s.prefix||"")}" placeholder="비우면 작품 제목 (${esc(filePre())})"></div>
   <div class="fld"><span>규칙</span><input type="text" data-set="pattern" value="${esc(s.pattern)}"></div>
   <div class="fld"><span>번호 자릿수</span><select data-set="digits"><option value="2"${s.digits==2?' selected':''}>2자리 (01)</option><option value="3"${s.digits==3?' selected':''}>3자리 (001)</option></select></div>
   <p class="note">쓸 수 있는 값: {prefix} {ep} {n} {title} — 순서를 바꾸면 이름도 따라 바뀌어요.</p>
@@ -5232,7 +5257,7 @@ function specAdd(key,epId){const P=SPEC[key];const e=epId?S.episodes.find(x=>x.i
  if(ex){if(S.cur!==cv.id)switchEp(cv.id);setActive(ex.id,null);setTimeout(()=>{const el=cardEls.get(ex.id);if(el)el.scrollIntoView({block:'center',behavior:'smooth'});},60);return;}
  const c=mkSpecCut(key,e);mutate(()=>{const C=ensureCover();const order=Object.keys(SPEC);C.cuts.push(c);C.cuts.sort((a,b)=>{const ea=a.epId?S.episodes.findIndex(x=>x.id===a.epId):-1,eb=b.epId?S.episodes.findIndex(x=>x.id===b.epId):-1;return ea-eb||order.indexOf(a.role)-order.indexOf(b.role);});});
  const C=coverEp();if(S.cur!==C.id)switchEp(C.id);setActive(c.id,null);setTimeout(()=>{const el=cardEls.get(c.id);if(el)el.scrollIntoView({block:'center',behavior:'smooth'});},60);}
-function specFile(c){const P=specOf(c)||{label:c.name,w:dims(c).W0,h:dims(c).H0};const e=c.epId&&S.episodes.find(x=>x.id===c.epId);const pre=S.settings.prefix||'webtoon';
+function specFile(c){const P=specOf(c)||{label:c.name,w:dims(c).W0,h:dims(c).H0};const e=c.epId&&S.episodes.find(x=>x.id===c.epId);const pre=filePre();
  return `${pre}_${e?`ep${pad(e.num,2)}_`:''}${(P.label||'image').replace(/\s+/g,'')}_${P.w}x${P.h}.${S.settings.specFmt||'jpg'}`;}
 /* 규격 저장 설정: 형식 · 용량 제한(플랫폼 기준/직접/없음) · 시작 품질 */
 function specLimitKb(c){const s=S.settings,m=s.specLimit||'plat';if(m==='none')return 0;if(m==='custom')return Math.max(0,s.specKb|0);const P=specOf(c);return P&&P.kb||0;}
@@ -5244,7 +5269,7 @@ async function specBlob(c){const P=specOf(c),{W0,H0}=dims(c);const W=P?P.w:W0,H=
 async function specZip(){const C=coverEp();const list=(C?C.cuts:[]);if(!list.length){toast('먼저 표지나 썸네일을 만들어 주세요');return;}prog('규격 이미지 만드는 중');const files=[];const info=[];
  for(let i=0;i<list.length;i++){if(cancelFlag){progEnd();return;}progSet(i/list.length,`${i+1}/${list.length}`);const c=list[i],b=await specBlob(c);if(!b)continue;const n=specFile(c);files.push({name:n,data:new Uint8Array(await b.arrayBuffer())});{const kb=specLimitKb(c);info.push(`${n}\t${Math.round(b.size/1024)}KB${kb&&b.size>kb*1024?`\t(${kb}KB 초과 — ${(S.settings.specFmt||'jpg')==='png'?'PNG는 용량을 줄일 수 없어요. JPG로 바꿔 보세요':'그림을 단순하게 해 주세요'})`:''}`);}await sleep(0);}
  files.push({name:'규격_목록.txt',data:new TextEncoder().encode((S.settings.platform==='custom'?'직접 정한 규격':'네이버 웹툰 CREATOR\'S')+' 업로드용 이미지\n\n'+info.join('\n')+'\n\n'+((S.settings.specLimit||'plat')==='plat'?'※ 포스터형·가로형은 1MB 이하, 기타·회차 이미지는 200KB 이하로 맞췄어요.':(S.settings.specLimit==='custom'?`※ 모든 이미지를 ${S.settings.specKb|0}KB 이하로 맞췄어요.`:'※ 용량 제한 없이 저장했어요.'))+` 형식 ${(S.settings.specFmt||'jpg').toUpperCase()}. 규격은 바뀔 수 있으니 업로드 화면 안내를 함께 확인하세요.\n`)});
- progSet(1,'묶는 중…');const zip=makeZip(files);progEnd();await saveFile(`${S.settings.prefix||'webtoon'}_표지_썸네일_${S.settings.platform==='custom'?'직접규격':'네이버규격'}.zip`,zip);}
+ progSet(1,'묶는 중…');const zip=makeZip(files);progEnd();await saveFile(`${filePre()}_표지_썸네일_${S.settings.platform==='custom'?'직접규격':'네이버규격'}.zip`,zip);}
 function coverPanel(C){const has=(k,eid)=>C&&C.cuts.some(x=>x.role===k&&(x.epId||null)===(eid||null));
  const B=(k,eid,lab,noSz)=>`<button class="tbtn sz${has(k,eid)?' done':''}" data-act="spec-add" data-k="${k}"${eid?` data-ep="${eid}"`:''} title="${SPEC[k].label} ${SPEC[k].w}×${SPEC[k].h}">${ic(has(k,eid)?'check':'plus',13)}<span>${lab||SPEC[k].label}</span>${noSz?'':`<small>${SPEC[k].w}×${SPEC[k].h}</small>`}</button>`;
  const eps=S.episodes.filter(e=>e.kind!=='cover');const pl=S.settings.platform||'naver';
@@ -5555,7 +5580,7 @@ async function saveProject(){
  const meta={app:'webtoon-cut-studio',version:1,saved:new Date().toISOString(),cur:S.cur,settings:S.settings,episodes:S.episodes,types:Object.fromEntries(keys.map(k=>[k,(blobs.get(k)||{}).type||'']))};
  files.unshift({name:'project.json',data:new TextEncoder().encode(JSON.stringify(meta))});
  progSet(1,'묶는 중…');await sleep(0);const zip=makeZip(files);progEnd();
- const d=new Date();await saveFile(`${S.settings.prefix||'webtoon'}_프로젝트_${d.getFullYear()}${pad(d.getMonth()+1,2)}${pad(d.getDate(),2)}_${pad(d.getHours(),2)}${pad(d.getMinutes(),2)}.zip`,zip);
+ const d=new Date();await saveFile(`${filePre()}_프로젝트_${d.getFullYear()}${pad(d.getMonth()+1,2)}${pad(d.getDate(),2)}_${pad(d.getHours(),2)}${pad(d.getMinutes(),2)}.zip`,zip);
 }
 async function loadProject(entries){
  const pj=entries.find(e=>e.name==='project.json'||e.name.endsWith('/project.json'));const meta=JSON.parse(new TextDecoder().decode(pj.data));
@@ -5651,7 +5676,7 @@ async function zipEpisodes(all){
  list.push({name:'순서표.txt',data:new TextEncoder().encode(man.join('\n'))});
  progSet(1,'묶는 중…');await sleep(0);
  const zip=makeZip(list);progEnd();
- const s=S.settings;await saveFile(all?`${s.prefix||'webtoon'}_전체회차.zip`:`${s.prefix||'webtoon'}_ep${pad(eps[0].num,2)}.zip`,zip);
+ const s=S.settings;await saveFile(all?`${filePre()}_전체회차.zip`:`${filePre()}_ep${pad(eps[0].num,2)}.zip`,zip);
 }
 
 /* 이어붙이기 */
@@ -5736,7 +5761,7 @@ async function runMerge(){
  const src=M.parts.map(p=>p.cut);if(!src.length){progEnd();return;}
  const outs=await longOuts(src,progSet);if(!outs){progEnd();return;}
  progEnd();
- const base=`${s.prefix||'webtoon'}_ep${pad(e.num,2)}_long`;
+ const base=`${filePre()}_ep${pad(e.num,2)}_long`;
  if(outs.length===1)await saveFile(`${base}.${s.fmt}`,outs[0]);
  else{const list=[];for(let i=0;i<outs.length;i++)list.push({name:`${base}_${pad(i+1,2)}.${s.fmt}`,data:new Uint8Array(await outs[i].arrayBuffer())});await saveFile(`${base}.zip`,makeZip(list));}
 }
@@ -5781,7 +5806,7 @@ function renderExp(){
    :`<b>ZIP 1개</b> 안에 이미지 ${nCuts}장${EX.scope==='all'?' (회차마다 폴더)':''} + 순서표(txt)<br><code>${esc(nm)} …</code>`;
  }else{
   const n=groups.reduce((a,g)=>a+exLongCount(g.cuts),0);
-  const nm=first?`${s.prefix||'webtoon'}_ep${pad(first.e.num,2)}_long${n>1?'_01':''}.${ext}`:'';
+  const nm=first?`${filePre()}_ep${pad(first.e.num,2)}_long${n>1?'_01':''}.${ext}`:'';
   sum=(n===1?`<b>긴 이미지 1장</b>을 바로 저장해요.`:`<b>ZIP 1개</b> 안에 긴 이미지 ${n}장${EX.scope==='all'?' (회차마다 따로 이어붙임)':''}`)
    +`<br>나누기: ${s.mergeH>0?`${s.mergeH}px마다${s.mergeByCut?' · 컷 경계에서':''}`:'나누지 않음 (아주 길면 자동으로 나눠요)'} · 컷 사이 ${s.mergeGap}px<br><code>${esc(nm)}</code>`;
  }
@@ -5848,7 +5873,7 @@ async function runExport(){
  const groups=exGroups();if(!groups.length){toast('저장할 컷이 없어요');return;}
  if(!DL){saveFile('x',new Blob());return;}
  $('#mExp').hidden=true;
- const s=S.settings,multi=EX.scope==='all',pre=s.prefix||'webtoon';
+ const s=S.settings,multi=EX.scope==='all',pre=filePre();
  const g0=groups[0].e,zname=multi?`${pre}_전체회차${EX.mode==='long'?'_long':''}.zip`:`${pre}_ep${pad(g0.num,2)}${EX.scope==='sel'?'_선택':''}${EX.mode==='long'?'_long':''}.zip`;
  if(EX.mode==='cuts'){
   const total=groups.reduce((a,g)=>a+g.cuts.length,0);prog(total>1?'ZIP 만드는 중':'이미지 만드는 중');
@@ -6140,7 +6165,7 @@ document.addEventListener('click',async ev=>{
    gAfterItem();break;}
   case'gif-frame':if(!$('#gPvImg').hidden)showLive();pv.playing=false;pv.i=+b.dataset.k;startPv();break;
   case'gif-drop':{const k=+b.dataset.k;const[f]=G.frames.splice(k,1);G.items=G.items.filter(i=>i.frame!==f.key);if(G.sel&&!G.items.find(i=>i.id===G.sel))G.sel=null;if(G.tab==='txt')renderGTxt();prepPreview(Math.max(0,Math.min(k,G.frames.length-1)));break;}
-  case'gif-save':if(gifBlob){const f0=G.frames.find(f=>f.from);const i0=f0?e.cuts.findIndex(c=>c.id===f0.from):-1;saveFile(`${S.settings.prefix||'webtoon'}_ep${pad(e.num,2)}_`+(i0>=0?`c${pad(i0+1,2)}_`:'')+'anim.gif',gifBlob);}break;
+  case'gif-save':if(gifBlob){const f0=G.frames.find(f=>f.from);const i0=f0?e.cuts.findIndex(c=>c.id===f0.from):-1;saveFile(`${filePre()}_ep${pad(e.num,2)}_`+(i0>=0?`c${pad(i0+1,2)}_`:'')+'anim.gif',gifBlob);}break;
   case'gif-insert':if(gifBlob){stopPv();const idxs=G.frames.map(f=>e.cuts.findIndex(c=>c.id===f.from)).filter(i=>i>=0);const last=idxs.length?Math.max(...idxs):e.cuts.length-1;const n=await cutFromBlob(gifBlob,`anim_${pad(last+1,2)}.gif`);mutate(()=>e.cuts.splice(last+1,0,n));$('#mGif').hidden=true;toast('GIF를 컷으로 넣었어요 · 쓰지 않을 원본 컷은 지워도 돼요');}break;
   case'merge-open':openMerge();break;
   case'lp-up':LIBT=null;$('#libIn').click();break;
@@ -6271,7 +6296,7 @@ const inspInput=ev=>{
  const t=ev.target;const sib=t.closest('.rng')&&t.closest('.rng').querySelector(t.type==='range'?'input.rnum':'input[type=range]');if(sib&&(t.type==='range'||t.type==='number')){if(t.type==='number'&&t.value==='')return;sib.value=t.value;}
  if(t.dataset.set){const k=t.dataset.set;let v=t.value;if(['q','width','gap','digits'].includes(k))v=+v;S.settings[k]=v;save();
   if(k==='gap'){document.documentElement.style.setProperty('--gap',v+'px');return;}
-  if(k==='prefix'||k==='pattern'||k==='digits'){renderStrip();const e=ep();const nm=$('.names');if(nm&&e)nm.innerHTML=e.cuts.length?e.cuts.slice(0,3).map((c,i)=>esc(fname(e,i,c))).join('<br>')+(e.cuts.length>3?'<br>…':''):'';}
+  if(k==='prefix')S.settings.prefixSet=!!String(v).trim();if(k==='prefix'||k==='pattern'||k==='digits'){renderStrip();const e=ep();const nm=$('.names');if(nm&&e)nm.innerHTML=e.cuts.length?e.cuts.slice(0,3).map((c,i)=>esc(fname(e,i,c))).join('<br>')+(e.cuts.length>3?'<br>…':''):'';}
   if(k==='width')renderStrip();if(k==='platform'){renderInspector();renderSBar();}return;}
  if(t.dataset.ep){const e=ep();if(t.dataset.ep==='num')e.num=Math.max(0,parseInt(t.value)||0);else e.title=t.value;renderEps();renderStrip();save();return;}
  const c=cutById(activeCut);if(!c)return;
@@ -6728,6 +6753,7 @@ document.addEventListener('pointerdown',ev=>{const m=$('#hMenu');if(!m.hidden&&!
 $('#hQ').addEventListener('input',e=>{HV.q=e.target.value;renderHome();});
 $('#hSort').addEventListener('change',e=>{HV.sort=e.target.value;hvSave();renderHome();});
 $('#wTitle').addEventListener('input',e=>{S.settings.workTitle=e.target.value;save();lpmSync();});
+$('#wTitle').addEventListener('change',()=>{if(filePre()!==(S.settings.prefix||'').trim())renderStrip();});
 $('#wTitle').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key==='Escape')e.target.blur();e.stopPropagation();});
 
 /* ---------------- 시작 ---------------- */
