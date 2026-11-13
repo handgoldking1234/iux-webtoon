@@ -78,6 +78,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px 14px}
 @media (max-width:1180px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (max-width:760px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 10px}}
+/* 홈의 한 줄 목록은 좁은 화면에서 옆으로 넘겨 봐요 */
+@media (max-width:1180px){.grid.swipe{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:calc((100% - 3*14px)/4.3);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}.grid.swipe::-webkit-scrollbar{display:none}.grid.swipe>*{scroll-snap-align:start}}
+@media (max-width:760px){.grid.swipe{grid-auto-columns:calc((100% - 2*10px)/3.3)}}
 .card{display:grid;gap:7px;min-width:0}
 .card .th{position:relative;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:var(--line);max-width:100%}
 .card .th canvas{width:100%;height:100%}
@@ -95,6 +98,10 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .side{display:grid;gap:22px}
 .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
 .rank{list-style:none;margin:0;padding:0;display:grid;gap:4px;counter-reset:r}
+.rank-wide{display:block;columns:2;column-gap:28px}
+.rank-wide li,.side .rank li{break-inside:avoid;margin-bottom:4px}
+@media (min-width:600px) and (max-width:980px){.side .rank{display:block;columns:2;column-gap:28px}.side .rank li{break-inside:avoid}.side{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:599px){.rank-wide{columns:1}}
 .rank li a{display:grid;grid-template-columns:22px 44px minmax(0,1fr);gap:10px;align-items:center;padding:6px 0}
 .rank .n{font-weight:700;font-size:16px;text-align:center}
 .rank li:nth-child(-n+3) .n{color:var(--green)}
@@ -151,21 +158,24 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .bal{position:absolute;max-width:62%;background:#fff;color:#151916;border:2px solid #151916;border-radius:22px;padding:10px 16px;font-size:clamp(13px,2.4vw,17px);font-weight:500;line-height:1.45;text-align:center}
 .bal.nar{border-radius:3px;background:#151916;color:#f2f2f2;border-color:#151916}
 .bal.sh{border-width:3px;font-weight:700}
-.after{max-width:690px;margin:0 auto;padding-block:26px 60px;display:grid;gap:18px}
+.after{max-width:722px;margin:0 auto;padding-block:26px 60px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+.after>*{min-width:0}
 .amsg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;gap:4px}
 .amsg small{color:var(--ink-2);font-weight:700;font-size:12.5px}
 .rate{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;justify-items:center;text-align:center}
 .stars{display:flex;gap:4px}
 .stars button{border:0;background:none;padding:2px;font-size:30px;line-height:1;color:var(--line)}
 .stars button.on{color:var(--amber)}
-.navep{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.navep{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 .navep a{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:2px;min-width:0}
 .navep a small{color:var(--ink-2);font-size:12.5px}
 .navep a b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .navep a.next{text-align:right;border-color:var(--green)}
 .navep a[aria-disabled="true"]{opacity:.4;pointer-events:none}
 .cmts{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:14px}
-.cmts form{display:flex;gap:8px}
+.cmts,.amsg{grid-template-columns:minmax(0,1fr)}
+.cmts form{display:flex;gap:8px;min-width:0}
+.cmts input{width:0}
 .cmts input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit}
 .cmt{display:grid;gap:3px;padding-top:12px;border-top:1px solid var(--line)}
 .cmt .h{display:flex;gap:8px;align-items:center;font-size:13px}
@@ -184,6 +194,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .steps span.on{color:var(--ink);border-color:var(--ink)}
 .steps span.on i{background:var(--ink);color:var(--surface)}
 .steps span.done i{background:var(--green);color:var(--on-green)}
+@media (max-width:520px){.steps{flex-wrap:nowrap;gap:4px}.steps span:not(.on){padding-right:6px;font-size:0;gap:0}.steps span:not(.on) i{font-size:12px}}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:grid;gap:18px}
 .panel h2{font-size:18px}
 .field{display:grid;gap:6px}
@@ -337,7 +348,7 @@ function home(){const f=byId('hyeonsang');
   <div class="layout"><div>
    <div class="sec-h"><h2>요일연재</h2><a href="${U('daily')}">전체 보기</a></div>${dayTabs()}<div id="dayGrid">${dayGrid()}</div>
    <div class="sec-h" style="margin-top:34px"><h2>자유연재 새 작품</h2><a href="${U('free')}">전체 보기</a></div>
-   <div class="grid">${FREE.slice(0,5).map(card).join('')}</div>
+   <div class="grid swipe">${FREE.slice(0,5).map(card).join('')}</div>
    <p class="notice"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>자유연재는 누구나 올릴 수 있어요. 관심과 별점이 많이 모이면 요일연재 추천 후보가 돼요.</p>
   </div>
   <aside class="side">
@@ -347,7 +358,7 @@ function home(){const f=byId('hyeonsang');
 function daily(){return `<div class="wrap" style="padding-block:24px 10px"><div class="sec-h"><h2>요일연재</h2><span class="muted" style="font-size:13px">별점 높은 순</span></div>${dayTabs()}<div id="dayGrid">${dayGrid()}</div></div>`;}
 function free(){const L=FREE.slice().sort(S.freeSort==='new'?(a,b)=>(b.isNew||0)-(a.isNew||0):(a,b)=>b.rate-a.rate);
  return `<div class="wrap" style="padding-block:24px 10px"><div class="sec-h"><h2>자유연재</h2></div><div class="tabs2"><button class="${S.freeSort==='new'?'on':''}" data-fs="new">최신 업데이트</button><button class="${S.freeSort==='rate'?'on':''}" data-fs="rate">별점순</button></div><div class="grid">${L.map(card).join('')}</div><p class="notice"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>운영정책에 맞지 않는 작품은 신고를 받아 숨김 처리될 수 있어요.</p></div>`;}
-function rank(){return `<div class="wrap" style="padding-block:24px 10px;max-width:760px"><div class="sec-h"><h2>실시간 랭킹</h2><span class="muted" style="font-size:13px">최근 7일 별점 · 관심 기준</span></div><div class="box">${rankList(ALL().slice().sort((a,b)=>b.rate-a.rate),20)}</div></div>`;}
+function rank(){return `<div class="wrap" style="padding-block:24px 10px;max-width:960px"><div class="sec-h"><h2>실시간 랭킹</h2><span class="muted" style="font-size:13px">최근 7일 별점 · 관심 기준</span></div><div class="box">${rankList(ALL().slice().sort((a,b)=>b.rate-a.rate),20).replace('class="rank"','class="rank rank-wide"')}</div></div>`;}
 function title(id){const w=byId(id);if(!w)return home();const fav=S.fav.has(w.id);const dl=w.days?w.days.map(d=>DAYS.find(x=>x[0]===d)[1]).join(' · '):'';
  const eps=[];for(let n=w.eps;n>=1;n--)eps.push(n);
  return `<div class="wrap"><section class="thead"><div class="th">${img(thumb(w),w.title+' 썸네일')}</div><div><h1>${esc(w.title)}</h1><p class="who"><span>글/그림 ${esc(w.author)}</span><span>${w.free?'자유연재':(w.days[0]==='end'?'완결':dl+'요일 연재')}</span><span>${esc(w.age)} 이용가</span></p><p class="desc">${esc(w.desc)}</p>
