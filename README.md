@@ -14,7 +14,9 @@ app/
   auth/callback|signout    로그인 후 돌아오기 · 로그아웃
   studio/route.ts          편집기 — editor/studio.html에 회원 · 한도 정보를 심어서 보내요
   account/                 내 계정 · AI 사용량 · 문의
-  admin/                   관리자 (대시보드 · 회원관리 · AI 사용/비용 · 작품 · 문의)
+  admin/                   관리자 (대시보드 · 회원관리 · AI 사용/비용 · 작품 · 연재관 · 문의)
+  read/                    연재관 /read (홈 · 요일연재 · 자유연재 · 랭킹 · 작품 · 뷰어 · 연재하기 · 운영정책)
+  read/api/                연재관 연결 통로 (관심 · 별점 · 댓글 · 신고 · 조회 · 연재하기 초안 · 공개)
   api/
     me                     내 정보 · 접속 시각
     projects/[id]          작품 목록 · 본문(서명 URL) · 저장 · 삭제
@@ -24,6 +26,7 @@ app/
     ai/image               이미지 AI (Gemini) — 참고 그림 최대 3장
     inquiries              문의 보내기
 lib/                       env · 인증 · 한도 · AI · 관리자 데이터
+lib/read/                  연재관 모듈 — 떼어 낼 때의 경계는 lib/read/README.md
 public/studio-assets/bridge.js   편집기 ↔ 서버 브리지 (클라우드 저장 · AI · 계정)
 prototype/studio.html      편집기 원본 (아티팩트에서 다듬은 단일 HTML)
 prototype/admin.html       관리자 화면 시안
@@ -52,16 +55,18 @@ npm test                     # 한도 · AI 엔진 · 편집기 패치 테스트
 
 ## DB 연동 (Supabase)
 
-1. Supabase에서 새 프로젝트를 만들어요 (리전: Seoul 권장).
-2. SQL Editor에 `supabase/migrations/0001_init.sql` → `0002_settings_notices.sql` 순서로 붙여 넣고 실행해요.
-3. Authentication → Providers
+1. Supabase 프로젝트를 정해요 (리전: Seoul 권장). 새 프로젝트도, 여러 서비스가 함께 쓰는 프로젝트(iux-cloud)도 돼요.
+   웹툰보드 테이블은 모두 `webtoon` 구역(스키마)에, 버킷은 `webtoon` · `webtoon-read`로 만들어져서 다른 서비스와 섞이지 않아요.
+2. SQL Editor에 `supabase/migrations/0001_init.sql` → `0002_settings_notices.sql` → `0003_read.sql` 순서로 붙여 넣고 실행해요.
+3. **Project Settings → API → Exposed schemas**에 `webtoon`을 추가해요. (빠뜨리면 "schema must be one of …" 오류가 나요)
+4. Authentication → Providers
    - Email: 켜기 (메일 인증 사용 여부 선택)
    - Kakao · Google: 각 개발자 콘솔에서 앱을 만들고 Client ID · Secret 입력
    - Redirect URL: `https://<사이트>/auth/callback`
-4. Authentication → URL Configuration → Site URL / Redirect URLs에 사이트 주소 추가
-5. `.env.local`(로컬) · Vercel 환경 변수에 키를 넣어요 → `.env.example` 참고
+5. Authentication → URL Configuration → Site URL / Redirect URLs에 사이트 주소 추가
+6. `.env.local`(로컬) · Vercel 환경 변수에 키를 넣어요 → `.env.example` 참고
    - `SUPABASE_SERVICE_ROLE_KEY`는 서버에서만 써요 (관리자 화면 · 사용량 기록)
-6. `ADMIN_EMAILS`의 이메일로 가입하면 관리자로 들어가요. 관리자 화면에서 다른 회원에게 관리자 권한을 줄 수도 있어요.
+7. `ADMIN_EMAILS`의 이메일로 가입하면 관리자로 들어가요. 관리자 화면에서 다른 회원에게 관리자 권한을 줄 수도 있어요.
 
 ## 배포 (Vercel)
 
@@ -74,6 +79,14 @@ npm test                     # 한도 · AI 엔진 · 편집기 패치 테스트
 - **OpenAI** — `OPENAI_API_KEY`를 넣으면 관리자 › 설정에서 글 · 이미지 엔진을 OpenAI로 바꿀 수 있어요 (기본은 Claude + 나노바나나).
 - **Cloudflare R2** — `R2_*`를 넣으면 작품 · 그림 파일을 Supabase Storage 대신 R2에 저장해요. R2 버킷 CORS에 사이트 주소의 `PUT` · `GET`을 허용해 주세요.
 - **메일 (Resend)** — `RESEND_API_KEY` · `MAIL_FROM`을 넣으면 새 문의가 관리자에게, 답변이 회원에게 메일로 가요. 없으면 화면에서만 보여요.
+
+## 연재관 (/read)
+
+- 독자: 요일연재 · 자유연재 · 랭킹 · 작품 페이지 · 세로 뷰어 · 별점 · 댓글 · 관심 · 신고 (읽기는 로그인 없이, 반응은 로그인해서)
+- 작가: 편집기 아래 막대의 **「연재하기」** → 컷을 가로 690px로 만들어 연재 그림 저장소에 바로 올리고 → `/read/publish`에서 작품 정보 · 공개 설정을 정해 공개
+- 관리자 › 연재관: 신고 처리(숨김), 요일연재 신청 승인(요일 지정) · 반려, 숨긴 작품
+- 그림 저장소: 기본은 Supabase 공개 버킷 `webtoon-read`. 독자가 늘면 `R2_READ_BUCKET` + `R2_PUBLIC_URL`(R2 공개 버킷 · 커스텀 도메인)로 바꿔요 — R2는 다운로드(전송료)가 무료예요.
+- 떼어 내기: `lib/read/README.md` — 편집기는 `/read/api/*`로만 연재관과 이야기해요.
 
 ## 관리자 화면
 

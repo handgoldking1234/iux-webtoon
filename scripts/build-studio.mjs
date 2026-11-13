@@ -49,6 +49,11 @@ P('콘티 컷 그림', 'const mk=async(w,h,v)=>{const b=await sbMockImg(Math.max
 P('실패한 컷 빼기', ' progEnd();if(!res.length)return;\n mutate(()=>{for(const r of res){const c=r.c;c.sb.aiModel=model;', ' progEnd();for(let i=res.length-1;i>=0;i--){if(res[i].ks.some(k=>!k))res.splice(i,1);}if(!res.length)return;\n mutate(()=>{for(const r of res){const c=r.c;c.sb.aiModel=model;');
 P('예시 표시', / \(예시 이미지\)`/g, "${window.__WBX??' (예시 이미지)'}`", (s.match(/ \(예시 이미지\)`/g) || []).length || 1);
 
+// 5) 연재하기: 내보내기 버튼 옆 · 연재관으로 바로 올리기
+P('연재하기 버튼', '<span class="lb">내보내기</span></button></div>`', '<span class="lb">내보내기</span></button><button class="btn sm sbout" data-act="wb-publish" title="연재관에 이 회차 올리기">${ic(\'up\',13)}<span class="lb">연재하기</span></button></div>`');
+P('연재하기 버튼(선택 없을 때)', "${n}컷</span></div>`:'');}bar.hidden", "${n}컷</span>${cov?'':`<span style=\"flex:1\"></span><button class=\"btn sm sbout\" data-act=\"wb-publish\" title=\"연재관에 이 회차 올리기\">${ic('up',13)}<span class=\"lb\">연재하기</span></button>`}</div>`:'');}bar.hidden");
+P('연재하기 동작', "case'exp-open':openExp(b.dataset.scope);break;", "case'exp-open':openExp(b.dataset.scope);break;case'wb-publish':if(window.__WB)__WB.publish();break;");
+
 mkdirSync(join(root, 'editor'), { recursive: true });
 writeFileSync(join(root, 'editor/studio.html'), s);
 console.log(`editor/studio.html 만들었어요 (${(s.length / 1024 / 1024).toFixed(2)}MB)`);

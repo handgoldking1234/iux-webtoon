@@ -7,6 +7,7 @@ import { env } from '@/lib/env';
 export async function supabaseServer() {
   const store = await cookies();
   return createServerClient(env.supabaseUrl, env.supabaseAnon, {
+    db: { schema: env.dbSchema },
     cookies: {
       getAll: () => store.getAll(),
       setAll: (list) => {
@@ -22,5 +23,5 @@ export async function supabaseServer() {
 
 /** 서버 전용 관리자 키 (RLS 무시) — 절대 브라우저로 보내지 않아요 */
 export function supabaseAdmin() {
-  return createAdmin(env.supabaseUrl, env.serviceRole, { auth: { persistSession: false, autoRefreshToken: false } });
+  return createAdmin(env.supabaseUrl, env.serviceRole, { db: { schema: env.dbSchema }, auth: { persistSession: false, autoRefreshToken: false } });
 }

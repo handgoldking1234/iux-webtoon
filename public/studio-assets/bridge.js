@@ -225,10 +225,71 @@
   document.addEventListener('DOMContentLoaded', function () { setTimeout(applyUser, 0); setTimeout(showNotices, 600); });
   if (cloud) fetch('/api/me', { method: 'POST', credentials: 'same-origin' }).catch(function () {});
 
+  /* ---------- 연재하기 — 지금 회차를 연재 규격(가로 690px)으로 만들어 연재관에 올려요
+   * 연재관과는 /read/api/* 로만 이야기해요 (연재관을 다른 사이트로 떼어 내도 그대로 쓰게) */
+  var READ_API = '/read/api/';
+  function publish() {
+    var e = null; try { e = ep(); } catch (_) {}
+    if (!e || e.kind === 'cover') { say('연재할 회차를 열어 주세요'); return; }
+    var cuts = (e.cuts || []).filter(function (c) { return c.kind !== 'blank' || (c.items && c.items.length); });
+    if (!cuts.length) { say('이 회차에는 올릴 컷이 없어요'); return; }
+    var P = {}; try { P = plan() || {}; } catch (_) {}
+    var ai = cuts.some(function (c) { return c.sb && c.sb.aiModel; });
+    var W = 690, outs = [];
+    try { prog('연재 규격으로 만드는 중'); } catch (_) {}
+    var step = Promise.resolve();
+    cuts.forEach(function (c, i) {
+      step = step.then(function () {
+        if (typeof cancelFlag !== 'undefined' && cancelFlag) throw { code: 'cancel' };
+        try { progSet(i / cuts.length * 0.5, (i + 1) + ' / ' + cuts.length + ' 컷 만드는 중'); } catch (_) {}
+        if (c.kind === 'gif') { var g = blobs.get(c.blob); if (g) outs.push({ blob: g, w: W, h: Math.round((dims(c).H0 || W) * W / (dims(c).W0 || W)) }); return; }
+        return renderCut(c, W, null, false).then(function (cv) {
+          var o = document.createElement('canvas'); o.width = cv.width; o.height = cv.height;
+          var x = o.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, o.width, o.height); x.drawImage(cv, 0, 0);
+          return new Promise(function (r) { o.toBlob(r, 'image/jpeg', 0.9); }).then(function (b) { if (b) outs.push({ blob: b, w: o.width, h: o.height }); });
+        });
+      });
+    });
+    var draft;
+    step.then(function () {
+      try { progSet(0.5, '연재관에 자리 만드는 중'); } catch (_) {}
+      return api(READ_API + 'drafts', { method: 'POST', json: {
+        ai: ai,
+        source: { project: (typeof WID !== 'undefined' && WID) || '', workTitle: (S.settings && S.settings.workTitle) || '', logline: P.logline || '', genre: P.genre || '', ep: { num: e.num, title: e.title || '', syn: e.syn || '' } },
+        cuts: outs.map(function (o) { return { w: o.w, h: o.h, type: o.blob.type || 'image/jpeg', bytes: o.blob.size }; }),
+      } });
+    }).then(function (j) {
+      draft = j; var q = Promise.resolve();
+      outs.forEach(function (o, i) {
+        q = q.then(function () {
+          try { progSet(0.5 + (i + 1) / outs.length * 0.48, (i + 1) + ' / ' + outs.length + ' 컷 올리는 중'); } catch (_) {}
+          var u = j.uploads[i];
+          return fetch(u.url, { method: u.method, headers: { 'content-type': o.blob.type || 'image/jpeg', 'x-upsert': 'true' }, body: o.blob, credentials: u.method === 'POST' ? 'same-origin' : 'omit' })
+            .then(function (r) { if (!r.ok) throw { code: 'upload', message: '그림을 올리지 못했어요 (' + r.status + ')' }; });
+        });
+      });
+      return q;
+    }).then(function () {
+      return api(READ_API + 'drafts/' + encodeURIComponent(draft.id), { method: 'POST', json: {} });
+    }).then(function (j) {
+      try { progEnd(); } catch (_) {}
+      say('다 올렸어요 · 연재하기 화면에서 공개 설정을 정해 주세요');
+      var w = window.open(j.next, '_blank');
+      if (!w) location.href = j.next;
+    }).catch(function (err) {
+      try { progEnd(); } catch (_) {}
+      if (err && err.code === 'cancel') { say('취소했어요'); return; }
+      if (err && err.status === 401) { say('로그인하면 연재할 수 있어요'); return; }
+      say((err && err.message) || '연재관에 올리지 못했어요 · 잠시 뒤 다시 해 주세요');
+      console.warn('[웹툰보드] publish', err);
+    });
+  }
+
   window.__WBX = boot.ai.image ? '' : undefined;
   window.__WB = {
     boot: boot, dbSuffix: cloud ? ':' + uid : '',
     sync: sync, pushWorks: pushWorks, deleteProject: deleteProject, putBlob: putBlob, getBlob: getBlob,
     txtAi: txtAi, imgLeft: imgLeft, image: image, refPrompt: refPrompt, sbPrompt: sbPrompt, refsFor: refsFor,
+    publish: publish,
   };
 })();

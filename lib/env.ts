@@ -6,6 +6,11 @@ export const env = {
   supabaseAnon: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
   serviceRole: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
+  /** 웹툰보드 테이블이 사는 DB 구역 — 공용 Supabase(iux-cloud)에 얹어도 다른 서비스와 안 섞이게 */
+  dbSchema: process.env.NEXT_PUBLIC_SUPABASE_DB_SCHEMA || 'webtoon',
+  /** Supabase Storage 버킷: 작품 원본(비공개) · 연재 그림(공개) */
+  bucket: process.env.SUPABASE_BUCKET || 'webtoon',
+  readBucket: process.env.SUPABASE_READ_BUCKET || 'webtoon-read',
   adminEmails: (process.env.ADMIN_EMAILS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
   anthropicKey: process.env.ANTHROPIC_API_KEY || '',
   claudeModel: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',
@@ -22,6 +27,10 @@ export const env = {
     accessKey: process.env.R2_ACCESS_KEY_ID || '',
     secret: process.env.R2_SECRET_ACCESS_KEY || '',
     bucket: process.env.R2_BUCKET || '',
+    /** 연재 그림을 바로 보여 줄 공개 주소 (R2 공개 버킷 · 커스텀 도메인), 예: https://img.toon.iux.kr */
+    /** 연재 그림 전용 공개 버킷 (작품 원본 버킷과 따로) */
+    readBucket: process.env.R2_READ_BUCKET || '',
+    publicUrl: (process.env.R2_PUBLIC_URL || '').replace(/\/$/, ''),
   },
   resendKey: process.env.RESEND_API_KEY || '',
   mailFrom: process.env.MAIL_FROM || '',
