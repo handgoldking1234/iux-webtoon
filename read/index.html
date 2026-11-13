@@ -1,6 +1,12 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>웹툰보드 연재</title>
 <meta name="description" content="웹툰보드에서 만든 웹툰을 요일연재 · 자유연재로 읽는 곳">
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
@@ -238,6 +244,8 @@ footer .wrap{display:flex;gap:6px 18px;flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
+</head>
+<body>
 <header class="gnb" id="gnb">
   <div class="wrap">
     <a class="logo" href="/read" data-l=""><i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg></i>웹툰보드<small>연재</small></a>
@@ -464,3 +472,6 @@ function collect(){const P=S.pub;const v=id=>{const e=$(id);return e?e.value:nul
 (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{for(const k in TH)delete TH[k];render();});
 render();
 </script>
+
+</body>
+</html>
