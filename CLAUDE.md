@@ -27,6 +27,8 @@
 ```
 index.html             편집기 (작품 기획·콘티·AI·라이브러리·컷 편집·내보내기)
 admin/index.html       관리자 시안 (대시보드·유입경로·회원·통계·요금제·운영·설정)
+read/index.html        연재관 시안 /read (요일연재·자유연재·랭킹·작품·뷰어·연재하기) — 예시 데이터, 주소는 /read/작품id/회차
+vercel.json            /read/* 주소를 read/index.html로 보내는 설정
 docs/style-prompts.md  그림체 예시 이미지용 나노바나나 프롬프트
 ```
 - localStorage 키: `wca-theme`, `wcs-*` / 주요 함수: `plan*`(기획 패널), `balloonGeo`·`fitBalloon`(말풍선), `drawSb`(콘티), `paywall`·`aiTestReset`

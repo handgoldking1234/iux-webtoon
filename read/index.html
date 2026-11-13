@@ -1,0 +1,455 @@
+<title>웹툰보드 연재</title>
+<meta name="description" content="웹툰보드에서 만든 웹툰을 요일연재 · 자유연재로 읽는 곳">
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<style>
+/* 레이아웃: 독자용 연재관 — 위 고정 메뉴, 요일 탭 + 3:4 썸네일 격자, 작품 · 세로 뷰어 · 연재하기 단계 화면을 #주소로 바꿔 보여 줘요 */
+:root{
+  --bg:#f5f6f4;--surface:#ffffff;--ink:#151916;--ink-2:#626a64;--ink-3:#959c97;--line:#e3e6e2;
+  --green:#16a34a;--green-soft:#e6f6ec;--on-green:#ffffff;--red:#e5484d;--amber:#f5a524;--blue:#3d6fd1;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-display:"Black Han Sans","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1210;--surface:#161b18;--ink:#eef1ee;--ink-2:#a6aea8;--ink-3:#727a74;--line:#262d29;--green:#22c55e;--green-soft:#123221;--on-green:#05200e;--red:#f2555a;--amber:#f5b54a;--blue:#7ea4f0;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1210;--surface:#161b18;--ink:#eef1ee;--ink-2:#a6aea8;--ink-3:#727a74;--line:#262d29;--green:#22c55e;--green-soft:#123221;--on-green:#05200e;--red:#f2555a;--amber:#f5b54a;--blue:#7ea4f0;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);-webkit-font-smoothing:antialiased;word-break:keep-all}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;cursor:pointer}
+img,canvas{display:block;max-width:100%}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:6px}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;text-wrap:balance}
+p{margin:0}
+.muted{color:var(--ink-2)}
+.tnum{font-variant-numeric:tabular-nums}
+
+/* 상단 */
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
+.gnb{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+.gnb .wrap{display:flex;align-items:center;gap:18px;height:58px}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:21px;letter-spacing:-.01em;white-space:nowrap}
+.logo i{width:28px;height:28px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+.logo svg{width:15px;height:15px;stroke:var(--on-green)}
+.logo small{font-family:var(--f-body);font-size:12px;font-weight:700;color:var(--green);margin-left:2px;align-self:flex-start;margin-top:4px}
+.menu{display:flex;gap:2px;height:100%}
+.menu a{display:flex;align-items:center;padding:0 12px;font-weight:700;color:var(--ink-2);border-bottom:3px solid transparent;margin-bottom:-1px}
+.menu a.on{color:var(--ink);border-bottom-color:var(--green)}
+.gnb .right{margin-left:auto;display:flex;gap:8px;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;border:1px solid var(--line);background:var(--surface);white-space:nowrap}
+.btn.go{background:var(--green);border-color:var(--green);color:var(--on-green)}
+.btn.big{padding:13px 22px;font-size:15px}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.ico{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.only-wide{display:inline-flex}
+@media (max-width:760px){
+  .gnb .wrap{height:auto;flex-wrap:wrap;gap:0 12px;padding-block:8px 0}
+  .menu{order:3;width:100%;height:44px;overflow-x:auto}
+  .menu a{padding:0 10px}
+  .only-wide{display:none}
+}
+
+/* 홈 */
+.feature{margin-top:22px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);border-radius:16px;overflow:hidden;background:#141a17;color:#f2f4f2;min-height:260px}
+.feature .art{position:relative;min-height:220px}
+.feature .art canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.feature .txt{padding:30px 30px 28px;display:grid;gap:12px;align-content:center}
+.feature .tag{font-size:12px;font-weight:700;color:#7ee2a3;letter-spacing:.06em}
+.feature h2{font-family:var(--f-display);font-weight:400;font-size:38px;line-height:1.15}
+.feature p{color:#c3cbc6}
+.feature .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.feature .btn{background:transparent;border-color:#4a554f;color:#f2f4f2}
+.feature .btn.go{background:#22c55e;border-color:#22c55e;color:#05200e}
+@media (max-width:760px){.feature{grid-template-columns:1fr}.feature .txt{padding:22px}.feature h2{font-size:30px}}
+
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:32px;margin-top:30px;align-items:start}
+.layout>*{min-width:0}
+@media (max-width:980px){.layout{grid-template-columns:1fr}}
+.sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
+.sec-h h2{font-size:20px}
+.sec-h a{margin-left:auto;font-size:13px;color:var(--ink-2)}
+.days{display:flex;gap:4px;overflow-x:auto;padding-bottom:2px;margin-bottom:16px}
+.days button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-weight:700;font-size:14px;color:var(--ink-2)}
+.days button.on{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+.days button .today{font-size:11px;color:var(--green);margin-left:3px}
+.days button.on .today{color:#7ee2a3}
+.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px 14px}
+@media (max-width:1180px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:760px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 10px}}
+.card{display:grid;gap:7px;min-width:0}
+.card .th{position:relative;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:var(--line);max-width:100%}
+.card .th canvas{width:100%;height:100%}
+.badges{position:absolute;left:6px;top:6px;display:flex;gap:4px}
+.bd{font-size:10.5px;font-weight:700;line-height:1;padding:4px 6px;border-radius:5px;background:rgba(10,12,11,.72);color:#fff}
+.bd.up{background:var(--red)}
+.bd.new{background:var(--green);color:var(--on-green)}
+.bd.ai{background:rgba(255,255,255,.9);color:#151916}
+.card b{font-size:14.5px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .meta{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--ink-2);min-width:0}
+.card .meta span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.star{color:var(--amber);font-weight:700;flex:none}
+.empty{padding:40px 0;text-align:center;color:var(--ink-2)}
+
+.side{display:grid;gap:22px}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.rank{list-style:none;margin:0;padding:0;display:grid;gap:4px;counter-reset:r}
+.rank li a{display:grid;grid-template-columns:22px 44px minmax(0,1fr);gap:10px;align-items:center;padding:6px 0}
+.rank .n{font-weight:700;font-size:16px;text-align:center}
+.rank li:nth-child(-n+3) .n{color:var(--green)}
+.rank .mini{width:44px;aspect-ratio:3/4;border-radius:6px;overflow:hidden}
+.rank .mini canvas{width:100%;height:100%}
+.rank b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank small{color:var(--ink-2);font-size:12px}
+.make{background:var(--green-soft);border-color:transparent;display:grid;gap:10px}
+.make h3{font-size:16px}
+.make p{font-size:13.5px;color:var(--ink-2)}
+.tabs2{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:14px}
+.tabs2 button{border:0;background:none;padding:8px 12px;font-weight:700;color:var(--ink-2);border-bottom:2px solid transparent;margin-bottom:-1px}
+.tabs2 button.on{color:var(--ink);border-bottom-color:var(--ink)}
+.notice{margin-top:12px;font-size:13px;color:var(--ink-2);display:flex;gap:6px;align-items:flex-start}
+
+/* 작품 페이지 */
+.thead{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding-block:28px 22px;align-items:start}
+.thead .th{aspect-ratio:3/4;border-radius:12px;overflow:hidden;max-width:100%}
+.thead .th canvas{width:100%;height:100%}
+.thead h1{font-family:var(--f-display);font-weight:400;font-size:36px;line-height:1.15}
+.thead .who{margin-top:6px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px}
+.thead .desc{margin-top:14px;max-width:62ch}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.chip{font-size:12.5px;padding:4px 10px;border-radius:999px;background:var(--surface);border:1px solid var(--line);color:var(--ink-2)}
+.chip.ai{border-color:var(--blue);color:var(--blue)}
+.thead .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.fav.on{background:var(--ink);border-color:var(--ink);color:var(--surface)}
+@media (max-width:640px){.thead{grid-template-columns:96px minmax(0,1fr);gap:4px 16px;padding-block:20px 18px}.thead>div:last-child{display:contents}.thead .th{grid-row:1/3}.thead h1{font-size:26px;grid-column:2;grid-row:1;align-self:end}.thead .who{grid-column:2;grid-row:2;align-self:start}.thead .desc,.thead .chips,.thead .acts{grid-column:1/-1}.thead .desc{margin-top:16px}}
+.eplist{background:var(--surface);border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:40px}
+.eplist .hd{display:flex;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line);font-size:14px}
+.eplist .hd b{font-size:15px}
+.eplist .hd button{margin-left:auto;border:0;background:none;color:var(--ink-2);font-size:13px}
+.ep{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 18px;border-bottom:1px solid var(--line)}
+.ep:last-child{border-bottom:0}
+.ep:hover{background:color-mix(in srgb,var(--bg) 60%,var(--surface))}
+.ep .eth{aspect-ratio:16/10;border-radius:6px;overflow:hidden;max-width:100%}
+.ep .eth canvas{width:100%;height:100%}
+.ep b{display:block;font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ep small{color:var(--ink-2);font-size:12.5px}
+.ep .d{font-size:12.5px;color:var(--ink-3);text-align:right}
+@media (max-width:520px){.ep{grid-template-columns:80px minmax(0,1fr)}.ep .d{display:none}}
+
+/* 뷰어 */
+.vbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:25;background:var(--surface);border-bottom:1px solid var(--line)}
+.vbar .wrap{display:flex;align-items:center;gap:10px;height:54px;max-width:820px}
+.vbar .t{min-width:0;flex:1}
+.vbar .t b{display:block;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vbar .t small{color:var(--ink-2);font-size:12.5px}
+.ibtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;flex:none}
+.ibtn[disabled]{opacity:.35;cursor:not-allowed}
+.strip{max-width:690px;margin:0 auto;background:#fff}
+.cutv{position:relative}
+.cutv canvas{width:100%;height:auto}
+.bal{position:absolute;max-width:62%;background:#fff;color:#151916;border:2px solid #151916;border-radius:22px;padding:10px 16px;font-size:clamp(13px,2.4vw,17px);font-weight:500;line-height:1.45;text-align:center}
+.bal.nar{border-radius:3px;background:#151916;color:#f2f2f2;border-color:#151916}
+.bal.sh{border-width:3px;font-weight:700}
+.after{max-width:690px;margin:0 auto;padding-block:26px 60px;display:grid;gap:18px}
+.amsg{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:grid;gap:4px}
+.amsg small{color:var(--ink-2);font-weight:700;font-size:12.5px}
+.rate{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:10px;justify-items:center;text-align:center}
+.stars{display:flex;gap:4px}
+.stars button{border:0;background:none;padding:2px;font-size:30px;line-height:1;color:var(--line)}
+.stars button.on{color:var(--amber)}
+.navep{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.navep a{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px;display:grid;gap:2px;min-width:0}
+.navep a small{color:var(--ink-2);font-size:12.5px}
+.navep a b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.navep a.next{text-align:right;border-color:var(--green)}
+.navep a[aria-disabled="true"]{opacity:.4;pointer-events:none}
+.cmts{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;display:grid;gap:14px}
+.cmts form{display:flex;gap:8px}
+.cmts input{flex:1;min-width:0;border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit}
+.cmt{display:grid;gap:3px;padding-top:12px;border-top:1px solid var(--line)}
+.cmt .h{display:flex;gap:8px;align-items:center;font-size:13px}
+.cmt .h b{font-size:13.5px}
+.cmt .best{font-size:11px;font-weight:700;color:var(--red);border:1px solid var(--red);border-radius:4px;padding:1px 5px}
+.cmt .h span{color:var(--ink-3)}
+.cmt .f{display:flex;gap:12px;font-size:12.5px;color:var(--ink-2)}
+.cmt .f button{border:0;background:none;padding:0;color:var(--ink-2);font-size:12.5px}
+
+/* 연재하기 */
+.pub{max-width:860px;margin:0 auto;padding-block:28px 60px}
+.pub h1{font-size:26px}
+.steps{display:flex;gap:6px;margin:18px 0 22px;flex-wrap:wrap}
+.steps span{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:700;color:var(--ink-3);padding:6px 12px 6px 6px;border-radius:999px;background:var(--surface);border:1px solid var(--line)}
+.steps span i{font-style:normal;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--line);color:var(--ink-2);font-size:12px}
+.steps span.on{color:var(--ink);border-color:var(--ink)}
+.steps span.on i{background:var(--ink);color:var(--surface)}
+.steps span.done i{background:var(--green);color:var(--on-green)}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:24px;display:grid;gap:18px}
+.panel h2{font-size:18px}
+.field{display:grid;gap:6px}
+.field label,.field .lb{font-weight:700;font-size:14px}
+.field small{color:var(--ink-2);font-size:12.5px}
+.field input[type=text],.field textarea,.field select{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;font:inherit;width:100%}
+.field textarea{min-height:84px;resize:vertical}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:640px){.two{grid-template-columns:1fr}.panel{padding:18px}}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:7px 12px;font-size:13.5px;font-weight:500;cursor:pointer;background:var(--bg)}
+.seg input{accent-color:var(--green)}
+.seg label:has(input:checked){border-color:var(--green);background:var(--green-soft)}
+.src{display:grid;gap:10px}
+.srcw{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;background:var(--bg)}
+.srcw:has(input:checked){border-color:var(--green);background:var(--green-soft)}
+.srcw .mini{aspect-ratio:3/4;border-radius:6px;overflow:hidden}
+.srcw .mini canvas{width:100%;height:100%}
+.srcw small{color:var(--ink-2);font-size:12.5px}
+.eps{display:grid;gap:6px}
+.eprow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.eprow input{accent-color:var(--green);width:18px;height:18px}
+.eprow small{color:var(--ink-2)}
+.chk{display:grid;gap:8px;list-style:none;margin:0;padding:0}
+.chk li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:14px;padding:10px 12px;border-radius:10px;background:var(--bg)}
+.chk .ok{color:var(--green);font-weight:700}
+.chk .warn{color:var(--amber);font-weight:700}
+.chk i{font-style:normal;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-size:12px;font-weight:700;background:var(--green-soft);color:var(--green)}
+.chk i.w{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber)}
+.agree{display:grid;gap:8px}
+.agree label{display:flex;gap:10px;align-items:flex-start;font-size:14px}
+.agree input{accent-color:var(--green);width:18px;height:18px;margin-top:2px;flex:none}
+.pfoot{display:flex;gap:8px;justify-content:space-between;flex-wrap:wrap}
+.done{text-align:center;justify-items:center;padding-block:40px}
+.done .bigck{width:64px;height:64px;border-radius:50%;background:var(--green);display:grid;place-items:center}
+.done .bigck svg{width:30px;height:30px;stroke:var(--on-green);stroke-width:3}
+.preview-card{width:160px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:999px;font-size:14px;font-weight:500;z-index:50;pointer-events:none}
+footer{border-top:1px solid var(--line);padding-block:24px 36px;color:var(--ink-3);font-size:12.5px;margin-top:20px}
+footer .wrap{display:flex;gap:6px 18px;flex-wrap:wrap}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style>
+
+<header class="gnb" id="gnb">
+  <div class="wrap">
+    <a class="logo" href="/read" data-l=""><i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg></i>웹툰보드<small>연재</small></a>
+    <nav class="menu" aria-label="연재관 메뉴">
+      <a href="/read" data-l="" data-m="home">홈</a>
+      <a href="/read/daily" data-l="daily" data-m="daily">요일연재</a>
+      <a href="/read/free" data-l="free" data-m="free">자유연재</a>
+      <a href="/read/rank" data-l="rank" data-m="rank">랭킹</a>
+    </nav>
+    <div class="right">
+      <a class="btn only-wide" href="/" data-make><svg class="ico" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z"/></svg>만들기</a>
+      <a class="btn go" href="/read/publish" data-l="publish"><svg class="ico" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>연재하기</a>
+    </div>
+  </div>
+</header>
+
+<main id="app" aria-live="polite"></main>
+
+<footer><div class="wrap"><span>웹툰보드 연재 · toon.iux.kr</span><span>시안 · 작품과 작가는 모두 예시예요</span><span>운영정책 · 신고하기 · 문의</span></div></footer>
+
+<script>
+/* ---------- 예시 데이터 (실제 서비스에서는 서버에서 받아요) ---------- */
+const DAYS=[['mon','월'],['tue','화'],['wed','수'],['thu','목'],['fri','금'],['sat','토'],['sun','일'],['end','완결']];
+const TODAY=['sun','mon','tue','wed','thu','fri','sat'][new Date().getDay()];
+const W=[
+ {id:'hyeonsang',title:'현상',author:'손금왕',genre:'스릴러',days:['mon'],rate:9.86,eps:12,up:1,ai:1,age:'15세',pal:['#141c2b','#2b3a55','#c0392b'],motif:'rain',desc:'1944년 경성. 혼을 보는 견습 사진사 해원이 사라진 스승을 찾아 나선다. 스승을 가둔 유리건판은 하나씩 깨져 가고, 마지막 한 장마저 깨지면 경성의 혼이 모두 풀려난다.'},
+ {id:'conv',title:'밤의 한강 편의점',author:'유린',genre:'일상',days:['tue','fri'],rate:9.71,eps:48,up:1,pal:['#0f2a3a','#1f6f8b','#ffd166'],motif:'moon',age:'전체',desc:'새벽 두 시에만 찾아오는 손님들. 알바생 지호는 오늘도 라면 물을 맞춘다.'},
+ {id:'er',title:'새벽 응급실 3년차',author:'김온',genre:'드라마',days:['wed'],rate:9.64,eps:31,pal:['#e9f1f2','#6fb3b8','#e5484d'],motif:'cross',age:'15세',desc:'3년차 응급의학과 전공의의 열두 시간. 오늘 밤도 무사히 넘길 수 있을까.'},
+ {id:'mungu',title:'문구점 마왕',author:'파란볼펜',genre:'판타지',days:['thu'],rate:9.52,eps:67,up:1,pal:['#2a1b3d','#7b2cbf','#f9c74f'],motif:'stars',age:'전체',desc:'세계 정복에 실패한 마왕이 초등학교 앞 문구점을 차렸다.'},
+ {id:'baduk',title:'바둑부 막내',author:'흑돌',genre:'스포츠',days:['fri'],rate:9.48,eps:22,pal:['#f2ead8','#3a3a3a','#c8a96a'],motif:'grid',age:'전체',desc:'폐부 직전 바둑부에 들어온 신입. 첫 대회까지 남은 시간은 한 달.'},
+ {id:'funeral',title:'화사한 장례식',author:'오늘도맑음',genre:'개그',days:['sat'],rate:9.77,eps:39,up:1,pal:['#fff4e6','#ff8fab','#3d405b'],motif:'dots',age:'12세',desc:'장례지도사 3명이 운영하는, 세상에서 가장 시끄러운 장례식장.'},
+ {id:'lab',title:'연구실 로맨스는 없다',author:'석사과정',genre:'로맨스',days:['sun'],rate:9.58,eps:54,pal:['#fde2e4','#e5989b','#6d6875'],motif:'waves',age:'전체',desc:'실험은 실패해도 연애는 안 한다. 그런데 옆자리 박사과정이 자꾸 신경 쓰인다.'},
+ {id:'barrier',title:'결계 아파트 304호',author:'도깨비불',genre:'액션',days:['mon','thu'],rate:9.41,eps:76,pal:['#10151f','#3a86ff','#8338ec'],motif:'rings',age:'15세',desc:'월세 20만 원짜리 집에는 이유가 있었다. 이 아파트는 도시의 결계였다.'},
+ {id:'palace',title:'첫 출근은 용궁으로',author:'물방울',genre:'판타지',days:['wed','sat'],rate:9.69,eps:41,pal:['#023e8a','#00b4d8','#caf0f8'],motif:'waves',age:'전체',desc:'공채 합격 문자를 받고 간 곳은 바닷속 용궁 인사팀이었다.'},
+ {id:'bakery',title:'달곰 동네 빵집',author:'곰손',genre:'일상',days:['tue'],rate:9.33,eps:18,pal:['#fff1d6','#d4a373','#6b4226'],motif:'dots',age:'전체',desc:'골목 끝 빵집의 하루. 오늘의 빵은 손님 사연으로 정해진다.'},
+ {id:'end1',title:'마지막 기차는 0시',author:'철길',genre:'미스터리',days:['end'],rate:9.81,eps:60,pal:['#1b1b1e','#5f0f40','#fb8b24'],motif:'lines',age:'15세',desc:'자정에만 서는 기차역. 내리는 사람은 있어도 타는 사람은 없다.'},
+ {id:'end2',title:'우리 반 반장은 고양이',author:'냥펀치',genre:'개그',days:['end'],rate:9.74,eps:88,pal:['#f8edeb','#f9844a','#577590'],motif:'dots',age:'전체',desc:'반장 선거에서 고양이가 당선됐다. 공약은 낮잠 시간 확보.'},
+];
+const FREE=[
+ {id:'f1',title:'옥탑방 작업실',author:'새벽두시',genre:'일상',rate:9.12,eps:7,ai:0,pal:['#e9edc9','#a3b18a','#344e41'],motif:'lines',isNew:1,age:'전체',desc:'웹툰 지망생 셋이 사는 옥탑방 이야기.'},
+ {id:'f2',title:'레벨업 안 되는 용사',author:'만렙꿈나무',genre:'판타지',rate:8.97,eps:12,ai:1,pal:['#22223b','#4a4e69','#f2e9e4'],motif:'stars',age:'12세',desc:'경험치가 쌓이지 않는 저주에 걸린 용사의 무지성 모험.'},
+ {id:'f3',title:'고3 봄날 일기',author:'벚꽃엔딩',genre:'로맨스',rate:9.25,eps:4,ai:0,pal:['#ffe5ec','#ffb3c6','#fb6f92'],motif:'dots',isNew:1,age:'전체',desc:'수능 D-200, 짝꿍이 바뀌었다.'},
+ {id:'f4',title:'좀비 아파트 관리소',author:'관리소장',genre:'액션',rate:9.03,eps:15,ai:1,pal:['#132a13','#4f772d','#ecf39e'],motif:'grid',age:'15세',desc:'세상이 망해도 관리비는 걷어야 한다.'},
+ {id:'f5',title:'편의점 마법소녀',author:'삼각김밥',genre:'개그',rate:8.88,eps:9,ai:0,pal:['#ffd6ff','#c8b6ff','#b8c0ff'],motif:'stars',age:'전체',desc:'변신 아이템은 1+1 행사 상품.'},
+];
+FREE.forEach(f=>f.free=1);
+const ALL=()=>W.concat(FREE);
+const byId=id=>ALL().find(w=>w.id===id);
+const EP_TITLES={hyeonsang:['붉은 등 아래','유리건판의 얼굴','본정 사진관','두 번째 혼','총독부 사진반','깨진 건판','서린','암실의 규칙','명월의 노트','마지막 현상','빛을 들이다','현상']};
+function epTitle(w,n){const t=EP_TITLES[w.id];return t&&t[n-1]?t[n-1]:`${n}화`;}
+function epDate(w,n){const d=new Date(2026,10,10);d.setDate(d.getDate()-(w.eps-n)*7);return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;}
+function epRate(w,n){return (Math.min(9.99,w.rate-((n*37)%17)/100)).toFixed(2);}
+const SCRIPT={hyeonsang:[
+ [['nar','1944년 가을, 경성 본정. 등화관제로 불빛 하나 허락되지 않던 밤.']],
+ [['say','선생님…? 계세요?']],
+ [['say','암실 문이… 열려 있어.'],['th','붉은 등이 켜져 있다.']],
+ [['sh','누구야!']],
+ [['say','…선생님 얼굴이 왜 여기에.']],
+ [['nar','유리건판 속 얼굴이, 해원을 향해 천천히 눈을 떴다.']],
+ [['say','해원아. 그 판을 깨뜨리지 마라.']],
+]};
+const GEN=[[['nar','그날도 평소와 다르지 않은 하루였다.']],[['say','오늘은 좀 이상한데?']],[['say','…방금 그거 봤어?']],[['sh','잠깐만!']],[['say','설마, 아니겠지.']],[['nar','하지만 그 설마가 시작이었다.']]];
+
+/* ---------- 그림: 썸네일 · 컷 (예시용으로 캔버스에 그려요) ---------- */
+const TH={};
+function rnd(seed){let s=0;for(const c of seed)s=(s*31+c.charCodeAt(0))>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;};}
+function motif(g,w,W2,H,r){const [a,b,c]=w.pal;g.save();
+ if(w.motif==='rain'){g.strokeStyle='rgba(255,255,255,.14)';g.lineWidth=W2/240;for(let i=0;i<60;i++){const x=r()*W2*1.3,y=r()*H;g.beginPath();g.moveTo(x,y);g.lineTo(x-W2*.06,y+H*.22);g.stroke();}g.fillStyle=c;g.beginPath();g.arc(W2*.32,H*.62,W2*.13,0,7);g.fill();}
+ else if(w.motif==='moon'){g.fillStyle=c;g.beginPath();g.arc(W2*.7,H*.28,W2*.16,0,7);g.fill();g.fillStyle=a;g.beginPath();g.arc(W2*.77,H*.24,W2*.15,0,7);g.fill();}
+ else if(w.motif==='stars'){g.fillStyle=c;for(let i=0;i<40;i++){const x=r()*W2,y=r()*H*.7,s=r()*W2*.012+1;g.fillRect(x,y,s,s);}g.beginPath();g.arc(W2*.5,H*.42,W2*.2,0,7);g.globalAlpha=.85;g.fill();}
+ else if(w.motif==='grid'){g.strokeStyle=b;g.globalAlpha=.55;g.lineWidth=W2/220;const n=9;for(let i=1;i<n;i++){g.beginPath();g.moveTo(W2*i/n,0);g.lineTo(W2*i/n,H);g.stroke();g.beginPath();g.moveTo(0,H*i/n);g.lineTo(W2,H*i/n);g.stroke();}g.globalAlpha=1;g.fillStyle=c;g.beginPath();g.arc(W2*4/9,H*4/9,W2*.06,0,7);g.fill();g.fillStyle=b;g.beginPath();g.arc(W2*5/9,H*5/9,W2*.06,0,7);g.fill();}
+ else if(w.motif==='dots'){for(let i=0;i<26;i++){g.fillStyle=[b,c][i%2];g.globalAlpha=.75;g.beginPath();g.arc(r()*W2,r()*H,r()*W2*.07+W2*.02,0,7);g.fill();}}
+ else if(w.motif==='waves'){g.strokeStyle=c;g.lineWidth=W2/60;g.globalAlpha=.8;for(let k=0;k<6;k++){g.beginPath();for(let x=0;x<=W2;x+=W2/40){const y=H*(.35+k*.1)+Math.sin(x/W2*12+k)*H*.02;x?g.lineTo(x,y):g.moveTo(x,y);}g.stroke();}}
+ else if(w.motif==='rings'){g.strokeStyle=c;g.lineWidth=W2/70;for(let k=1;k<6;k++){g.globalAlpha=1-k*.15;g.beginPath();g.arc(W2*.5,H*.42,W2*.07*k,0,7);g.stroke();}}
+ else if(w.motif==='cross'){g.fillStyle=c;g.fillRect(W2*.44,H*.22,W2*.12,W2*.36);g.fillRect(W2*.32,H*.22+W2*.12,W2*.36,W2*.12);}
+ else if(w.motif==='lines'){g.strokeStyle=c;g.lineWidth=W2/80;for(let k=0;k<7;k++){g.globalAlpha=.3+k*.1;g.beginPath();g.moveTo(0,H*(.2+k*.08));g.lineTo(W2,H*(.1+k*.08));g.stroke();}}
+ g.restore();}
+function figure(g,x,y,s,col){g.fillStyle=col;g.beginPath();g.arc(x,y-s*1.25,s*.42,0,7);g.fill();g.beginPath();g.moveTo(x-s*.62,y+s*.9);g.quadraticCurveTo(x-s*.6,y-s*.7,x,y-s*.72);g.quadraticCurveTo(x+s*.6,y-s*.7,x+s*.62,y+s*.9);g.closePath();g.fill();}
+function thumb(w,Wd=300,Ht=400){const k=w.id+w.title+Wd+'x'+Ht;if(TH[k])return TH[k];const cv=document.createElement('canvas');cv.width=Wd;cv.height=Ht;const g=cv.getContext('2d'),r=rnd(w.id);
+ const gr=g.createLinearGradient(0,0,0,Ht);gr.addColorStop(0,w.pal[0]);gr.addColorStop(1,w.pal[1]);g.fillStyle=gr;g.fillRect(0,0,Wd,Ht);motif(g,w,Wd,Ht,r);
+ figure(g,Wd*.5,Ht*.86,Wd*.17,'rgba(10,12,11,.82)');
+ const sh=g.createLinearGradient(0,Ht*.55,0,Ht);sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.6)');g.fillStyle=sh;g.fillRect(0,Ht*.55,Wd,Ht*.45);
+ g.fillStyle='#fff';g.textAlign='center';g.textBaseline='alphabetic';let fs=Wd*(w.title.length>6?.12:.17);g.font=`${fs}px "Black Han Sans","Apple SD Gothic Neo",sans-serif`;
+ const words=w.title.length>7?[w.title.slice(0,Math.ceil(w.title.length/2)).trim(),w.title.slice(Math.ceil(w.title.length/2)).trim()]:[w.title];
+ words.forEach((t,i)=>g.fillText(t,Wd/2,Ht*.93-(words.length-1-i)*fs*1.1));
+ return TH[k]=cv.toDataURL('image/jpeg',.86);}
+function img(src,alt){return `<img src="${src}" alt="${alt||''}" style="width:100%;height:100%;object-fit:cover">`;}
+function cutCanvas(w,n,i){const r=rnd(w.id+n+'-'+i);const Wd=690,Ht=[560,720,620,860,640,760,600][i%7];const cv=document.createElement('canvas');cv.width=Wd;cv.height=Ht;const g=cv.getContext('2d');
+ const gr=g.createLinearGradient(0,0,0,Ht);gr.addColorStop(0,w.pal[0]);gr.addColorStop(1,w.pal[1]);g.fillStyle=gr;g.fillRect(0,0,Wd,Ht);motif(g,w,Wd,Ht,r);
+ const people=(i%3===1)?2:1;for(let p=0;p<people;p++){const x=people===1?Wd*(.3+r()*.4):Wd*(.3+p*.4),s=Wd*(i%4===3?.2:.12);figure(g,x,Ht*(.78+r()*.06),s,'rgba(10,12,11,.85)');}
+ return cv.toDataURL('image/jpeg',.82);}
+
+/* ---------- 상태 ---------- */
+const S={day:TODAY,fav:new Set(['hyeonsang']),myRate:{},cm:{},freeSort:'new',pub:{step:1,src:'hyeonsang',eps:[1,2,3],title:'현상',genre:'스릴러',desc:'1944년 경성. 혼을 보는 견습 사진사가 사라진 스승을 찾아 나선다.',age:'15세',days:['mon'],mode:'free',ai:'yes',agree:[false,false,false]}};
+try{const f=JSON.parse(localStorage.getItem('wbs-fav')||'null');if(Array.isArray(f))S.fav=new Set(f);}catch(e){}
+const $=s=>document.querySelector(s);
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200);}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- 화면 ---------- */
+function card(w){return `<a class="card" href="${U(w.id)}"><div class="th">${img(thumb(w),'')}<div class="badges">${w.up?'<span class="bd up">UP</span>':''}${w.isNew?'<span class="bd new">신작</span>':''}${w.ai?'<span class="bd ai">AI 활용</span>':''}</div></div><b>${esc(w.title)}</b><span class="meta">${w.rate?`<span class="star tnum">★ ${w.rate.toFixed(2)}</span>`:'<span class="star">새 작품</span>'}<span>${esc(w.author)}</span></span></a>`;}
+function dayTabs(){return `<div class="days" role="tablist" aria-label="요일">${DAYS.map(([k,l])=>`<button role="tab" aria-selected="${S.day===k}" class="${S.day===k?'on':''}" data-day="${k}">${l}${k===TODAY?'<span class="today">오늘</span>':''}</button>`).join('')}</div>`;}
+function dayGrid(){const L=W.filter(w=>w.days.includes(S.day)).sort((a,b)=>b.rate-a.rate);return L.length?`<div class="grid">${L.map(card).join('')}</div>`:`<p class="empty">이 요일에는 아직 연재 작품이 없어요</p>`;}
+function rankList(L,n=10){return `<ol class="rank">${L.slice(0,n).map((w,i)=>`<li><a href="${U(w.id)}"><span class="n tnum">${i+1}</span><span class="mini">${img(thumb(w),'')}</span><span style="min-width:0"><b>${esc(w.title)}</b><small>${esc(w.genre)} · ★ ${w.rate.toFixed(2)}</small></span></a></li>`).join('')}</ol>`;}
+function home(){const f=byId('hyeonsang');
+ return `<div class="wrap">
+  <section class="feature" aria-label="오늘의 추천"><div class="art">${img(thumb(f,900,560),f.title+' 대표 그림')}</div><div class="txt"><span class="tag">오늘의 추천 · 매주 월요일</span><h2>${esc(f.title)}</h2><p>${esc(f.desc)}</p><div class="acts"><a class="btn go" href="${U('hyeonsang/1')}">첫 화 보기</a><a class="btn" href="${U('hyeonsang')}">작품 보기</a></div></div></section>
+  <div class="layout"><div>
+   <div class="sec-h"><h2>요일연재</h2><a href="${U('daily')}">전체 보기</a></div>${dayTabs()}<div id="dayGrid">${dayGrid()}</div>
+   <div class="sec-h" style="margin-top:34px"><h2>자유연재 새 작품</h2><a href="${U('free')}">전체 보기</a></div>
+   <div class="grid">${FREE.slice(0,5).map(card).join('')}</div>
+   <p class="notice"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>자유연재는 누구나 올릴 수 있어요. 관심과 별점이 많이 모이면 요일연재 추천 후보가 돼요.</p>
+  </div>
+  <aside class="side">
+   <div class="box"><div class="sec-h" style="margin-bottom:6px"><h2 style="font-size:17px">실시간 랭킹</h2><a href="${U('rank')}">더 보기</a></div>${rankList(ALL().slice().sort((a,b)=>b.rate-a.rate),8)}</div>
+   <div class="box make"><h3>내 웹툰도 여기에</h3><p>웹툰보드에서 만든 회차는 「연재하기」 한 번으로 바로 올라가요. 파일을 따로 내보낼 필요가 없어요.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn go" href="${U('publish')}">연재하기</a><a class="btn" href="${PATH?'/':'https://toon.iux.kr'}">웹툰 만들기</a></div></div>
+  </aside></div></div>`;}
+function daily(){return `<div class="wrap" style="padding-block:24px 10px"><div class="sec-h"><h2>요일연재</h2><span class="muted" style="font-size:13px">별점 높은 순</span></div>${dayTabs()}<div id="dayGrid">${dayGrid()}</div></div>`;}
+function free(){const L=FREE.slice().sort(S.freeSort==='new'?(a,b)=>(b.isNew||0)-(a.isNew||0):(a,b)=>b.rate-a.rate);
+ return `<div class="wrap" style="padding-block:24px 10px"><div class="sec-h"><h2>자유연재</h2></div><div class="tabs2"><button class="${S.freeSort==='new'?'on':''}" data-fs="new">최신 업데이트</button><button class="${S.freeSort==='rate'?'on':''}" data-fs="rate">별점순</button></div><div class="grid">${L.map(card).join('')}</div><p class="notice"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>운영정책에 맞지 않는 작품은 신고를 받아 숨김 처리될 수 있어요.</p></div>`;}
+function rank(){return `<div class="wrap" style="padding-block:24px 10px;max-width:760px"><div class="sec-h"><h2>실시간 랭킹</h2><span class="muted" style="font-size:13px">최근 7일 별점 · 관심 기준</span></div><div class="box">${rankList(ALL().slice().sort((a,b)=>b.rate-a.rate),20)}</div></div>`;}
+function title(id){const w=byId(id);if(!w)return home();const fav=S.fav.has(w.id);const dl=w.days?w.days.map(d=>DAYS.find(x=>x[0]===d)[1]).join(' · '):'';
+ const eps=[];for(let n=w.eps;n>=1;n--)eps.push(n);
+ return `<div class="wrap"><section class="thead"><div class="th">${img(thumb(w),w.title+' 썸네일')}</div><div><h1>${esc(w.title)}</h1><p class="who"><span>글/그림 ${esc(w.author)}</span><span>${w.free?'자유연재':(w.days[0]==='end'?'완결':dl+'요일 연재')}</span><span>${esc(w.age)} 이용가</span></p><p class="desc">${esc(w.desc)}</p>
+  <div class="chips"><span class="chip">#${esc(w.genre)}</span><span class="chip">총 ${w.eps}화</span>${w.ai?'<span class="chip ai">AI 활용 작품</span>':''}<span class="chip">웹툰보드로 제작</span></div>
+  <div class="acts"><a class="btn go big" href="${U(w.id+'/1')}">첫 화 보기</a><button class="btn big fav ${fav?'on':''}" data-fav="${w.id}" aria-pressed="${fav}">${fav?'관심 등록됨':'+ 관심'}</button><button class="btn big" data-share>공유</button></div></div></section>
+  <section class="eplist" aria-label="회차 목록"><div class="hd"><b>총 ${w.eps}화</b><span class="muted">최신화부터</span></div>${eps.map(n=>`<a class="ep" href="${U(w.id+'/'+n)}"><span class="eth">${img(cutCanvasThumb(w,n),'')}</span><span style="min-width:0"><b>${n}화 · ${esc(epTitle(w,n))}</b><small><span class="star tnum">★ ${epRate(w,n)}</span></small></span><span class="d tnum">${epDate(w,n)}</span></a>`).join('')}</section></div>`;}
+const ETH={};function cutCanvasThumb(w,n){const k=w.id+n;if(ETH[k])return ETH[k];const cv=document.createElement('canvas');cv.width=320;cv.height=200;const g=cv.getContext('2d'),r=rnd(k);const gr=g.createLinearGradient(0,0,320,200);gr.addColorStop(0,w.pal[0]);gr.addColorStop(1,w.pal[1]);g.fillStyle=gr;g.fillRect(0,0,320,200);motif(g,w,320,200,r);figure(g,90+r()*140,190,34,'rgba(10,12,11,.8)');return ETH[k]=cv.toDataURL('image/jpeg',.8);}
+function viewer(id,n){const w=byId(id);if(!w)return home();n=Math.max(1,Math.min(w.eps,n|0));
+ const lines=(id==='hyeonsang'&&n===1)?SCRIPT.hyeonsang:GEN;const cms=S.cm[id+n]||(S.cm[id+n]=[
+  {u:'암실지기',t:'붉은 등 연출 미쳤다… 마지막 컷 소름',up:1284,best:1,d:'1일 전'},
+  {u:'경성러버',t:'시대 고증 너무 좋아요. 다음 주 월요일만 기다림',up:842,best:1,d:'1일 전'},
+  {u:'지나가던독자',t:'유리건판 설정 신선하네요',up:96,d:'6시간 전'}]);
+ const my=S.myRate[id+n]||0;
+ return `<div class="vbar"><div class="wrap"><a class="ibtn" href="${U(w.id)}" aria-label="작품으로"><svg class="ico" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></a><div class="t"><b>${esc(w.title)}</b><small>${n}화 · ${esc(epTitle(w,n))}</small></div><a class="ibtn" href="${U(w.id+'/'+(n-1))}" aria-label="이전 화" ${n<=1?'aria-disabled="true" style="pointer-events:none;opacity:.35"':''}><svg class="ico" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></a><a class="ibtn" href="${U(w.id+'/'+(n+1))}" aria-label="다음 화" ${n>=w.eps?'aria-disabled="true" style="pointer-events:none;opacity:.35"':''}><svg class="ico" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></a></div></div>
+ <div class="strip" aria-label="${n}화 본문">${lines.map((L,i)=>`<div class="cutv"><img src="${cutCanvas(w,n,i)}" alt="${n}화 ${i+1}번째 컷" style="width:100%;height:auto">${L.map((b,j)=>{const pos=b[0]==='nar'?'left:6%;top:6%;max-width:80%':(j%2?'right:6%;top:'+(26+j*14)+'%':'left:'+(8+(i*13)%30)+'%;top:'+(10+j*16)+'%');return `<p class="bal ${b[0]==='nar'?'nar':b[0]==='sh'?'sh':''}" style="${pos}">${esc(b[1])}</p>`;}).join('')}</div>`).join('')}</div>
+ <div class="after"><div class="amsg"><small>작가의 말</small><p>${n===1&&id==='hyeonsang'?'첫 화 읽어 주셔서 고마워요. 매주 월요일에 다음 건판을 현상할게요.':'오늘도 봐 주셔서 고마워요!'}</p></div>
+  <div class="rate"><b>이번 화 별점</b><div class="stars" role="radiogroup" aria-label="별점 주기">${[1,2,3,4,5].map(s=>`<button role="radio" aria-checked="${my===s}" aria-label="${s*2}점" data-rate="${s}" class="${s<=my?'on':''}">★</button>`).join('')}</div><small class="muted tnum">${my?`내 별점 ${my*2}점 · `:''}평균 ★ ${epRate(w,n)} · 참여 ${(3120-n*41).toLocaleString()}명</small></div>
+  <nav class="navep" aria-label="회차 이동"><a href="${U(w.id+'/'+(n-1))}" aria-disabled="${n<=1}"><small>이전 화</small><b>${n>1?esc(epTitle(w,n-1)):'첫 화예요'}</b></a><a class="next" href="${U(w.id+'/'+(n+1))}" aria-disabled="${n>=w.eps}"><small>다음 화</small><b>${n<w.eps?esc(epTitle(w,n+1)):'최신화예요'}</b></a></nav>
+  <section class="cmts" aria-label="댓글"><b>댓글 ${cms.length.toLocaleString()}</b><form id="cmForm"><label for="cmIn" class="sr" style="position:absolute;left:-9999px">댓글 쓰기</label><input id="cmIn" maxlength="200" placeholder="따뜻한 댓글을 남겨 주세요" autocomplete="off"><button class="btn go">등록</button></form>
+   ${cms.map((c,i)=>`<div class="cmt"><div class="h">${c.best?'<span class="best">BEST</span>':''}<b>${esc(c.u)}</b><span>${c.d}</span></div><p>${esc(c.t)}</p><div class="f"><button data-like="${i}">좋아요 <span class="tnum">${c.up}</span></button><button data-report="${i}">신고</button></div></div>`).join('')}</section>
+ </div>`;}
+
+/* ---------- 연재하기 ---------- */
+const MY=[{id:'hyeonsang',title:'현상',eps:[[1,'붉은 등 아래',7,4.8],[2,'유리건판의 얼굴',9,6.1],[3,'본정 사진관',8,5.5],[4,'두 번째 혼',0,0]],pal:['#141c2b','#2b3a55','#c0392b'],motif:'rain',updated:'오늘'},
+ {id:'mynew',title:'새 작품 1',eps:[[1,'1화',6,3.9]],pal:['#e9edc9','#a3b18a','#344e41'],motif:'lines',updated:'3일 전'}];
+function pubSteps(){const L=['작품 고르기','작품 정보','공개 설정','확인'];return `<div class="steps" aria-label="진행 단계">${L.map((l,i)=>`<span class="${S.pub.step===i+1?'on':S.pub.step>i+1?'done':''}"><i>${S.pub.step>i+1?'✓':i+1}</i>${l}</span>`).join('')}</div>`;}
+function publish(){const P=S.pub;const src=MY.find(m=>m.id===P.src);let body='';
+ if(P.step===1){body=`<div class="panel"><h2>웹툰보드에서 만든 작품</h2><p class="muted" style="margin-top:-10px">이 브라우저의 웹툰보드 작품을 불러왔어요. 로그인하면 다른 기기에서 만든 작품도 보여요.</p>
+  <div class="src">${MY.map(m=>`<label class="srcw"><span class="mini">${img(thumb(Object.assign({},m,{id:m.id})),'')}</span><span style="min-width:0"><b>${esc(m.title)}</b><br><small>회차 ${m.eps.length}개 · ${m.updated} 수정</small></span><input type="radio" name="src" value="${m.id}" ${P.src===m.id?'checked':''} style="accent-color:var(--green);width:18px;height:18px"></label>`).join('')}</div>
+  <div class="field"><span class="lb">올릴 회차</span><div class="eps">${src.eps.map(([n,t,c,mb])=>`<label class="eprow"><input type="checkbox" data-ep="${n}" ${P.eps.includes(n)&&c?'checked':''} ${c?'':'disabled'}><span style="min-width:0"><b>${n}화 · ${esc(t)}</b><br><small>${c?`컷 ${c}개 · ${mb}MB`:'컷이 없어서 올릴 수 없어요'}</small></span><small class="tnum">${c?'가로 690px':''}</small></label>`).join('')}</div><small>회차는 한 번에 여러 개 올릴 수 있고, 예약 공개도 돼요.</small></div>
+  <div class="pfoot"><a class="btn" href="${U('')}">취소</a><button class="btn go big" data-next ${P.eps.length?'':'disabled'}>다음</button></div></div>`;}
+ else if(P.step===2){body=`<div class="panel"><h2>작품 정보</h2>
+  <div class="two"><div class="field"><label for="pTitle">작품 제목</label><input type="text" id="pTitle" value="${esc(P.title)}" maxlength="30"></div>
+  <div class="field"><label for="pGenre">장르</label><select id="pGenre">${['스릴러','드라마','판타지','로맨스','일상','개그','액션','스포츠','미스터리'].map(g=>`<option ${P.genre===g?'selected':''}>${g}</option>`).join('')}</select></div></div>
+  <div class="field"><label for="pDesc">작품 소개</label><textarea id="pDesc" maxlength="200">${esc(P.desc)}</textarea><small>기획의 로그라인을 가져왔어요. 200자까지 써요.</small></div>
+  <div class="field"><span class="lb">이용 연령</span><div class="seg">${['전체','12세','15세','19세'].map(a=>`<label><input type="radio" name="age" value="${a}" ${P.age===a?'checked':''}>${a}${a==='전체'?'':' 이상'}</label>`).join('')}</div><small>19세 작품은 성인 인증한 독자에게만 보여요.</small></div>
+  <div class="field"><span class="lb">썸네일</span><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div class="preview-card">${card({id:'pv-'+P.src,title:P.title||'제목',author:'손금왕',rate:0,pal:src.pal,motif:src.motif,isNew:1,ai:P.ai==='yes'})}</div><small style="max-width:280px">웹툰보드의 「표지 · 썸네일」에서 만든 그림을 써요. 없으면 1화 첫 컷으로 만들어요.</small></div></div>
+  <div class="pfoot"><button class="btn big" data-prev>이전</button><button class="btn go big" data-next>다음</button></div></div>`;}
+ else if(P.step===3){body=`<div class="panel"><h2>공개 설정</h2>
+  <div class="field"><span class="lb">연재 방식</span><div class="seg"><label><input type="radio" name="mode" value="free" ${P.mode==='free'?'checked':''}>자유연재 — 바로 공개</label><label><input type="radio" name="mode" value="apply" ${P.mode==='apply'?'checked':''}>요일연재 신청 — 검토 후 공개</label></div><small>${P.mode==='free'?'올리면 자유연재 목록에 바로 보여요.':'운영팀이 1~3일 안에 검토해요. 그동안은 자유연재로 공개돼요.'}</small></div>
+  <div class="field"><span class="lb">연재 요일</span><div class="seg">${DAYS.slice(0,7).map(([k,l])=>`<label><input type="checkbox" name="day" value="${k}" ${P.days.includes(k)?'checked':''}>${l}</label>`).join('')}</div><small>요일을 정해 두면 그날 「UP」 표시가 붙고 관심 독자에게 알림이 가요.</small></div>
+  <div class="field"><span class="lb">AI 활용 표시</span><div class="seg"><label><input type="radio" name="ai" value="yes" ${P.ai==='yes'?'checked':''}>AI 그림 · 글을 썼어요</label><label><input type="radio" name="ai" value="no" ${P.ai==='no'?'checked':''}>직접 그렸어요</label></div><small>웹툰보드에서 AI 이미지를 쓴 회차는 자동으로 「AI 활용」 표시가 붙어요.</small></div>
+  <div class="pfoot"><button class="btn big" data-prev>이전</button><button class="btn go big" data-next>다음</button></div></div>`;}
+ else if(P.step===4){const ok=P.agree.every(Boolean);const sel=src.eps.filter(e=>P.eps.includes(e[0]));const tot=sel.reduce((a,e)=>a+e[3],0).toFixed(1);
+  body=`<div class="panel"><h2>올리기 전에 확인해요</h2>
+  <ul class="chk"><li><i>✓</i><span>가로 690px로 맞춰져 있어요</span><span class="ok">통과</span></li>
+   <li><i>✓</i><span>회차 ${sel.length}개 · 컷 ${sel.reduce((a,e)=>a+e[2],0)}개 · ${tot}MB (회차당 50MB까지)</span><span class="ok">통과</span></li>
+   <li><i>✓</i><span>파일 이름 순서대로 컷이 이어져요</span><span class="ok">통과</span></li>
+   ${P.eps.includes(2)?'<li><i class="w">!</i><span>2화 4번째 컷에 말풍선이 그림 밖으로 조금 나가 있어요 · 올릴 수는 있어요</span><span class="warn">확인</span></li>':''}</ul>
+  <div class="agree"><label><input type="checkbox" data-ag="0" ${P.agree[0]?'checked':''}><span>제가 만들었거나 쓸 권리가 있는 그림과 글만 올려요.</span></label><label><input type="checkbox" data-ag="1" ${P.agree[1]?'checked':''}><span>실존 인물을 해치거나 선정적 · 폭력적인 내용은 연령 등급에 맞게 표시했어요.</span></label><label><input type="checkbox" data-ag="2" ${P.agree[2]?'checked':''}><span>운영정책을 어기면 신고를 받아 숨김 처리될 수 있다는 걸 알아요.</span></label></div>
+  <div class="pfoot"><button class="btn big" data-prev>이전</button><button class="btn go big" data-go ${ok?'':'disabled'}>${P.mode==='free'?'지금 연재하기':'신청하고 자유연재로 공개'}</button></div></div>`;}
+ else{const id=P.newId;body=`<div class="panel done"><span class="bigck"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><h2 style="font-size:22px">「${esc(P.title)}」이 올라갔어요</h2><p class="muted">${P.mode==='free'?'자유연재에 바로 공개됐어요.':'요일연재 검토를 신청했어요. 결과는 알림으로 알려 드려요.'} 다음 회차는 웹툰보드 편집기에서 「연재하기」를 누르면 이어서 올라가요.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><a class="btn go big" href="${U(id)}">작품 페이지 보기</a><a class="btn big" href="${U('free')}">자유연재 목록</a></div></div>`;}
+ return `<div class="pub wrap"><h1>연재하기</h1>${P.step<5?pubSteps():''}${body}</div>`;}
+
+/* ---------- 주소 ---------- */
+/* toon.iux.kr/read/… 에서는 진짜 주소(/read/작품/화)로, 파일·미리보기에서는 #주소로 움직여요 */
+const PATH=/^\/read(\/|$)/.test(location.pathname);
+function U(p){return PATH?'/read'+(p?'/'+p:''):'#'+(p?'r-'+p.split('/').join('--'):'home');}
+function segs(){if(PATH)return location.pathname.replace(/^\/read\/?/,'').split('/').filter(Boolean).map(decodeURIComponent);const h=location.hash.slice(1);return h.startsWith('r-')?h.slice(2).split('--'):[];}
+let CUR={};
+function render(){const g=segs();let html,m='';CUR={};
+ if(g[0]==='daily'){html=daily();m='daily';}else if(g[0]==='free'){html=free();m='free';}else if(g[0]==='rank'){html=rank();m='rank';}
+ else if(g[0]==='publish'){html=publish();}
+ else if(g.length===1){html=title(g[0]);}
+ else if(g.length>=2){CUR={id:g[0],n:Math.max(1,+g[1]||1)};html=viewer(g[0],CUR.n);}
+ else{html=home();m='home';}
+ $('#app').innerHTML=html;document.querySelectorAll('.menu a').forEach(a=>a.classList.toggle('on',a.dataset.m===m));
+ $('#gnb').hidden=g.length>=2&&!['daily','free','rank','publish'].includes(g[0]);
+ const w=g[0]&&byId(g[0]);document.title=w?(g[1]?`${w.title} ${g[1]}화 · 웹툰보드 연재`:`${w.title} · 웹툰보드 연재`):'웹툰보드 연재';
+ window.scrollTo(0,0);}
+function go(p){if(PATH){history.pushState(null,'',p);render();}else location.hash=p;}
+window.addEventListener(PATH?'popstate':'hashchange',render);
+document.querySelectorAll('[data-l]').forEach(a=>a.setAttribute('href',U(a.dataset.l)));
+if(!PATH)document.querySelectorAll('[data-make]').forEach(a=>{a.href='https://toon.iux.kr';a.target='_blank';a.rel='noopener';});
+if(PATH)document.addEventListener('click',e=>{const a=e.target.closest('a[href^="/read"]');if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;e.preventDefault();if(a.getAttribute('href')!==location.pathname)go(a.getAttribute('href'));},true);
+
+/* ---------- 동작 ---------- */
+document.addEventListener('click',e=>{const t=e.target.closest('button,a');if(!t)return;
+ if(t.dataset.day){S.day=t.dataset.day;document.querySelectorAll('.days button').forEach(b=>{b.classList.toggle('on',b.dataset.day===S.day);b.setAttribute('aria-selected',b.dataset.day===S.day);});$('#dayGrid').innerHTML=dayGrid();}
+ else if(t.dataset.fs){S.freeSort=t.dataset.fs;render();}
+ else if(t.dataset.fav){const id=t.dataset.fav;S.fav.has(id)?S.fav.delete(id):S.fav.add(id);try{localStorage.setItem('wbs-fav',JSON.stringify([...S.fav]))}catch(e){}const on=S.fav.has(id);t.classList.toggle('on',on);t.setAttribute('aria-pressed',on);t.textContent=on?'관심 등록됨':'+ 관심';toast(on?'관심 작품에 넣었어요 · 새 회차가 올라오면 알려 드려요':'관심 작품에서 뺐어요');}
+ else if(t.hasAttribute('data-share')){const u=location.href;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('작품 주소를 복사했어요')).catch(()=>toast('주소창의 주소를 복사해 공유해 주세요'));}
+ else if(t.dataset.rate){S.myRate[CUR.id+CUR.n]=+t.dataset.rate;const st=t.parentNode.querySelectorAll('button');st.forEach((b,i)=>{b.classList.toggle('on',i<+t.dataset.rate);b.setAttribute('aria-checked',i+1===+t.dataset.rate);});toast(`별점 ${t.dataset.rate*2}점을 줬어요`);}
+ else if(t.dataset.like){t.querySelector('span').textContent=(+t.querySelector('span').textContent+1);t.disabled=true;}
+ else if(t.dataset.report){toast('신고를 접수했어요 · 운영팀이 확인해요');}
+ else if(t.hasAttribute('data-next')){collect();if(S.pub.step===1&&!S.pub.eps.length)return;S.pub.step++;render();}
+ else if(t.hasAttribute('data-prev')){collect();S.pub.step--;render();}
+ else if(t.hasAttribute('data-go')){collect();const P=S.pub,src=MY.find(m=>m.id===P.src);const id='my-'+Date.now().toString(36);
+  FREE.unshift({id,title:P.title||'제목 없음',author:'손금왕',genre:P.genre,rate:0,eps:P.eps.length,ai:P.ai==='yes'?1:0,pal:src.pal,motif:src.motif,isNew:1,free:1,age:P.age==='전체'?'전체':P.age,desc:P.desc,days:P.days});
+  P.newId=id;P.step=5;render();}
+});
+document.addEventListener('change',e=>{const t=e.target;const P=S.pub;
+ if(t.name==='src'){P.src=t.value;const m=MY.find(x=>x.id===t.value);P.title=m.title;P.eps=m.eps.filter(x=>x[2]).map(x=>x[0]);render();}
+ else if(t.dataset.ep){const n=+t.dataset.ep;P.eps=t.checked?[...new Set(P.eps.concat(n))]:P.eps.filter(x=>x!==n);const nb=$('[data-next]');if(nb)nb.disabled=!P.eps.length;}
+ else if(t.dataset.ag){P.agree[+t.dataset.ag]=t.checked;const g=$('[data-go]');if(g)g.disabled=!P.agree.every(Boolean);}
+ else if(t.name==='mode'){collect();render();}
+});
+document.addEventListener('submit',e=>{if(e.target.id!=='cmForm')return;e.preventDefault();const v=$('#cmIn').value.trim();if(!v)return;const key=CUR.id+CUR.n;S.cm[key].splice(2,0,{u:'나',t:v,up:0,d:'방금'});render();setTimeout(()=>{const c=document.querySelector('.cmts');c&&c.scrollIntoView({block:'start'});},0);toast('댓글을 남겼어요');});
+function collect(){const P=S.pub;const v=id=>{const e=$(id);return e?e.value:null;};
+ if($('#pTitle')){P.title=v('#pTitle').trim();P.genre=v('#pGenre');P.desc=v('#pDesc');const a=document.querySelector('input[name=age]:checked');if(a)P.age=a.value;}
+ if(document.querySelector('input[name=mode]')){P.mode=document.querySelector('input[name=mode]:checked').value;P.days=[...document.querySelectorAll('input[name=day]:checked')].map(x=>x.value);P.ai=document.querySelector('input[name=ai]:checked').value;}}
+
+(document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>{for(const k in TH)delete TH[k];render();});
+render();
+</script>
