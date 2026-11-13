@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import AiTest from './AiTest';
 import { getSettings } from '@/lib/settings';
 import { admins } from '@/lib/admin-data';
 import { saveSettingsAction } from '../actions';
@@ -41,6 +42,7 @@ export default async function SettingsPage() {
         </div>
         <div><button className="btn pri lg">설정 저장</button></div>
       </form>
+      <AiTest textReady={engineReady(st.engines.text)} imageReady={engineReady(st.engines.image)} />
       <div className="grid g-2">
         <div className="card"><h2>연결 상태</h2>
           <dl className="kv">

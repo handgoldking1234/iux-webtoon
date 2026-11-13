@@ -4,6 +4,14 @@ import { createServerClient } from '@supabase/ssr';
 const PROTECTED = ['/studio', '/admin', '/account', '/read/publish'];
 
 export async function middleware(req: NextRequest) {
+  // 시험 배포: SITE_PASSWORD가 있으면 사이트 전체를 비밀번호로 잠가요 (아이디는 아무거나)
+  const pw = process.env.SITE_PASSWORD;
+  if (pw) {
+    const h = req.headers.get('authorization') || '';
+    let given = '';
+    try { given = h.startsWith('Basic ') ? atob(h.slice(6)).split(':').slice(1).join(':') : ''; } catch { /* 잘못된 값 */ }
+    if (given !== pw) return new NextResponse('비밀번호가 필요해요', { status: 401, headers: { 'WWW-Authenticate': 'Basic realm="webtoonboard-beta", charset="UTF-8"' } });
+  }
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL, anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   // DB 연동 전(로컬 시연 모드): 로그인 없이 통과
   if (!url || !anon) return NextResponse.next();
