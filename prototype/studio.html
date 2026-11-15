@@ -2186,7 +2186,7 @@ function planCtx(e){const P=plan(),L=[];if((P.idea||'').trim())L.push(`하고 �
  if((P.intent||'').trim())L.push(`기획의도: ${P.intent.trim().slice(0,500)}`);if((P.selling||'').trim())L.push(`셀링 포인트: ${P.selling.trim().slice(0,400)}`);
  const st=P.struct||'3act',A=P.acts||{};const AL=PL_STRUCT[st].filter(([s])=>(A[s]||{}).t).map(([s,tag])=>`- ${tag} ${s}${A[s].from?` (${A[s].from}~${A[s].to||'?'}화)`:''}: ${A[s].t.slice(0,600)}`);if(AL.length)L.push(`줄거리 단계 (${st==='3act'?'3막':'기승전결'}):\n`+AL.join('\n'));
  const lo=(S.settings.locs||[]).filter(l=>l.name);if(lo.length)L.push('주요 장소: '+lo.map(l=>l.name+(l.desc?`(${l.desc})`:'')).join(', '));
- const ch=(S.settings.sbCharList||[]).filter(c=>c.name);if(ch.length)L.push('인물:\n'+ch.map(c=>`- ${c.name}${c.role?` (${c.role})`:''}${c.intro?` · ${c.intro}`:''}${c.want?` · 욕망: ${c.want}`:''}${c.secret?` · 비밀: ${c.secret}`:''}${c.pers?` · 성격: ${c.pers}`:''}${c.voice?` · 말투: ${c.voice}`:''}${c.look?` · 외모: ${c.look}`:''}`).join('\n'));
+ const ch=(S.settings.sbCharList||[]).filter(c=>c.name);if(ch.length)L.push('인물:\n'+ch.map(c=>`- ${c.name}${c.role?` (${c.role})`:''}${c.intro?` · ${c.intro}`:''}${c.want?` · 욕망: ${c.want}`:''}${c.secret?` · 비밀: ${c.secret}`:''}${c.pers?` · 성격: ${c.pers}`:''}${c.voice?` · 말투: ${c.voice}`:''}${c.look?` · 외모: ${c.look}`:''}${c.outfit?` · 고정 의상: ${c.outfit}`:''}`).join('\n'));
  const rl=(P.rels||[]).map(r=>{const a=ch.find(c=>c.id===r.a),b=ch.find(c=>c.id===r.b);return a&&b?`- ${a.name}↔${b.name}: ${r.t}${r.call?` (${r.call})`:''}`:'';}).filter(Boolean);if(rl.length)L.push('인물 관계 · 호칭:\n'+rl.join('\n'));
  if(e){const ac=plActOf(+e.num);if(ac)L.push(`${e.num}화는 「${ac.tag} ${ac.s}」 단계예요: ${ac.t.slice(0,400)}`);}
  if(e){const eps=S.episodes.filter(x=>x.kind!=='cover').sort((a,b)=>a.num-b.num),i=eps.indexOf(e),pv=eps.slice(Math.max(0,i-2),i).filter(x=>x.syn);pv.forEach(x=>L.push(`${x.num}화 시놉시스(지난 화): ${x.syn.slice(0,500)}`));if(e.syn)L.push(`${e.num}화 시놉시스(이번 화): ${e.syn.slice(0,900)}`);}
@@ -2451,7 +2451,7 @@ function plSecHTML(k){const P=plan(),q=txtAi();
     :!st?none
     :pkEdHTML(e,T);
    return `<div class="plevpick" role="tablist" aria-label="회차 고르기">${E.map(x=>{const s2=pkStat(x);return `<button role="tab" data-placts="evsel" data-v="${x.id}" aria-selected="${x.id===e.id}" title="${s2?`패키지 · 콘티 ${s2.n}컷`:(x.syn||'').trim()?'시놉시스만 있어요':'비어 있어요'}">${x.num}화<i class="${s2?'pk':(x.syn||'').trim()?'syn':''}"></i></button>`;}).join('')}</div>
-   <div class="plep cur plev"><div class="plepH"><b>${esc(e.num)}화</b>${e.title&&e.title!==e.num+'화'?`<span>${esc(e.title)}</span>`:''}${a?`<span class="pltag">${a.tag} · ${a.s}</span>`:'<span class="note" style="margin:0">단계 미지정</span>'}<button class="btn sm" data-placts="syn" data-v="${e.id}">✦ 줄거리에서 만들기</button><button class="btn sm pri" data-placts="tosb" data-v="${e.id}">${ic('rows',12)}이 화 콘티 쓰기</button></div>
+   <div class="plep cur plev"><div class="plepH"><b>${esc(e.num)}화</b>${e.title&&e.title!==e.num+'화'?`<span>${esc(e.title)}</span>`:''}${a?`<span class="pltag">${a.tag} · ${a.s}</span>`:'<span class="note" style="margin:0">단계 미지정</span>'}<button class="btn sm" data-placts="syn" data-v="${e.id}">✦ 줄거리에서 만들기</button><button class="btn sm pri" data-placts="tosb" data-v="${e.id}">${ic('rows',12)}콘티·AI에서 이어 하기</button></div>
     ${st?`<div class="plevsum">${ic('check',12)}<span><b>패키지</b> 콘티 ${st.n}컷 · 이미지 프롬프트 ${st.pr} · 말풍선 ${st.ln}</span><button class="btn sm ghost" data-placts="pkredo" data-v="${e.id}">↻ 다시 만들기</button><button class="btn sm pri" data-act="wk-open" data-ep="${e.id}" data-sec="sb">콘티·AI에서 보기 ${ic('arrow',12)}</button></div>`:`<div class="plevsum none">${ic('wand',12)}<span>패키지가 없어요 · 시놉시스로 콘티 · 이미지 프롬프트 · 말풍선을 한 번에 만들어요</span><button class="btn sm pri" data-placts="pkone" data-v="${e.id}">${ic('wand',12)}${e.num}화 패키지 만들기</button></div>`}
     <div class="plevbody">${body}</div>
     ${st&&T!=='syn'?`<div class="plevfoot"><button class="btn sm" data-placts="pkcopy" data-k="${T}" data-v="${e.id}">${ic('copy',12)}${T==='sb'?'콘티':T==='pr'?'이미지 프롬프트':'말풍선'} 모두 복사</button><button class="btn sm ghost" data-placts="pkredo" data-v="${e.id}">↻ 다시 만들기</button><span class="note" style="margin:0 0 0 auto">고친 내용은 「기획에서 불러오기」에 그대로 들어가요</span></div>`:''}</div>`;})():'<div class="plempty">회차가 없어요</div>'}${cost}`;}
@@ -2553,7 +2553,7 @@ async function plClick(ev){const t=ev.target,m=$('#mPlan'),P=plan();if(t===m||t.
  else if(a==='reladd'){const N=C.filter(c=>c.name);N.forEach(c=>{if(!c.id)c.id=uid();});(P.rels=P.rels||[]).push({a:N[0].id,b:N[1].id,t:'친구',call:''});plSave();planRender();}
  else if(a==='reldel'){P.rels.splice(+b.dataset.i,1);plSave();planRender();}
  else if(a==='syn'){const e=S.episodes.find(x=>x.id===b.dataset.v);await planAI('syn',e);planRender();}
- else if(a==='tosb'){const e=S.episodes.find(x=>x.id===b.dataset.v);if(!e||!((e.syn||'').trim()||pkStat(e))){toast('이 화 시놉시스를 먼저 적어 주세요');return;}planClose();if(ep()!==e&&typeof switchEp==='function')switchEp(e.id);setNav('ai');openSb();setTimeout(pkStat(e)?pkLoadSb:sbAiOpen,60);}
+ else if(a==='tosb'){const e=S.episodes.find(x=>x.id===b.dataset.v);if(!e||!((e.syn||'').trim()||pkStat(e))){toast('이 화 시놉시스를 먼저 적어 주세요');return;}planClose();wkOpen(pkStat(e)?'sb':'syn',e.id);}
  else if(a==='evsel'){PLEPV.id=b.dataset.v;planRender();}
  else if(a==='evtab'){PLEPV.tab=b.dataset.v;planRender();}
  else if(a==='pkone'){const e=S.episodes.find(x=>x.id===b.dataset.v);if(e)await pkRun([+e.num],PLPK?PLPK.n:0);}
@@ -2594,9 +2594,9 @@ async function pkMake(e,N){const st=S.settings,P=plan(),style=st.sbStyle||SB_STY
 ${planCtx(e)}
 ${(e.syn||'').trim()?`Use this episode's synopsis as the outline:\n${e.syn.trim().slice(0,1500)}`:`First write this episode's synopsis in Korean (이번 화 목표, 주요 사건 3~5개(번호), 마지막 장면(클리프행어), 심어 둘 복선; 8-14 lines), continuing from previous episodes and fitting the overall story.`}
 Then split the episode into ${N||'12-24 (choose what fits)'} panels numbered from 1. For each panel:
-- "scene": one Korean line — shot + what we see, using character names
+- "scene": one Korean line — shot + what we see, using the exact character names and location names from the lists above
 - "notes": Korean note for lettering drawn inside the image or a sound cue, or ""
-- "prompt": an English image-generation prompt for this single panel. Begin with the art style: ${style}. Then shot size and camera angle, each character by name restating their fixed look (hair, face, outfit) from the character list, action and expression, location, time of day and lighting, mood. Never ask for text, speech bubbles or captions in the image.
+- "prompt": an English image-generation prompt for this single panel. Begin with the art style: ${style}. Then shot size and camera angle, each character by name restating their fixed look (hair, face, outfit) from the character list — write character names and location names exactly as given in Korean (never romanise or translate them; reference images are matched by these names), action and expression, location, time of day and lighting, mood. Never ask for text, speech bubbles or captions in the image.
 - "lines": 0-3 Korean lines as {"who":"speaker name or \"\"","type":"말풍선|생각|나레이션|효과음|외침|작게","text":"...","pos":"왼쪽 위|오른쪽 위|가운데|왼쪽 아래|오른쪽 아래|"}. Keep each character's voice. Some panels should have no lines.
 Answer JSON only: {"syn":"...","cuts":[{"no":1,"scene":"","notes":"","prompt":"","lines":[]}]}`,{cache:false});
   const o=pkNorm(r,N);if(!o.cuts.length)throw{code:'invalid_json'};return o;}
@@ -2628,7 +2628,7 @@ async function pkRun(nums,N){nums=[...nums].sort((a,b)=>a-b);if(!nums.length){to
   try{const pk=await pkMake(e,N);mutate(()=>{if(pk.syn&&!(e.syn||'').trim())e.syn=pk.syn;e.pack={at:Date.now(),cuts:pk.cuts};});if(SM)txtAiUse(1);ok++;}catch(x){err=x&&x.code||'upstream_error';break;}}
  progEnd();renderEps();if($('#mPlan'))planRender();if(typeof renderAll==='function')renderAll();
  if(err&&err!=='cancelled')toast((SM_ERR[err]||'AI가 답하지 못했어요')+(ok?` · ${ok}화는 만들어 뒀어요`:' · 사용 횟수는 줄지 않았어요'));
- else if(ok)toast(`${ok}화 패키지를 만들었어요${SM?'':' (예시)'} · 콘티 만들기 · 이미지 · 대사 넣기에서 「기획에서 불러오기」로 가져다 써요${SM?` · 글 AI ${txtAi().left}/${TXT_FREE}회 남음`:''}`);}
+ else if(ok)toast(`${ok}화 패키지를 만들었어요${SM?'':' (예시)'} · ${$('#mWork')?'② 콘티를 확인하고 「원고에 컷 만들기」를 눌러요':'콘티·AI에서 콘티를 확인하고 원고에 컷을 만들어요'}${SM?` · 글 AI ${txtAi().left}/${TXT_FREE}회 남음`:''}`);}
 function txSrc(id,html){const el=$(id);if(!el)return;el.hidden=!html;el.innerHTML=html||'';}
 function extPrompt(kind){const e=ep(),st=S.settings,P=plan();const ctx=planFill()?planCtx(e):'(작품 기획 없음)';
  if(kind==='sb')return `너는 한국 세로 스크롤 웹툰 콘티 작가야. 아래 작품 설정을 읽고 ${e?e.num+'화':'이번 화'} 콘티를 써 줘.
@@ -2696,12 +2696,12 @@ function wkRender(){const m=$('#mWork');if(!m)return;const e=wkEp();PLEPV.id=e&&
  const pre=SB_PRESETS.find(x=>x[1]===(S.settings.sbStyle||SB_STYLE)),GS=S.settings.sbSheet||[];
  const scenes=[...new Set(L.map(c=>(c.sb.scene||'').split(/[,·.\-—]/)[0].trim()).filter(x=>x&&x.length<=14&&!LO.some(l=>l.name===x)))].slice(0,6);
  const S3=sec('ch',3,`<p class="wkhint">인물 · 장소 · 화풍은 <b>기획</b>에서 정하고, 그림(캐릭터 시트 · 배경)은 <b>여기서</b> 만들어요. 만든 그림은 컷마다 참고 이미지로 붙어서 얼굴 · 옷 · 장소가 같게 나와요.</p>
-  <div class="wkstyle">${ic('droplet',13)}<span>화풍 <b>${S.settings.sbStyle?esc(pre?pre[0]:'직접 정함'):'아직 안 정함'}</b>${(S.settings.sbStyleRefs||[]).length?` · 참고 ${(S.settings.sbStyleRefs||[]).length}장`:''}${S.settings.sbStyle?'':' · 시트는 고른 그림체로 그려져요'}</span><button class="btn sm ghost" data-act="wk-planart">${S.settings.sbStyle?'기획에서 바꾸기':'화풍 먼저 고르기'} ${ic('arrow',12)}</button></div>
+  <div class="wkstyle">${ic('droplet',13)}<span>화풍 <b>${S.settings.sbStyle?esc(pre?pre[0]:'직접 정함'):'웹툰 기본 (기본값)'}</b>${(S.settings.sbStyleRefs||[]).length?` · 참고 ${(S.settings.sbStyleRefs||[]).length}장`:''}${S.settings.sbStyle?'':' · 시트를 만들기 전에 그림체를 정해 두면 좋아요'}</span><button class="btn sm ghost" data-act="wk-planart">${S.settings.sbStyle?'기획에서 바꾸기':'화풍 고르기'} ${ic('arrow',12)}</button></div>
   <p class="wklab">인물 <small>${w.cho}/${C.length} 시트</small></p>${C.length?`<div class="wkchs">${C.map(c=>card(c,'ch')).join('')}</div>`:`<div class="wkempty">${ic('user',18)}<span>기획에 인물이 없어요</span><button class="btn sm pri" data-act="wk-planch">기획에서 인물 추가 ${ic('arrow',12)}</button></div>`}
   <p class="wklab">단체 시트 · 설정화 <small>여러 인물이 한 장에 모인 그림 · 있으면 같이 붙어요</small></p><div class="plrefs2">${GS.map((k,i)=>`<span class="plref"><img src="${urlOf(k)||''}" alt="단체 시트"><button data-placts="refdel" data-kind="sheet" data-i="${i}" aria-label="빼기">${ic('x',10)}</button></span>`).join('')}<button class="plref add" data-placts="refadd" data-kind="sheet">${ic('plus',16)}<small>이미지</small></button></div>
   <p class="wklab">장소 · 배경 <small>${w.loo}/${LO.length}</small></p>${LO.length?`<div class="wkchs">${LO.map(l=>card(l,'loc')).join('')}</div>`:`<div class="wkempty">${ic('mountain',18)}<span>기획에 장소가 없어요</span><button class="btn sm" data-act="wk-planworld">기획에서 장소 추가 ${ic('arrow',12)}</button></div>`}
   ${scenes.length?`<div class="stusug"><small>콘티에 나온 장소 — 누르면 기획의 장소에 들어가요</small>${scenes.map(x=>`<button data-placts="addlocnm" data-v="${esc(x)}">${ic('plus',11)}${esc(x)}</button>`).join('')}</div>`:''}`,`<button class="btn sm ghost" data-act="wk-planch" style="margin-left:auto">인물 · 장소 고치기 ${ic('arrow',12)}</button>`);
- const S4=sec('img',4,L.length?`<div class="wkbar"><span>프롬프트 <b>${w.pr}/${w.sbn}</b> · 이미지 <b>${w.im}/${w.sbn}</b></span><button class="btn sm" data-act="sb-gen" data-scope="all">${ic('wand',12)}${w.pr===w.sbn?'프롬프트 다시 만들기':'프롬프트 만들기'}</button>${st?`<button class="btn sm" data-act="sb-pkpr">${ic('list',12)}기획 프롬프트 불러오기</button>`:''}${w.pr?`<button class="btn sm pri" data-act="sb-ai-gen">${ic('wand',12)}이미지 만들기</button>`:''}<button class="btn sm" data-act="wk-bulk">${ic('images',12)}한꺼번에 넣기</button></div>
+ const S4=sec('img',4,L.length?`${(()=>{const no=[...new Set(L.flatMap(c=>sbCast(c).chars.filter(ch=>!(ch.refs||[]).length).map(ch=>ch.name)))];return no.length?`<p class="stuwarn" style="margin:0 0 10px">${esc(no.join(', '))} — 캐릭터 시트가 없어요 · 시트를 먼저 만들면 컷마다 얼굴 · 옷이 같게 나와요 · <button data-wkgo="ch">③에서 시트 만들기</button></p>`:'';})()}<div class="wkbar"><span>프롬프트 <b>${w.pr}/${w.sbn}</b> · 이미지 <b>${w.im}/${w.sbn}</b></span><button class="btn sm" data-act="sb-gen" data-scope="all">${ic('wand',12)}${w.pr===w.sbn?'프롬프트 다시 만들기':'프롬프트 만들기'}</button>${st?`<button class="btn sm" data-act="sb-pkpr">${ic('list',12)}기획 프롬프트 불러오기</button>`:''}${w.pr?`<button class="btn sm pri" data-act="sb-ai-gen">${ic('wand',12)}이미지 만들기</button>`:''}<button class="btn sm" data-act="wk-bulk">${ic('images',12)}한꺼번에 넣기</button></div>
    <ol class="wkimgs">${L.map(c=>{const u=c.sb.img&&urlOf(c.sb.img),H=c.sb.hist||[];return `<li><div class="wkth">${u?`<img src="${u}" alt="">`:`<span>S#${c.sb.no}</span>`}</div><div class="wkimb"><div class="wkimh"><b>S#${c.sb.no}</b><small>${esc((c.sb.scene||'').slice(0,80))}</small></div><textarea data-wkpr="${c.id}" rows="3" spellcheck="false" placeholder="이미지 프롬프트 — 비어 있으면 「프롬프트 만들기」">${esc(c.sb.prompt||'')}</textarea>
     ${(c.sb.cands||[]).length>1?`<div class="wkcands">${c.sb.cands.map(k=>`<button data-act="wk-cand" data-cid="${c.id}" data-k="${k}" aria-pressed="${c.sb.img===k}"><img src="${urlOf(k)||''}" alt=""></button>`).join('')}</div>`:''}
     <div class="wkimf"><button class="btn sm" data-act="wk-img1" data-cid="${c.id}">${ic('wand',12)}${u?'다시 그리기':'이 컷 그리기'}</button><button class="btn sm ghost" data-act="wk-cp" data-cid="${c.id}">${ic('copy',12)}복사</button>${H.length?`<details class="wkhist"><summary>${ic('undo',12)}이전 프롬프트 ${H.length}</summary>${H.map((h,j)=>`<div><small>${new Date(h.at).toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'})} · ${esc(h.by||'')}</small><p>${esc(h.p)}</p><button class="btn sm ghost" data-act="wk-hist" data-cid="${c.id}" data-j="${j}">이걸로 되돌리기</button></div>`).join('')}</details>`:''}</div></div></li>`;}).join('')}</ol>`
@@ -2891,11 +2891,12 @@ ${(plan().logline||plan().world)?`Story: ${[plan().logline,plan().world].filter(
 ${all.map(c=>{const t=(c.sb.scene||'').replace(/\s+/g,' ').trim();const dl=(c.items||[]).filter(x=>x.text&&!FX.has(x.type)).map(x=>x.text.replace(/\s+/g,' ')).join(' / ');return `S#${c.sb.no}: ${t.length>90?t.slice(0,90)+'…':t}${dl?` — "${dl.length>50?dl.slice(0,50)+'…':dl}"`:''}`;}).join('\n')}
 Art style for every panel: ${st.sbStyle||SB_STYLE}
 Characters — keep each look identical in every panel and restate it whenever the character appears:
-${st.sbChars||'(no character sheet given — infer plausible, consistent looks from the scenes)'}${sbRefsLine(st)}
+${st.sbChars||'(no character sheet given — infer plausible, consistent looks from the scenes)'}${(st.locs||[]).filter(l=>l.name).length?`\nLocations — when a scene happens in one of these places, use its Korean name once and describe it the same way every time:\n${(st.locs||[]).filter(l=>l.name).map(l=>`${l.name}${l.desc?` — ${l.desc}`:''}`).join('\n')}`:''}${sbRefsLine(st)}
 
 Rules:
 - One English prompt per panel, 60-120 words, one paragraph.
 - Order: shot type and camera angle, subject and action, expression and pose, setting and period, lighting and colour mood, art style.
+- Write character names and location names exactly as given in Korean (never romanise or translate them) — reference images are matched by these names.
 - Read the dialogue only for emotion and who is present. Never ask for text, letters, captions, speech bubbles, panel borders or watermarks.
 - If lettering_in_image is given, describe that object (sign, document, screen) with "blank or illegible lettering" — real lettering is added later in the editor.
 - If the panel has dialogue, keep quiet negative space near the top for speech bubbles.
@@ -3061,7 +3062,7 @@ const stChars=()=>(S.settings.sbCharList||[]).filter(c=>c.name);
 function aiImgOpen(target,o){o=o||{};if(o.tab==='prep'){wkOpen('ch');return;}STU.t=target||null;STU.tab='shot';
  const e=ep(),sbL=e?e.cuts.filter(c=>c.sb):[];
  if(o.src)STU.src=o.src;else STU.src=sbL.length&&!o.free?'sb':'free';if(o.free)STU.src='free';
- if(STU.src==='sb'){const c=o.cid?cutById(o.cid):activeCut&&cutById(activeCut);stuPickCut(c&&c.sb?c:(sbL.find(x=>!sbHasImg(x))||sbL[0]));}
+ if(STU.src==='sb'){const cid=o.cid||(target&&target.cid),c=cid?cutById(cid):activeCut&&cutById(activeCut);stuPickCut(c&&c.sb?c:(sbL.find(x=>!sbHasImg(x))||sbL[0]));}
  let m=$('#mAiImg');if(m)m.remove();m=document.createElement('div');m.className='modal';m.id='mAiImg';document.body.appendChild(m);stuRender();
  m.addEventListener('click',async ev=>{const t=ev.target;if(t===m||t.closest('[data-aix]')){m.remove();return;}const d=t.closest('[data-stu]');if(!d)return;const a=d.dataset.stu,v=d.dataset.v;
   if(a==='tab'||a==='gosheet'){m.remove();$('#mPlan')&&planClose();wkOpen('ch');}
@@ -3078,39 +3079,47 @@ function aiImgOpen(target,o){o=o||{};if(o.tab==='prep'){wkOpen('ch');return;}STU
   else if(a==='addloc'){const n=$('#stuLn'),dsc=$('#stuLd');const nm=(n&&n.value||v||'').trim();if(!nm){n&&n.focus();return;}if(stLocs().some(x=>x.name===nm)){toast('이미 있는 배경이에요');return;}stLocs().push({id:uid(),name:nm,desc:(dsc&&dsc.value||'').trim(),refs:[]});save();stuRender();}
   else if(a==='addch'){const n=$('#stuCn'),lk=$('#stuCl');const nm=(n&&n.value||'').trim();if(!nm){n&&n.focus();return;}const L=S.settings.sbCharList=S.settings.sbCharList||[];L.push({id:uid(),name:nm,role:'',look:(lk&&lk.value||'').trim(),refs:[]});S.settings.sbChars=sbCharsText(L);save();stuRender();}
   else if(a==='style'){m.remove();planOpen('art');}
-  else if(a==='go')await stuGo();});
+  else if(a==='go')await stuGo();if($('#mWork'))wkRender();});
  m.addEventListener('input',ev=>{const t=ev.target;if(t.id==='stuP'){STU.p=t.value;const g=m.querySelector('[data-stu=go]');if(g)g.disabled=!t.value.trim();const pv=m.querySelector('#stuPv');if(pv)pv.textContent=stuPrompt();}
   if(t.dataset.aiq){S.settings[t.dataset.aiq]=t.dataset.aiq==='aiN'?+t.value:t.value;save();stuRender();}
   if(t.dataset.locd){const l=stLocs().find(x=>x.id===t.dataset.locd);if(l){l.desc=t.value;clearTimeout(window.__stuT);window.__stuT=setTimeout(save,400);}}});
  m.addEventListener('keydown',ev=>{if(ev.key==='Escape'){ev.stopPropagation();m.remove();}if(ev.key==='Enter'&&(ev.ctrlKey||ev.metaKey)&&STU.tab==='shot'){ev.preventDefault();stuGo();}});
  setTimeout(()=>m.querySelector('#stuP')?.focus(),30);}
-function stuPickCut(c){if(!c||!c.sb)return;STU.cid=c.id;STU.p=(c.sb.scene||'')+(c.sb.notes?` — ${c.sb.notes}`:'');
- const txt=[c.sb.scene,c.sb.notes,...(c.items||[]).map(x=>x.text||'')].join(' ');STU.chars=stChars().filter(ch=>txt.includes(ch.name)).map(ch=>ch.id);
- const lc=stLocs().find(l=>l.name&&txt.includes(l.name));STU.loc=lc?lc.id:STU.loc;}
+function stuPickCut(c){if(!c||!c.sb)return;STU.cid=c.id;STU.hasP=!!(c.sb.prompt||'').trim();STU.p=STU.hasP?c.sb.prompt:(c.sb.scene||'')+(c.sb.notes?` — ${c.sb.notes}`:'');
+ const x=sbCast(c);STU.chars=x.chars.map(ch=>ch.id);STU.loc=x.loc?x.loc.id:null;STU.skip=[];}
+/* 컷 그림 공통 — 「이 컷 그리기」와 「이미지 만들기(한꺼번에)」가 같은 프롬프트 · 같은 참고 이미지를 써요 */
+function sbCast(c){const txt=[c.sb.scene,c.sb.notes,c.sb.prompt,...(c.items||[]).map(x=>x.text||'')].join(' ');/* 「명월사진관」 때문에 인물 「명월」이 잡히지 않게, 장소 이름을 먼저 빼고 인물을 찾아요 */
+ const L=stLocs().filter(l=>l.name).sort((a,b)=>b.name.length-a.name.length),loc=L.find(l=>txt.includes(l.name))||null,t2=L.reduce((t,l)=>t.split(l.name).join(' '),txt);return{chars:stChars().filter(ch=>t2.includes(ch.name)),loc};}
+function refPick(chars,loc){const out=[];chars.forEach(c=>{if((c.refs||[])[0])out.push({k:c.refs[0],l:c.name,t:'ch'});});if(loc&&(loc.refs||[])[0])out.push({k:loc.refs[0],l:loc.name,t:'loc'});(S.settings.sbStyleRefs||[]).slice(0,1).forEach(k=>out.push({k,l:'화풍',t:'style'}));return out.slice(0,3);}
+function refGuide(R,chars,loc){return (chars.length?`\nCharacters: ${chars.map(c=>`${c.name}${c.look?` — ${c.look}`:''}${c.outfit?`, outfit: ${c.outfit}`:''}`).join('; ')}`:'')+(loc?`\nLocation: ${loc.name}${loc.desc?` — ${loc.desc}`:''}`:'')
+ +(R.length?`\nAttached reference images, in this order: ${R.map((r,i)=>`${i+1}) ${r.t==='ch'?`character sheet of ${r.l} — keep the face, hair and outfit identical`:r.t==='loc'?`background reference of ${r.l} — keep the place consistent`:'art-style reference — follow its line and colouring'}`).join('; ')}.`:'');}
+function sbCutRefs(c){const x=sbCast(c);return refPick(x.chars,x.loc);}
+function sbCutPrompt(c){const x=sbCast(c),d=dims(c);return ((c.sb.prompt||'').trim()||`${S.settings.sbStyle||SB_STYLE}. Scene: ${c.sb.scene||''}`)+refGuide(sbCutRefs(c),x.chars,x.loc)+`\nSingle vertical webtoon panel, ${d.W0}×${d.H0}. Leave space for speech balloons, no text, no speech bubbles.`;}
 function stuSize(){if(STU.src==='sb'){const c=cutById(STU.cid);if(c){const d=dims(c);return[d.W0,d.H0];}}const R=BRATIO.find(x=>x[0]===STU.r)||BRATIO[2],W=S.settings.width||690;return[W,Math.round(W*R[2]/R[1])];}
-function stuRefs(){const out=[],st=S.settings;stChars().filter(c=>STU.chars.includes(c.id)).forEach(c=>{if((c.refs||[])[0])out.push({k:c.refs[0],l:c.name});});
- const l=stLocs().find(x=>x.id===STU.loc);if(l&&(l.refs||[])[0])out.push({k:l.refs[0],l:l.name});(st.sbStyleRefs||[]).slice(0,1).forEach(k=>out.push({k,l:'화풍'}));return out;}
-function stuPrompt(){const st=S.settings,sh=SHOTS.find(x=>x[0]===STU.shot),an=ANGS.find(x=>x[0]===STU.ang),[W,H]=stuSize();
- const ch=stChars().filter(c=>STU.chars.includes(c.id)),l=stLocs().find(x=>x.id===STU.loc);
- return `${st.sbStyle||SB_STYLE}. ${sh[2]}, ${an[2]}. Scene: ${STU.p.trim()||'(장면 설명)'}`+(ch.length?`\nCharacters: ${ch.map(c=>`${c.name}${c.look?` — ${c.look}`:''}${c.outfit?`, outfit: ${c.outfit}`:''}${(c.refs||[]).length?' (match the attached character sheet exactly)':''}`).join('; ')}`:'')+(l?`\nLocation: ${l.name}${l.desc?` — ${l.desc}`:''}${(l.refs||[]).length?' (match the attached background reference)':''}`:'')+`\nComposition for a ${W}×${H} webtoon panel, leave space for speech balloons, no text, no speech bubbles.`;}
+function stuRefs(){return refPick(stChars().filter(c=>STU.chars.includes(c.id)),stLocs().find(x=>x.id===STU.loc)||null);}
+const stuUseP=()=>STU.src==='sb'&&STU.hasP;
+/* 컷에 저장되는 바탕 프롬프트(화풍 + 샷 + 장면) — 참고 이미지 안내는 그릴 때마다 붙여요 */
+function stuBase(){const st=S.settings,sh=SHOTS.find(x=>x[0]===STU.shot),an=ANGS.find(x=>x[0]===STU.ang);return stuUseP()?STU.p.trim():`${st.sbStyle||SB_STYLE}. ${sh[2]}, ${an[2]}. Scene: ${STU.p.trim()||'(장면 설명)'}`;}
+function stuPrompt(){const [W,H]=stuSize(),ch=stChars().filter(c=>STU.chars.includes(c.id)),l=stLocs().find(x=>x.id===STU.loc)||null;
+ return stuBase()+refGuide(stuRefs(),ch,l)+`\nComposition for a ${W}×${H} webtoon panel, leave space for speech balloons, no text, no speech bubbles.`;}
 function stuRender(){const m=$('#mAiImg');if(!m)return;const st=S.settings,left=Math.max(0,AI_FREE-(st.aiUsed||0)),nc=st.aiN||1,e=ep(),sbL=e?e.cuts.filter(c=>c.sb):[],CH=stChars(),LO=stLocs();
  const cur=STU.src==='sb'?cutById(STU.cid):null;const fo=document.activeElement&&document.activeElement.id;const chOk=CH.filter(c=>(c.refs||[]).length).length,loOk=LO.filter(l=>(l.refs||[]).length).length;
  const av=(k,txt)=>k&&urlOf(k)?`<img src="${urlOf(k)}" alt="">`:`<span>${esc((txt||'?').slice(0,1))}</span>`;
  const pre=SB_PRESETS.find(x=>x[1]===(st.sbStyle||SB_STYLE));
  /* 인물 · 장소 · 화풍은 기획에서, 캐릭터 시트 · 배경 그림은 콘티·AI ③에서 — 여기서는 골라서 쓰기만 해요 */
- const tabs=`<p class="stustyle">${ic('droplet',13)}<span>화풍 <b>${st.sbStyle?esc(pre?pre[0]:'직접 정함'):'안 정함 · 웹툰 기본으로 그려요'}</b>${(st.sbStyleRefs||[]).length?` · 참고 ${(st.sbStyleRefs||[]).length}장`:''}</span><button data-stu="goplan" data-v="art">기획에서 바꾸기</button></p>`;
+ const tabs=`<p class="stustyle">${ic('droplet',13)}<span>화풍 <b>${st.sbStyle?esc(pre?pre[0]:'직접 정함'):'웹툰 기본 (기본값)'}</b>${(st.sbStyleRefs||[]).length?` · 참고 ${(st.sbStyleRefs||[]).length}장`:''}</span><button data-stu="goplan" data-v="art">기획에서 바꾸기</button></p>`;
  let body='';
  {const R=BRATIO.filter(x=>['9:16','3:4','4:5','1:1','4:3','16:9'].includes(x[0])),[W,H]=stuSize(),refs=stuRefs(),noSheet=stChars().filter(c=>STU.chars.includes(c.id)&&!(c.refs||[]).length&&!(STU.skip||[]).includes(c.id)),noLoc=stLocs().filter(l=>STU.loc===l.id&&!(l.refs||[]).length&&!(STU.skip||[]).includes(l.id));
   body=`<div class="seg stusrc"><button data-stu="src" data-v="sb" aria-pressed="${STU.src==='sb'}">${ic('rows',13)}콘티 보고 만들기${sbL.length?` <small>${sbL.length}컷</small>`:''}</button><button data-stu="src" data-v="free" aria-pressed="${STU.src==='free'}">${ic('wand',13)}콘티 없이 만들기</button></div>
   ${STU.src==='sb'?`<div class="stucuts">${sbL.map(c=>`<button data-stu="cut" data-v="${c.id}" aria-pressed="${c.id===STU.cid}" title="${esc(c.sb.scene||'')}"><b>S#${c.sb.no}</b><small>${esc((c.sb.scene||'').slice(0,10))}</small>${sbHasImg(c)?`<i>${ic('check',9)}</i>`:''}</button>`).join('')}</div>`:''}
-  <label class="aiql">${STU.src==='sb'?`S#${cur?cur.sb.no:''} 장면`:'어떤 장면을 만들까요?'}</label>
-  <textarea id="stuP" rows="3" placeholder="예) 비 오는 밤 골목, 우산을 쓴 하나가 뒤를 돌아본다. 놀란 표정">${esc(STU.p)}</textarea>
+  <label class="aiql">${STU.src==='sb'?(stuUseP()?`S#${cur?cur.sb.no:''} 프롬프트 <small>콘티·AI ④에 적힌 그대로 · 여기서 고치면 컷에 저장돼요</small>`:`S#${cur?cur.sb.no:''} 장면`):'어떤 장면을 만들까요?'}</label>${stuUseP()&&cur?`<p class="note" style="margin:0 0 6px">장면 · ${esc(cur.sb.scene||'')}</p>`:''}
+  <textarea id="stuP" rows="${stuUseP()?5:3}" placeholder="예) 비 오는 밤 골목, 우산을 쓴 하나가 뒤를 돌아본다. 놀란 표정">${esc(STU.p)}</textarea>
   <div class="stur"><span class="aiql">등장인물</span><div class="stuchips">${stChars().length?stChars().map(c=>{const k=(c.refs||[])[0];return `<button data-stu="ch" data-v="${c.id}" aria-pressed="${STU.chars.includes(c.id)}" class="${k?'':'nos'}" title="${k?'캐릭터 시트가 같이 붙어요':'캐릭터 시트 없음'}">${av(k,c.name)}${esc(c.name)}${k?`<em class="stuok">시트</em>`:''}</button>`;}).join(''):`<button data-stu="goplan" data-v="ch" class="ghost">${ic('plus',11)}기획에서 인물 추가</button>`}</div></div>
   ${noSheet.length?`<div class="stuneed">${noSheet.map(c=>`<div><span><b>${esc(c.name)}</b> · 캐릭터 시트가 없어요 <small>없으면 컷마다 얼굴이 달라질 수 있어요</small></span><button class="btn sm pri" data-stu="mksheet" data-v="${c.id}">${ic('wand',12)}지금 만들기 · 1장</button><button class="btn sm" data-stu="upch" data-v="${c.id}">${ic('imgplus',12)}올리기</button><button class="btn sm ghost" data-stu="skip" data-v="${c.id}">없이 하기</button></div>`).join('')}</div>`:''}
   <div class="stur"><span class="aiql">배경</span><div class="stuchips">${stLocs().map(l=>{const k=(l.refs||[])[0];return `<button data-stu="loc" data-v="${l.id}" aria-pressed="${STU.loc===l.id}" class="${k?'':'nos'}" title="${k?'배경 그림이 같이 붙어요':'배경 그림 없음'}">${av(k,l.name)}${esc(l.name)}${k?`<em class="stuok">그림</em>`:''}</button>`;}).join('')}${stLocs().length?'':`<button data-stu="goplan" data-v="world" class="ghost">${ic('plus',11)}기획에서 장소 추가</button>`}</div></div>
   ${noLoc.length?`<div class="stuneed">${noLoc.map(l=>`<div><span><b>${esc(l.name)}</b> · 배경 그림이 없어요 <small>없으면 글 설명만으로 그려요</small></span><button class="btn sm pri" data-stu="mkloc" data-v="${l.id}">${ic('wand',12)}지금 만들기 · 1장</button><button class="btn sm" data-stu="uploc" data-v="${l.id}">${ic('imgplus',12)}올리기</button><button class="btn sm ghost" data-stu="skip" data-v="${l.id}">없이 하기</button></div>`).join('')}</div>`:''}
-  <div class="stur"><span class="aiql">샷 크기</span><div class="stuchips sm">${SHOTS.map(([k,l])=>`<button data-stu="shot" data-v="${k}" aria-pressed="${STU.shot===k}">${l}</button>`).join('')}</div></div>
-  <div class="stur"><span class="aiql">앵글</span><div class="stuchips sm">${ANGS.map(([k,l])=>`<button data-stu="ang" data-v="${k}" aria-pressed="${STU.ang===k}">${l}</button>`).join('')}</div></div>
+  ${stuUseP()?'':`<div class="stur"><span class="aiql">샷 크기</span><div class="stuchips sm">${SHOTS.map(([k,l])=>`<button data-stu="shot" data-v="${k}" aria-pressed="${STU.shot===k}">${l}</button>`).join('')}</div></div>
+  <div class="stur"><span class="aiql">앵글</span><div class="stuchips sm">${ANGS.map(([k,l])=>`<button data-stu="ang" data-v="${k}" aria-pressed="${STU.ang===k}">${l}</button>`).join('')}</div></div>`}
   ${STU.src==='sb'?`<p class="note" style="margin:2px 0 8px">크기 · 컷에 맞춰요 ${W}×${H}px</p>`:`<div class="stur"><span class="aiql">비율</span><div class="brat aiqr">${R.map(([l,a,b])=>{const k=Math.min(18/a,18/b);return `<button class="${l===STU.r?'on':''}" data-stu="r" data-v="${l}"><i style="width:${Math.max(5,Math.round(a*k))}px;height:${Math.max(5,Math.round(b*k))}px"></i>${l}</button>`;}).join('')}</div></div>`}
   <div class="sturefs"><span class="aiql">같이 붙는 참고 이미지 ${refs.length}장</span>${refs.length?refs.map(r=>`<figure><img src="${urlOf(r.k)||''}" alt=""><figcaption>${esc(r.l)}</figcaption></figure>`).join(''):'<small class="note" style="margin:0">없음 · 인물 · 배경을 고르면 만들어 둔 시트 · 배경 그림이 같이 붙어요</small>'}</div>
   <details class="stupv"><summary>프롬프트 보기</summary><pre id="stuPv">${esc(stuPrompt())}</pre></details>
@@ -3137,7 +3146,7 @@ async function stuGo(){const st=S.settings,nc=st.aiN||1,left=AI_FREE-(st.aiUsed|
  $('#mAiImg')?.remove();prog(`장면 만드는 중 · ${st.aiModel||'나노바나나 2'}`);const ks=[];
  for(let v=0;v<nc;v++){if(cancelFlag)break;progSet(v/nc,`${v+1}/${nc}장 그리는 중… 참고 ${stuRefs().length}장`);await new Promise(r=>setTimeout(r,350));const b=await sbMockImg(W,H,seed,v+(c&&c.sb.cands?c.sb.cands.length:0));const k='ai_'+uid();blobs.set(k,b);putBlob(k,b);libAdd(k,'ai',{model:st.aiModel||'나노바나나 2',prompt:prompt.slice(0,400),...(c?{sno:c.sb.no}:{})});ks.push(k);}
  progEnd();if(!ks.length)return;st.aiUsed=(st.aiUsed||0)+ks.length;save();
- if(c){mutate(()=>{c.sb.prompt=c.sb.prompt||prompt;c.sb.cands=[...ks,...(c.sb.cands||[])].slice(0,8);c.sb.img=ks[0];c.sb.aiModel=st.aiModel||'나노바나나 2';});baseCache.delete(c.id);sigs.delete(c.id);renderStrip();setActive(c.id,null);renderInspector();if(NAV==='ai'||NAV==='lib')renderEps();toast(`S#${c.sb.no}에 ${ks.length}장을 넣었어요${ks.length>1?' · 오른쪽에서 후보를 바꿀 수 있어요':''} (예시 이미지)`);requestAnimationFrame(()=>cardEls.get(c.id)?.scrollIntoView({block:'nearest',behavior:'smooth'}));return;}
+ if(c){mutate(()=>{const base=stuBase();if(base&&base!==c.sb.prompt){sbHistPush(c,'AI 이미지 창에서 고치기 전');c.sb.prompt=base;c.sb.ok=true;}c.sb.cands=[...ks,...(c.sb.cands||[])].slice(0,8);c.sb.img=ks[0];c.sb.aiModel=st.aiModel||'나노바나나 2';});baseCache.delete(c.id);sigs.delete(c.id);renderStrip();setActive(c.id,null);renderInspector();if(NAV==='ai'||NAV==='lib')renderEps();toast(`S#${c.sb.no}에 ${ks.length}장을 넣었어요${ks.length>1?' · 오른쪽에서 후보를 바꿀 수 있어요':''} (예시 이미지)`);requestAnimationFrame(()=>cardEls.get(c.id)?.scrollIntoView({block:'nearest',behavior:'smooth'}));return;}
  if(NAV==='lib'||NAV==='ai')renderEps();const e=ep(),a=activeCut&&cutById(activeCut),pos=e?(a?e.cuts.indexOf(a)+1:e.cuts.length):0;
  libOpen(STU.t||{cuts:pos});LIBF='ai';LIBSEL=[...ks];libRender();toast(`${ks.length}장을 만들었어요 · 아래 순서를 확인하고 넣으세요 (예시 이미지)`);}
 async function sbAiGen(T){
@@ -3146,6 +3155,8 @@ async function sbAiGen(T){
  const plan=T.map(c=>{const fr=(c.items||[]).filter(x=>x.frame);if(!fr.length)return{c,n:nc};const em=fr.filter(frameEmpty);return{c,fr:em.length?em:fr,n:(em.length?em:fr).length};});
  const need=plan.reduce((a,p)=>a+p.n,0),left=AI_FREE-(st.aiUsed||0);
  if(left<=0){paywall('img');return;}if(need>left){toast(`${need}장이 필요한데 맛보기가 ${Math.max(0,left)}장 남았어요 · 컷을 골라 나눠 만들어 주세요`);return;}
+ {const noS=new Set(),hasR=T.some(c=>sbCutRefs(c).length);T.forEach(c=>sbCast(c).chars.forEach(ch=>{if(!(ch.refs||[]).length)noS.add(ch.name);}));
+  if((need>1||noS.size)&&!await confirmBox({title:`이미지 ${need}장을 만들까요?`,body:`${T.length}컷 · 남은 이미지 ${left}장 가운데 ${need}장을 써요.${noS.size?`<br><br><b>${esc([...noS].join(', '))}</b> — 캐릭터 시트가 없어요. 이대로 그리면 컷마다 얼굴 · 옷이 달라질 수 있어요. 취소하고 콘티·AI ③에서 시트를 먼저 만들 수 있어요.`:hasR?'<br>캐릭터 시트 · 배경 그림이 참고 이미지로 같이 붙어요.':''}`,ok:noS.size?`시트 없이 ${need}장 만들기`:`${need}장 만들기`,danger:false}))return;}
  prog(`이미지 만드는 중 · ${model}`);const res=[];let used=0;
  for(let i=0;i<plan.length;i++){if(cancelFlag)break;const P=plan[i],c=P.c,d=dims(c);progSet(i/plan.length,`S#${c.sb.no} 그리는 중…${P.fr?` 칸 ${P.fr.length}개`:''} (${i+1}/${plan.length}컷)`);await new Promise(r=>setTimeout(r,350));
   const mk=async(w,h,v)=>{const b=await sbMockImg(Math.max(40,Math.round(w)),Math.max(40,Math.round(h)),c.sb.no,v);const k='sb_'+uid();blobs.set(k,b);putBlob(k,b);used++;libAdd(k,'ai',{sno:c.sb.no,model:st.aiModel||'나노바나나 2'});return k;};
@@ -3261,7 +3272,7 @@ async function sbAct(act,b){
   case'wk-planart':wkClose();planOpen('art');break;
   case'wk-sbmodal':{const e=wkEp();wkClose();if(e&&ep()!==e)switchEp(e.id);setNav('ai');openSb();break;}
   case'wk-scmodal':{const e=wkEp();wkClose();if(e&&ep()!==e)switchEp(e.id);setNav('ai');openScript();break;}
-  case'wk-mkcuts':{const e=wkEp();if(!pkStat(e))break;if(ep()!==e)switchEp(e.id);SBo.forEp=e.id;$('#sbTx').value=pkSbText(e);SBo.where=e.cuts.length?'here':'here';SBo.ly=SBo.ly||'one';sbApply();wkRender();setTimeout(()=>wkGo('img',true),60);break;}
+  case'wk-mkcuts':{const e=wkEp();if(!pkStat(e))break;if(ep()!==e)switchEp(e.id);SBo.forEp=e.id;$('#sbTx').value=pkSbText(e);SBo.where=e.cuts.length?'here':'here';SBo.ly=SBo.ly||'one';sbApply();wkRender();setTimeout(()=>wkGo(stChars().some(c=>!(c.refs||[]).length)?'ch':'img',true),60);break;}
   case'wk-applysc':{const e=wkEp();if(!pkStat(e))break;if(ep()!==e)switchEp(e.id);$('#scTx').value=pkScText(e);SC.mode='name';SC.how='replace';SC.scope='all';applyScript();wkRender();break;}
   case'wk-bulk':libOpen({sbBulk:1});break;
   case'wk-img1':{const c=cutById(b.dataset.cid);if(c)aiImgOpen({cid:c.id,sb:true},{tab:'shot',src:'sb'});break;}
