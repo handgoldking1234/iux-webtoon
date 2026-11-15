@@ -810,6 +810,18 @@ body.picking,body.picking *{cursor:crosshair!important}
 .plmain .wkimb textarea{width:100%;box-sizing:border-box;font:12px/1.5 ui-monospace,Menlo,monospace}.wkcands{display:flex;gap:4px;flex-wrap:wrap}.wkcands button{width:42px;height:42px;padding:0;border:2px solid transparent;border-radius:6px;overflow:hidden;cursor:pointer;background:none}.wkcands button[aria-pressed=true]{border-color:var(--accent)}.wkcands img{width:100%;height:100%;object-fit:cover}
 .wkimf{display:flex;align-items:center;gap:6px;flex-wrap:wrap}.wkhist{font-size:12px}.wkhist summary{display:inline-flex;align-items:center;gap:4px;cursor:pointer;color:var(--muted);font-weight:600}.wkhist>div{margin-top:6px;padding:8px;border-radius:8px;background:var(--panel2)}.wkhist p{margin:2px 0 6px;font:11.5px/1.5 ui-monospace,Menlo,monospace;white-space:pre-wrap;word-break:break-word}.wkhist small{color:var(--muted)}
 @media (max-width:760px){.wkimgs>li{grid-template-columns:80px minmax(0,1fr)}.wkth{width:80px}.wkeps{order:3;flex-basis:100%}}
+@media (max-width:760px){
+ #mPlan .plhd,#mWork .plhd{flex-wrap:wrap;row-gap:8px;padding:12px 14px}
+ .plhd>.btn.icon{order:2;margin-left:auto}
+ #mPlan .plhd>h3{flex:1 1 auto}.plhd>.plprog{order:3;flex:1 1 60%;min-width:0;white-space:nowrap}.plhd>.plsv{order:4;margin-left:0}
+ .plcompt{flex-wrap:wrap;row-gap:2px}.plcomp h4,.plcompt small{white-space:nowrap}
+ .wkeps{order:3;flex-basis:100%;overflow:visible}.wkepsel{flex:1;min-width:0}.wkepsel select{width:100%;min-width:0}.wkepadd{flex:none}
+ .wknote{display:none}
+ .plsh4{flex-wrap:wrap;row-gap:8px}.plsh4 h4{white-space:nowrap}
+ .plchh{flex-wrap:wrap;row-gap:6px}.plchh .plname{flex:1 1 150px}
+ .wkchs{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ .stustyle,.wkstyle,.plgo{flex-wrap:wrap}.plgo>span,.wkstyle>span{flex:1 1 220px}.plgo .btn,.wkstyle .btn{margin-left:auto}
+}
 .plevfoot{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 @media (max-width:760px){.plevln{grid-template-columns:1fr 1fr 28px}.plevln input:not(.who){grid-column:1/-1}}
 .plpk{border:1px solid var(--line);border-radius:12px;padding:12px;margin:0 0 12px;background:var(--panel2,#f7f7f8)}.plpkH{display:flex;flex-direction:column;gap:2px;margin-bottom:8px}.plpkH b{display:flex;align-items:center;gap:6px;font-size:14px}.plpkH span{font-size:12px;color:var(--muted)}
