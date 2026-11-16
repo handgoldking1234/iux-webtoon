@@ -9,9 +9,9 @@ export const metadata = { title: '랭킹' };
 export default async function Rank() {
   const L = (await ranking(30)).map(sv);
   return (
-    <div className={k('wrap')} style={{ paddingBlock: '24px 10px', maxWidth: 960 }}>
-      <div className={k('sec-h')}><h2>실시간 랭킹</h2><span className={k('muted')} style={{ fontSize: 13 }}>별점 · 관심 · 조회 기준</span></div>
-      <div className={k('box')}><RankList list={L} wide /></div>
+    <div className={k('wrap')} style={{ maxWidth: 960 }}>
+      <div className={k('page-h')}><h1>실시간 랭킹</h1><p>별점 · 관심 · 조회 기준</p></div>
+      {L.length ? <RankList list={L} /> : <p className={k('empty')}>아직 순위에 오른 작품이 없어요</p>}
     </div>
   );
 }

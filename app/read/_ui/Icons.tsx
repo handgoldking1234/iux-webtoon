@@ -8,6 +8,7 @@ const P = {
   info: <><circle cx="12" cy="12" r="9" /><path d="M12 8v5M12 16h.01" /></>,
   check: <path d="m5 12 5 5 9-10" />,
   book: <><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z" /><path d="M5 17a3 3 0 0 1 3-3h11" /></>,
+  play: <path d="M7 4.5v15l12-7.5z" fill="currentColor" stroke="none" />,
   flag: <><path d="M4 22V4" /><path d="M4 4h12l-2 4 2 4H4" /></>,
 };
 export function Ic({ n, className }: { n: keyof typeof P; className?: string }) {

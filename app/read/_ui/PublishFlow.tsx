@@ -108,7 +108,7 @@ export default function PublishFlow({ draft, mine, penName }: { draft: D; mine: 
       {step === 4 && (
         <div className={k('panel')}>
           <h2>올리기 전에 확인해요</h2>
-          <div style={{ width: 160, pointerEvents: 'none' }} aria-label="미리보기">{isNew ? <Card s={{ id: 'preview', title: f.title || '제목', author: f.authorName, genre: f.genre, age: f.age as 'all', ai: f.ai, kind: 'free', days: f.days, episodes: 1, follows: 0, rating: 0, thumb: draft.cuts[0]?.url || null, art: null, isNew: true, up: false, description: '' }} /> : cur && <Card s={cur} />}</div>
+          <div style={{ width: 160, pointerEvents: 'none' }} aria-label="미리보기">{isNew ? <Card s={{ id: 'preview', title: f.title || '제목', author: f.authorName, genre: f.genre, age: f.age as 'all', ai: f.ai, kind: 'free', days: f.days, episodes: 1, follows: 0, rating: 0, thumb: draft.cuts[0]?.url || null, art: null, isNew: true, up: false, description: '' , last: Date.now() }} /> : cur && <Card s={cur} />}</div>
           <ul className={k('chk')}>{checks.map((c) => <li key={c.t}><i className={c.ok ? undefined : k('w')}>{c.ok ? '✓' : '!'}</i><span>{c.t}</span><span className={k(c.ok ? 'ok' : 'warn')}>{c.ok ? '통과' : '확인'}</span></li>)}</ul>
           <div className={k('agree')}>
             {['제가 만들었거나 쓸 권리가 있는 그림과 글만 올려요.', '선정적 · 폭력적인 내용은 이용 연령에 맞게 표시했어요.', '운영정책을 어기면 신고를 받아 숨김 처리될 수 있다는 걸 알아요.'].map((t, i) => (

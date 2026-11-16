@@ -32,7 +32,8 @@ export default function Art({ art, seed, w, h, title, people = 1, alt }: { art: 
       if (title) {
         const sh = g.createLinearGradient(0, h * 0.55, 0, h); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, 'rgba(0,0,0,.6)'); g.fillStyle = sh; g.fillRect(0, h * 0.55, w, h * 0.45);
         g.fillStyle = '#fff'; g.textAlign = 'center'; const fs = w * (title.length > 6 ? 0.12 : 0.17); g.font = `${fs}px "Black Han Sans","Apple SD Gothic Neo",sans-serif`;
-        const half = Math.ceil(title.length / 2), words = title.length > 7 ? [title.slice(0, half).trim(), title.slice(half).trim()] : [title];
+        // 긴 제목은 가운데에서 가장 가까운 띄어쓰기에서 두 줄로 나눠요
+        const words = (() => { const t = title; if (t.length <= 7) return [t]; const mid = t.length / 2; let best = -1; for (let i = 1; i < t.length - 1; i++) if (t[i] === ' ' && (best < 0 || Math.abs(i - mid) < Math.abs(best - mid))) best = i; return best > 0 ? [t.slice(0, best), t.slice(best + 1)] : [t.slice(0, Math.ceil(mid)), t.slice(Math.ceil(mid))]; })();
         words.forEach((t, i) => g.fillText(t, w / 2, h * 0.93 - (words.length - 1 - i) * fs * 1.1));
       }
     };

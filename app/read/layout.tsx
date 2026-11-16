@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: { default: '웹툰보드 연재', template: '%s · 웹툰보드 연재' },
   description: '웹툰보드에서 만든 웹툰을 요일연재 · 자유연재로 읽는 곳',
 };
-export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover', themeColor: '#ffffff' };
+export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover', themeColor: '#0b0d0c' };
 
 export default async function ReadLayout({ children }: { children: React.ReactNode }) {
   const me = await getMe();
