@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { adminReady, dbReady, env } from '@/lib/env';
 import { supabaseAdmin, supabaseServer } from '@/lib/supabase/server';
+import { TEST_COOKIE, testReady, testUser } from '@/lib/test-accounts';
 
 export type Profile = {
   id: string;
@@ -38,7 +39,15 @@ export const LOCAL_PROFILE: Profile = {
 
 /** 지금 로그인한 회원 — 없으면 null */
 export async function getMe(): Promise<Me | null> {
-  if (!dbReady()) return { mode: 'local', profile: LOCAL_PROFILE, isAdmin: true };
+  if (!dbReady()) {
+    // 시험 계정을 정해 두었으면: 로그인한 사람만 회원(그 밖에는 손님)
+    if (testReady()) {
+      let id: string | null = null;
+      try { id = testUser((await cookies()).get(TEST_COOKIE)?.value); } catch { /* 쿠키 없음 */ }
+      return id ? { mode: 'local', profile: { ...LOCAL_PROFILE, id: 'test-' + id, name: id, email: null, provider: 'test' }, isAdmin: true } : null;
+    }
+    return { mode: 'local', profile: LOCAL_PROFILE, isAdmin: true };
+  }
   const sb = await supabaseServer();
   const { data } = await sb.auth.getUser();
   if (!data.user) return null;

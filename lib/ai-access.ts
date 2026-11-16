@@ -5,13 +5,14 @@ import { err } from '@/lib/api';
  *  - 편집기는 누구나 (로그인 없이)
  *  - AI는 회원만 (AI_ACCESS=member, 기본값)
  *  - 나중에: 결제한 회원만 (AI_ACCESS=paid — 플랜이 pro · edu인 회원, 관리자는 항상 가능)
- *  DB 연동 전(회원이 없는 상태)에는 SITE_PASSWORD로 잠근 시험 배포에서만 AI가 열려요. */
+ *  DB 연동 전(회원이 없는 상태)에는 시험 계정(TEST_ACCOUNTS)으로 로그인했거나
+ *  SITE_PASSWORD로 잠근 시험 배포에서만 AI가 열려요. */
 export type AiNeed = null | 'login' | 'pro' | 'setup';
 export const aiAccess = (): 'member' | 'paid' => (process.env.AI_ACCESS === 'paid' ? 'paid' : 'member');
 
 export function aiNeed(me: Me | null): AiNeed {
   if (!me) return 'login';
-  if (me.mode === 'local') return process.env.SITE_PASSWORD ? null : 'setup';
+  if (me.mode === 'local') return process.env.SITE_PASSWORD || me.profile.provider === 'test' ? null : 'setup';
   if (me.isAdmin) return null;
   if (aiAccess() === 'paid' && me.profile.plan === 'free') return 'pro';
   return null;
