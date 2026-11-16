@@ -3001,7 +3001,7 @@ async function sbGen(cuts){
  if(err&&err!=='cancelled')toast((SM_ERR[err]||'프롬프트를 만들지 못했어요')+(out.size?` · ${out.size}컷은 만들어 뒀어요`:''));
  else toast(out.size?`${out.size}컷의 이미지 프롬프트를 만들었어요 · 컷을 눌러 다듬고 복사해 이미지를 만드세요`:'만든 이미지 프롬프트가 없어요');
 }
-const AI_FREE=10;
+const AI_FREE=20;
 function sbMockImg(W,H,seed,v){const sc=Math.min(1,720/W),cv=document.createElement('canvas');cv.width=Math.round(W*sc);cv.height=Math.round(H*sc);const x=cv.getContext('2d'),w=cv.width,h=cv.height;
  let r=seed*9301+v*49297;const rnd=()=>((r=(r*9301+49297)%233280)/233280);const hue=(seed*47+v*23)%360;
  const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,`hsl(${hue},55%,${70+rnd()*15}%)`);g.addColorStop(1,`hsl(${(hue+40)%360},45%,${35+rnd()*15}%)`);x.fillStyle=g;x.fillRect(0,0,w,h);
