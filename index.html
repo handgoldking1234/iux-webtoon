@@ -2335,7 +2335,7 @@ function plSimpleHTML(){const P=plan(),G=P.genres||[],C=plChars(),q=txtAi(),cur=
    <label class="plf plf2"><span>계획 화수</span><input data-plk="eps" type="number" min="1" max="999" value="${esc(P.eps||'')}" placeholder="예) 40"><small>화</small></label></div>
   <div class="plf"><span>그림체</span><div class="sbpre plpre">${SB_PRESETS.map(([n,v],i)=>{const x=SB_PRESET_EX[i]||{};return `<button data-placts="preset" data-v="${i}" aria-pressed="${cur===v}"><span class="sbpth" style="${x.img?'':'background:'+x.bg}">${x.img?`<img src="${x.img}" alt="${n} 예시" loading="lazy"><span class="sbzoom" data-stylezoom="${i}" role="button" tabindex="0" title="크게 보기" aria-label="${n} 크게 보기">${ic('expand',12)}</span>`:''}</span><b>${n}</b></button>`;}).join('')}</div></div>
   ${!plan().detail?`<div class="plcta two"><div><b>더 자세히 쓰기</b><small>로그라인 · 기획의도 · 셀링 · 세계관과 장소 · 인물 상세 · 관계도 · 줄거리와 화수 배분까지 쓰면 AI 콘티 · 대사 · 그림이 훨씬 정확해져요.</small><small class="plcost">✦ AI로 채우기는 글 AI 1회 · 이번 달 무료 <b>${q.left}</b>/${TXT_FREE}회 남음 · 채운 뒤 하나씩 고칠 수 있어요</small></div><div class="plctab"><button class="btn pri" data-placts="full">${ic('wand',14)}AI로 자세히 채우기</button><button class="btn" data-placts="detail">${ic('edit',13)}직접 자세히 쓰기</button></div></div>`:`<div class="plcta"><div><b>✦ AI로 나머지 채우기</b><small>아래 빈 섹션(로그라인 · 기획의도 · 셀링 · 세계관과 장소 · 인물 상세 · 관계도 · 줄거리와 화수 배분)을 한 번에 채워요. 이미 쓴 칸은 그대로 둬요.</small><small class="plcost">글 AI 1회 · 이번 달 무료 <b>${q.left}</b>/${TXT_FREE}회 남음</small></div><button class="btn pri" data-placts="full">${ic('wand',14)}나머지 채우기</button></div>`}`;}
-async function planAIFull(){const P=plan();if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}if(!txtAi().left){paywall('txt');return;}
+async function planAIFull(){const P=plan();if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return;}if(!txtAi().left){paywall('txt');return;}
  if(!((P.idea||'').trim()||(P.logline||'').trim())){toast('「하고 싶은 이야기」를 한두 문장 적어 주세요');$('#mPlan [data-plk=idea]')?.focus();return;}
  prog('AI가 전문가 기획을 쓰는 중');progSet(.25,'간단 기획을 읽는 중…');
  try{const res=await SM.json(`You are a veteran Korean webtoon planner. Expand the creator's short plan into a full professional series plan in Korean. Keep everything the creator already wrote; only fill what is missing and stay consistent with it.
@@ -2394,7 +2394,7 @@ function plRfSchema(k){return({ov:'{"tone":"","target":""}',ll:'{"options":["(�
  world:'{"world":"(3-5문장)","locs":[{"name":"","desc":"(그림 AI용 장소 묘사)"}]}',ch:'{"chars":[{"name":"(기존 이름 그대로, 새 인물만 새 이름)","cat":"주연|조연|단역","role":"","group":"","intro":"","want":"","secret":"","pers":"","voice":"","look":"(그림 AI용 외모)","outfit":""}]}',
  rel:'{"rels":[{"a":"(이름)","b":"(이름)","t":"가족|연인|친구|동료|라이벌|적대|스승·제자|기타","call":"(호칭 · 존댓말/반말)"}]}',plot:'{"struct":"3act|ki","acts":[{"step":"(단계 이름)","from":1,"to":10,"t":"(3-5문장)"}],"story":"(전체 요약)"}'})[k];}
 async function plLlPolish(){const P=plan();const parts=[P.ll_when,P.ll_who,P.ll_want,P.ll_but,P.ll_stake].map(x=>(x||'').trim()).filter(Boolean);const cur=(P.logline||'').trim();
- if(!cur&&!parts.length){toast('로그라인이나 칸을 먼저 적어 주세요');return;}if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}if(!txtAi().left){paywall('txt');return;}
+ if(!cur&&!parts.length){toast('로그라인이나 칸을 먼저 적어 주세요');return;}if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return;}if(!txtAi().left){paywall('txt');return;}
  prog('AI가 로그라인을 다듬는 중');
  try{const res=await SM.json(`You are a veteran Korean webtoon planner. Rewrite this webtoon logline as ONE natural Korean sentence of about 50-80 characters. Describe the protagonist by a defining trait instead of a name. It must contain the protagonist, their goal, the obstacle and what is at stake (and the trigger/setting if given). Keep the creator's meaning; do not add new plot facts.
 지금 로그라인: ${cur||'(없음)'}
@@ -2404,7 +2404,7 @@ Answer JSON only: {"logline":"(한 문장)"}`,{cache:false});
   progEnd();const v=String(res&&res.logline||'').trim();if(!v){toast('AI가 답하지 못했어요 · 사용 횟수는 줄지 않았어요');return;}
   txtAiUse(1);mutate(()=>{P.logline=v;plMark('logline',1);});plSave();planRender();toast('로그라인을 다듬었어요 · 실행 취소로 되돌릴 수 있어요');}
  catch(x){progEnd();toast((SM_ERR[x&&x.code]||'AI가 답하지 못했어요')+' · 사용 횟수는 줄지 않았어요');}}
-async function plRfGo(){const R=PLREF,P=plan(),k=R.k;if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}if(!txtAi().left){paywall('txt');return;}
+async function plRfGo(){const R=PLREF,P=plan(),k=R.k;if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return;}if(!txtAi().left){paywall('txt');return;}
  if(R.mode==='ask'&&!(R.req||'').trim()){toast('어떻게 고칠지 한 줄로 적어 주세요');$('#mPlan [data-rfreq]')?.focus();return;}
  R.busy=true;planRender();
  const how={fill:'Only fill fields that are currently empty; keep everything already written.',rewrite:'Rewrite this section to be stronger and more consistent with the whole plan.',ask:`Revise this section following the creator's request: "${(R.req||'').trim()}".`}[R.mode];
@@ -2810,7 +2810,7 @@ async function pkLoadPrompts(){const e=ep(),s=pkStat(e);if(!s)return;const L=e.c
  const T=L.filter(c=>pp(c.sb.no)),emp=T.filter(c=>!c.sb.prompt);if(!T.length){toast('S# 번호가 맞는 컷이 없어요');return;}
  let U=emp;if(!emp.length){if(!(await confirmBox({title:`${T.length}컷 프롬프트를 기획 패키지 것으로 바꿀까요?`,body:'지금 컷에 있는 이미지 프롬프트가 바뀌어요. Ctrl+Z로 되돌릴 수 있어요.',ok:'바꾸기'})))return;U=T;}
  mutate(()=>U.forEach(c=>{sbHistPush(c,'기획 불러오기 전');c.sb.prompt=pp(c.sb.no);c.sb.ok=true;}));renderAll();if($('#mWork'))wkRender();toast(`기획 패키지에서 이미지 프롬프트 ${U.length}컷을 불러왔어요`);}
-async function planAI(kind,e0){const e=e0||ep(),P=plan();if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}if(!txtAi().left){paywall('txt');return;}
+async function planAI(kind,e0){const e=e0||ep(),P=plan();if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return;}if(!txtAi().left){paywall('txt');return;}
  if(kind==='draft'&&!(P.logline||'').trim()){toast('로그라인을 먼저 한 줄 적어 주세요');return;}
  if(kind==='syn'&&!((P.story||P.logline||'').trim()||Object.values(P.acts||{}).some(a=>(a.t||'').trim()))){toast('작품 기획의 줄거리나 로그라인을 먼저 적어 주세요');return;}
  prog(kind==='draft'?'AI가 기획 초안을 쓰는 중':'AI가 시놉시스를 쓰는 중');progSet(.3,'작품 설정을 읽는 중…');
@@ -3948,7 +3948,7 @@ async function qaiSend(btn){const it=qpItem();if(!it)return;const isImg=it.type=
    catch(x){toast((SM_ERR[x&&x.code]||'Claude가 답하지 않아')+' · 기본 틀로 만들었어요');}finally{btn.disabled=false;btn.textContent=old;}}
   mutate(()=>{it.aiPrompt=pr;});qpRender();toast('프롬프트를 만들었어요 · 고친 뒤 「재생성」을 누르세요');return;}
 
- if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}
+ if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return;}
  if(!txtAi().left){paywall('txt');return;}
  const old=btn.textContent;btn.disabled=true;btn.textContent='다듬는 중…';
  try{const res=await SM.json(`You edit dialogue for a vertical Korean webtoon. Rewrite the ${KLABEL[it.type]||'text'} below following the instruction. Keep line breaks short enough for a speech balloon (max ~12 Korean characters per line). Instruction: ${q}\nFor a dialect or character voice, keep the meaning and the speaker's intent, make it sound natural and easy to read for Korean webtoon readers, and avoid slurs or profanity.\nText:\n${it.text}\n\nAnswer JSON only: {"text": "<rewritten text>"}`,{cache:false});
@@ -5674,7 +5674,7 @@ function scAiOpen(){let m=$('#mScAi');if(m)m.remove();const q=txtAi();if(!q.left
   const x=ev.target.closest('[data-scai]');if(!x&&ev.target!==m)return;if(!x||x.dataset.scai==='0'){m.remove();return;}
   const idea=$('#scaiTx').value.trim(),amt=m.querySelector('[data-scaia][aria-pressed=true]').dataset.scaia,nar=$('#scaiN').checked,keep=$('#scaiK').checked;m.remove();await scAiWrite(idea,amt,nar,keep);});
  m.addEventListener('keydown',ev=>{if(ev.key==='Escape'){ev.stopPropagation();m.remove();}});}
-async function scAiWrite(idea,amt,nar,keep){const e=ep();if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}if(!txtAi().left){paywall('txt');return;}
+async function scAiWrite(idea,amt,nar,keep){const e=ep();if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return;}if(!txtAi().left){paywall('txt');return;}
  scBuild();const T=SCC.list.filter(c=>!(keep&&c.body.trim()));if(!T.length){toast('대사를 쓸 빈 컷이 없어요');return;}
  prog('AI가 대사를 쓰는 중');progSet(.2,`${T.length}컷의 대사를 쓰는 중…`);
  const amtT=amt==='적게'?'0-1 short line per panel':amt==='많게'?'2-3 lines per panel':'1-2 lines per panel';
@@ -5693,7 +5693,7 @@ Answer JSON only: {"panels":[{"no":<panel no>,"lines":["..."]}]} for the panels 
 function scToneRender(){const box=$('#scTone');if(!box)return;box.innerHTML=QAIG.filter(([g])=>g!=='번역').map(([g,L])=>`<div class="qpg"><span>${g}</span><div class="qpre">${L.map(([l,v])=>`<button type="button" data-sctone="${esc(v||l)}" aria-pressed="${SCTONE===(v||l)}" title="${esc(v||l)}">${l}</button>`).join('')}</div></div>`).join('');
  $('#scToneGo').disabled=!SCTONE;$('#scToneN').innerHTML=`글 AI 1회 · 무료 <b>${txtAi().left}</b>/${TXT_FREE}회 남음`;}
 async function scTone(){const tx=$('#scTx'),src=tx.value.trim();if(!src){toast('대본을 먼저 적어 주세요');return;}if(!SCTONE)return;
- if(!SM){toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요');return;}if(!txtAi().left){paywall('txt');return;}
+ if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return;}if(!txtAi().left){paywall('txt');return;}
  const L=scSelLines(),lines=src.split('\n');const part=L?tx.value.split('\n').slice(L[0],L[1]+1).join('\n'):tx.value;
  const btn=$('#scToneGo'),old=btn.textContent;btn.disabled=true;btn.textContent='바꾸는 중…';
  try{const res=await SM.json(`You rewrite dialogue in a Korean webtoon script. Change ONLY the spoken words to this voice: ${SCTONE}.
