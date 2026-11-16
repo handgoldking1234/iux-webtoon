@@ -1,11 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css');
 /* 연재관(/read) 전용 — .rd 안에서만 적용돼요 (편집기 · 관리자 스타일과 안 섞이게) */
 /* 레이아웃: 독자용 연재관 — 위 고정 메뉴, 요일 탭 + 3:4 썸네일 격자, 작품 · 세로 뷰어 · 연재하기 */
 .rd{
-  --bg:#0b0d0c;--surface:#151917;--surface-2:#1d2320;--ink:#f2f4f2;--ink-2:#a6aea8;--ink-3:#727a74;--line:#262d29;
-  --green:#22c55e;--green-soft:#123221;--on-green:#05200e;--red:#f2555a;--amber:#f5b54a;--blue:#7ea4f0;
-  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
-  --f-display:"Black Han Sans","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --bg:#121212;--surface:#181818;--surface-2:#2a2a2a;--ink:#ffffff;--ink-2:#b3b3b3;--ink-3:#7c7c7c;--line:#2a2a2a;
+  --green:#1ed760;--green-soft:#12301c;--on-green:#000000;--red:#f2555a;--amber:#f5b54a;--blue:#7ea4f0;
+  --f-body:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-display:var(--f-body);
   color-scheme:dark;
 }
 .rd *{box-sizing:border-box}
@@ -23,7 +23,7 @@
 .rd::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
 .rd .r-gnb{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
 .rd .r-gnb .r-wrap{display:flex;align-items:center;gap:18px;height:58px}
-.rd .r-logo{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:21px;letter-spacing:-.01em;white-space:nowrap}
+.rd .r-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:21px;letter-spacing:-.01em;white-space:nowrap}
 .rd .r-logo i{width:28px;height:28px;border-radius:50%;background:var(--green);display:grid;place-items:center}
 .rd .r-logo svg{width:15px;height:15px;stroke:var(--on-green)}
 .rd .r-logo small{font-family:var(--f-body);font-size:12px;font-weight:700;color:var(--green);margin-left:2px;align-self:flex-start;margin-top:4px}
@@ -64,7 +64,7 @@
 .rd .r-thead{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding-block:28px 22px;align-items:start}
 .rd .r-thead .r-th{aspect-ratio:3/4;border-radius:12px;overflow:hidden;max-width:100%}
 .rd .r-thead .r-th canvas{width:100%;height:100%}
-.rd .r-thead h1{font-family:var(--f-display);font-weight:400;font-size:36px;line-height:1.15}
+.rd .r-thead h1{font-weight:800;font-size:36px;line-height:1.15}
 .rd .r-thead .r-who{margin-top:6px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px}
 .rd .r-thead .r-desc{margin-top:14px;max-width:62ch}
 .rd .r-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
@@ -225,39 +225,15 @@
 .rd .r-cutgrid img{width:100%;height:auto;display:block}
 /* 전역 main 스타일(관리자용)이 새어 들지 않게 */
 .rd > main{display:block;padding:0;margin:0;flex:none;gap:0;min-width:0}
-
-/* ───────── 새 디자인 (어두운 화면 · 큰 대표 작품 · TOP 10 · 시간표) — 아래 규칙이 위의 옛 규칙을 덮어써요 */
-.rd::before{background:var(--bg)}
-.rd .r-gnb{background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:0}
+/* ───────── 새 디자인 (스포티파이식 · 프리텐다드) — 아래 규칙이 위의 옛 규칙을 덮어써요 */
+.rd .r-gnb{backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:0}
 .rd .r-menu a{border-bottom:0;margin-bottom:0}
-.rd .r-hero .r-art canvas,.rd .r-hero .r-art img{width:100%;height:100%;object-fit:cover}
-.rd .r-card .r-th canvas,.rd .r-card .r-th img{transition:transform .3s ease}
-@media (hover:hover){.rd .r-card:hover .r-th canvas{transform:scale(1.04)}}
-.rd .r-days a{flex:none;padding:8px 10px;font-family:var(--f-display);font-size:19px;color:var(--ink-3);position:relative;white-space:nowrap}
-.rd .r-days button{border-radius:0}
+.rd .r-card .r-th canvas,.rd .r-card .r-th img,.rd .r-topi .r-th canvas,.rd .r-topi .r-th img,.rd .r-rank .r-mini canvas{width:100%;height:100%}
 .rd .r-fchip{display:inline-flex}
-.rd .r-topi .r-th canvas,.rd .r-topi .r-th img,.rd .r-rank .r-mini canvas{width:100%;height:100%}
-.rd .r-hero{position:relative;margin-top:10px;border-radius:20px;overflow:hidden;background:var(--surface);min-height:min(62vh,560px);display:grid;align-items:end;isolation:isolate}
-.rd .r-hero .r-art{position:absolute;inset:0;z-index:-2}
-.rd .r-hero .r-art img{width:100%;height:100%;object-fit:cover}
-.rd .r-hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(8,10,9,.92) 0%,rgba(8,10,9,.62) 38%,rgba(8,10,9,0) 68%),linear-gradient(0deg,rgba(8,10,9,.86) 0%,rgba(8,10,9,0) 46%)}
-.rd .r-hero .r-txt{padding:clamp(20px,4vw,44px);display:grid;gap:12px;max-width:640px;min-width:0}
-.rd .r-hero .r-kick{font-size:12.5px;font-weight:700;color:#7ee2a3;letter-spacing:.04em}
-.rd .r-hero h2{font-family:var(--f-display);font-weight:400;font-size:clamp(40px,7vw,84px);line-height:1.02;letter-spacing:-.01em;text-shadow:0 2px 24px rgba(0,0,0,.45)}
-.rd .r-hero .r-meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:13.5px;color:#d6dbd7;font-weight:500}
-.rd .r-hero .r-meta i{font-style:normal;color:var(--ink-3)}
-.rd .r-hero .r-meta .r-age{border:1px solid #7b837e;border-radius:4px;padding:0 5px;font-size:11.5px;font-weight:700;line-height:1.6}
-.rd .r-hero p{color:#c9cfcb;max-width:52ch;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.rd .r-hero .r-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+/* 홈 — 큰 추천 화면 */
 .rd .r-btn.r-play{background:#f2f4f2;border-color:#f2f4f2;color:#0b0d0c}
 
-.rd .r-hero .r-fav.r-on{background:rgba(255,255,255,.14);border-color:transparent;color:#f2f4f2}
 .rd .r-btn.r-glass{background:rgba(255,255,255,.14);border-color:transparent;color:#f2f4f2;backdrop-filter:blur(6px)}
-.rd .r-hero .r-pager{position:absolute;right:clamp(14px,3vw,30px);bottom:clamp(14px,3vw,30px);display:flex;align-items:center;gap:8px}
-.rd .r-hero .r-pager span{font-size:12.5px;font-weight:700;color:#d6dbd7;background:rgba(0,0,0,.5);border-radius:999px;padding:5px 11px}
-.rd .r-hero .r-pager button{width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.5);color:#fff;display:grid;place-items:center}
-.rd .r-hero .r-pager button:hover{background:rgba(0,0,0,.75)}
-@media (max-width:760px){.rd .r-hero{min-height:74vw;border-radius:16px}.rd .r-hero::after{background:linear-gradient(0deg,rgba(8,10,9,.94) 0%,rgba(8,10,9,.5) 46%,rgba(8,10,9,0) 80%)}.rd .r-hero p{-webkit-line-clamp:2;font-size:14px}.rd .r-hero .r-pager{top:14px;bottom:auto}.rd .r-hero .r-pager button{display:none}}
 
 /* 옆으로 넘기는 줄 */
 .rd .r-row{margin-top:34px;min-width:0}
@@ -306,7 +282,7 @@
 
 /* TOP 10 — 큰 숫자 + 포스터 */
 .rd .r-topi{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr);align-items:end;min-width:0}
-.rd .r-topi .r-n{font-family:var(--f-display);font-size:clamp(84px,11vw,150px);line-height:.78;color:transparent;-webkit-text-stroke:2px #59615c;text-align:right;margin-right:-.12em;letter-spacing:-.06em;user-select:none}
+.rd .r-topi .r-n{font-weight:800;font-size:clamp(84px,11vw,150px);line-height:.78;color:transparent;-webkit-text-stroke:2px #59615c;text-align:right;margin-right:-.12em;letter-spacing:-.06em;user-select:none}
 .rd .r-topi:hover .r-n{-webkit-text-stroke-color:var(--ink)}
 .rd .r-topi .r-th{position:relative;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--surface-2);z-index:1}
 
@@ -314,7 +290,7 @@
 .rd .r-tt{margin-top:44px}
 .rd .r-days{display:flex;justify-content:center;gap:clamp(2px,1.6vw,18px);overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
 .rd .r-days::-webkit-scrollbar{display:none}
-.rd .r-days button{flex:none;border:0;background:none;padding:8px 10px;font-family:var(--f-display);font-size:19px;color:var(--ink-3);position:relative;white-space:nowrap}
+.rd .r-days button{flex:none;border:0;background:none;padding:8px 10px;font-weight:800;font-size:19px;color:var(--ink-3);position:relative;white-space:nowrap}
 .rd .r-days button:hover{color:var(--ink-2)}
 .rd .r-days button.r-on{color:var(--ink)}
 .rd .r-days button.r-on::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:3px;border-radius:2px;background:var(--ink)}
@@ -329,7 +305,7 @@
 
 /* 만들기 안내 띠 */
 .rd .r-band{margin-top:48px;border-radius:20px;padding:clamp(22px,4vw,40px);display:flex;gap:18px 28px;align-items:center;flex-wrap:wrap;background:radial-gradient(120% 160% at 0% 0%,#1d5a36 0%,#11301f 46%,#151917 100%)}
-.rd .r-band h3{font-family:var(--f-display);font-weight:400;font-size:clamp(24px,3.4vw,34px);line-height:1.15}
+.rd .r-band h3{font-weight:800;font-size:clamp(24px,3.4vw,34px);line-height:1.15}
 .rd .r-band p{color:#c2cbc5;margin-top:6px;max-width:56ch}
 .rd .r-band>div:first-child{flex:1 1 320px;min-width:0}
 .rd .r-band .r-acts{display:flex;gap:8px;flex-wrap:wrap}
@@ -338,7 +314,7 @@
 .rd .r-rank{list-style:none;margin:0;padding:0;display:grid;gap:2px}
 .rd .r-rank li a{display:grid;grid-template-columns:54px 60px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 12px;border-radius:12px}
 .rd .r-rank li a:hover{background:var(--surface)}
-.rd .r-rank .r-n{font-family:var(--f-display);font-size:34px;line-height:1;text-align:center;color:var(--ink-3)}
+.rd .r-rank .r-n{font-weight:800;font-size:34px;line-height:1;text-align:center;color:var(--ink-3)}
 .rd .r-rank li:nth-child(-n+3) .r-n{color:var(--green)}
 .rd .r-rank .r-mini{width:60px;aspect-ratio:2/3;border-radius:6px;overflow:hidden;background:var(--surface-2)}
 .rd .r-rank b{display:block;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -348,5 +324,73 @@
 .rd .r-box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
 .rd .r-notice{margin-top:16px;font-size:13px;color:var(--ink-2);display:flex;gap:6px;align-items:flex-start}
 .rd .r-page-h{padding-block:26px 6px}
-.rd .r-page-h h1{font-family:var(--f-display);font-weight:400;font-size:clamp(28px,4vw,40px)}
+.rd .r-page-h h1{font-weight:800;font-size:clamp(28px,4vw,40px)}
 .rd .r-page-h p{color:var(--ink-2);margin-top:4px;font-size:14px}
+/* SPOTIFY — 스포티파이식 다듬기 (프리텐다드 · 검정 바탕 · 초록 재생 단추) */
+.rd{letter-spacing:-.01em}
+.rd :focus-visible{outline-color:#fff}
+.rd::before{background:#000}
+.rd .r-gnb{background:rgba(0,0,0,.86)}
+.rd .r-logo{letter-spacing:-.03em}
+.rd .r-menu a{color:var(--ink-2)}
+.rd .r-menu a:hover{color:var(--ink)}
+.rd .r-btn{background:transparent;border-color:#727272;transition:transform .12s ease,border-color .12s ease}
+@media (hover:hover){.rd .r-btn:not([disabled]):hover{transform:scale(1.04);border-color:#fff}}
+.rd .r-btn.r-go,.rd .r-btn.r-play{background:var(--green);border-color:var(--green);color:#000}
+.rd .r-btn.r-glass{background:transparent;border:1px solid #727272;color:#fff;backdrop-filter:none}
+.rd .r-hero{--tint:#535353;position:relative;margin-top:10px;border-radius:12px;padding:clamp(18px,3.4vw,36px);display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(16px,2.6vw,28px);align-items:end;background:linear-gradient(180deg,color-mix(in srgb,var(--tint) 88%,#000) 0%,color-mix(in srgb,var(--tint) 30%,var(--bg)) 100%)}
+.rd .r-hero .r-cover{width:clamp(132px,17vw,220px);aspect-ratio:2/3;border-radius:6px;overflow:hidden;box-shadow:0 4px 60px rgba(0,0,0,.5);background:var(--surface-2)}
+.rd .r-hero .r-cover img,.rd .r-hero .r-cover canvas{width:100%;height:100%;object-fit:cover}
+.rd .r-hero .r-txt{display:grid;gap:10px;min-width:0}
+.rd .r-hero .r-kick{font-size:13.5px;font-weight:600}
+.rd .r-hero h2{font-weight:900;font-size:clamp(34px,6.4vw,88px);line-height:1.04;letter-spacing:-.045em}
+.rd .r-hero .r-desc{color:rgba(255,255,255,.74);max-width:60ch;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.rd .r-hero .r-meta{display:flex;flex-wrap:wrap;gap:2px 6px;align-items:center;font-size:14px;color:rgba(255,255,255,.74)}
+.rd .r-hero .r-meta b{color:#fff;font-weight:700}
+.rd .r-hero .r-meta i{font-style:normal}
+.rd .r-hero .r-meta .r-age{border:1px solid rgba(255,255,255,.5);border-radius:3px;padding:0 5px;font-size:11.5px;font-weight:700;line-height:1.6;margin-left:4px}
+.rd .r-hero .r-acts{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.rd .r-hero .r-fav.r-on{background:transparent;border-color:var(--green);color:var(--green)}
+.rd .r-hero .r-pager{position:absolute;right:clamp(12px,2.4vw,24px);top:clamp(12px,2.4vw,24px);display:flex;align-items:center;gap:8px}
+.rd .r-hero .r-pager span{font-size:12.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.4);border-radius:999px;padding:5px 11px}
+.rd .r-hero .r-pager button{width:32px;height:32px;border-radius:50%;border:0;background:rgba(0,0,0,.4);color:#fff;display:grid;place-items:center}
+.rd .r-hero .r-pager button:hover{background:rgba(0,0,0,.7)}
+@media (max-width:640px){.rd .r-hero{grid-template-columns:1fr;justify-items:start}.rd .r-hero .r-cover{justify-self:center;width:min(48vw,190px)}.rd .r-hero .r-pager button{display:none}}
+.rd .r-sec-h h2{font-size:22px;font-weight:800;letter-spacing:-.03em}
+.rd .r-sec-h a{font-weight:700}
+.rd .r-sec-h a:hover{text-decoration:underline}
+.rd .r-rail{gap:0;margin-inline:-10px;grid-auto-columns:calc(100%/7)}
+.rd .r-rail.r-wide,.rd .r-rail.r-top{gap:12px;margin-inline:0}
+.rd .r-grid{gap:6px 0;margin-inline:-10px}
+@media (max-width:1180px){.rd .r-rail{grid-auto-columns:calc(100%/5.3)}}
+@media (max-width:760px){.rd .r-rail{grid-auto-columns:calc(100%/3.25);gap:0;margin-inline:-6px}.rd .r-grid{gap:4px 0;margin-inline:-6px}}
+.rd .r-card{padding:10px;border-radius:8px;gap:8px;align-content:start;transition:background .2s ease}
+@media (max-width:760px){.rd .r-card{padding:6px}}
+.rd .r-card .r-th{border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.rd .r-card b{display:block;font-size:15px;font-weight:700;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rd .r-card .r-meta{padding:0;font-size:13px;margin-top:-4px}
+.rd .r-card .r-pl{position:absolute;right:8px;bottom:8px;width:44px;height:44px;border-radius:50%;background:var(--green);color:#000;display:grid;place-items:center;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease;box-shadow:0 8px 8px rgba(0,0,0,.3)}
+.rd .r-card .r-pl svg{width:20px;height:20px}
+@media (hover:hover){.rd .r-card:hover{background:#1f1f1f}.rd .r-card:hover .r-th{box-shadow:0 8px 24px rgba(0,0,0,.5)}.rd .r-card:hover .r-th img,.rd .r-card:hover .r-th canvas{transform:none}.rd .r-card:hover .r-pl{opacity:1;transform:none}}
+.rd .r-bd{border-radius:4px}
+.rd .r-bd.r-new{color:#000}
+.rd .r-cont .r-th{border-radius:6px}
+.rd .r-topi .r-n{font-weight:900;color:#3e3e3e;-webkit-text-stroke:0;letter-spacing:-.08em}
+.rd .r-topi:hover .r-n{color:var(--green)}
+.rd .r-topi .r-th{border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.rd .r-days button{font-size:17px;letter-spacing:-.02em;color:var(--ink-2)}
+.rd .r-days button:hover{color:var(--ink)}
+.rd .r-days button.r-on::after{background:var(--green)}
+.rd .r-fchip{border-radius:999px;background:#2a2a2a;color:#fff;font-weight:500;padding:7px 14px}
+.rd .r-fchip:hover{background:#333}
+.rd .r-fchip.r-on{background:#fff;color:#000}
+.rd .r-band{border-radius:12px;background:linear-gradient(120deg,#1a6b3a 0%,#14402a 42%,#181818 100%)}
+.rd .r-band h3{letter-spacing:-.035em}
+.rd .r-rank li a{border-radius:6px}
+.rd .r-rank li a:hover{background:rgba(255,255,255,.1)}
+.rd .r-rank .r-n{font-size:20px;font-weight:600;color:var(--ink-2)}
+.rd .r-rank .r-mini{border-radius:4px}
+.rd .r-rank b{font-weight:600}
+.rd .r-rank .r-r{color:var(--ink-2);font-weight:500}
+.rd .r-page-h h1,.rd .r-thead h1{font-weight:900;letter-spacing:-.04em}
+

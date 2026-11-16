@@ -15,21 +15,21 @@ export default function Hero({ list }: { list: SV[] }) {
   if (!list.length) return null;
   const n = list.length, f = list[((i % n) + n) % n];
   return (
-    <section className={k('hero')} aria-label="추천 작품" aria-roledescription="carousel">
-      <div className={k('art')} key={f.id}><Thumb s={f} w={1600} h={800} noTitle alt="" /></div>
+    <section className={k('hero')} style={{ '--tint': f.art?.pal[1] || '#535353' } as React.CSSProperties} aria-label="추천 작품" aria-roledescription="carousel">
+      <div className={k('cover')} key={f.id}><Thumb s={f} w={400} h={600} alt="" /></div>
       <div className={k('txt')}>
         <span className={k('kick')}>오늘의 추천 · {when(f)}</span>
         <h2>{f.title}</h2>
+        <p className={k('desc')}>{f.description}</p>
         <p className={k('meta')}>
-          {f.rating > 0 && <><span className={k('star tnum')}>★ {f.rating.toFixed(2)}</span><i>·</i></>}
-          <span>{f.genre}</span><i>·</i><span>총 {f.episodes}화</span><i>·</i><span>{f.author}</span>
+          <b>{f.author}</b>{f.rating > 0 && <><i>·</i><span className={k('tnum')}>★ {f.rating.toFixed(2)}</span></>}
+          <i>·</i><span>{f.genre}</span><i>·</i><span>총 {f.episodes}화</span>
           <span className={k('age')}>{ageLabel(f.age)}</span>{f.ai && <span className={k('age')}>AI 활용</span>}
         </p>
-        <p>{f.description}</p>
-        <div className={k('acts')}>
-          <Link className={k('btn big play')} href={readHref(`${f.id}/1`)}><Ic n="play" />첫 화 보기</Link>
-          <Link className={k('btn big glass')} href={readHref(f.id)}><Ic n="info" />작품 정보</Link>
-        </div>
+      </div>
+      <div className={k('acts')}>
+        <Link className={k('btn big play')} href={readHref(`${f.id}/1`)}><Ic n="play" />첫 화 보기</Link>
+        <Link className={k('btn big glass')} href={readHref(f.id)}>작품 정보</Link>
       </div>
       {n > 1 && (
         <div className={k('pager')}>
