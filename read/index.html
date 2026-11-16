@@ -3,46 +3,47 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#ffffff">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="theme-color" content="#0b0d0c">
+<style>:root{color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>웹툰보드 연재</title>
 <meta name="description" content="웹툰보드에서 만든 웹툰을 요일연재 · 자유연재로 읽는 곳">
+<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
 <style>
-/* 레이아웃: 독자용 연재관 — 위 고정 메뉴, 요일 탭 + 3:4 썸네일 격자, 작품 · 세로 뷰어 · 연재하기 단계 화면을 #주소로 바꿔 보여 줘요 */
+/* 레이아웃: 독자용 연재관 — 어두운 바탕, 큰 추천 화면 → 옆으로 넘기는 줄(이어 보기 · TOP 10 · 주제별) → 요일 시간표(포스터 격자). 작품 · 세로 뷰어 · 연재하기는 주소로 바꿔 보여 줘요 */
 :root{
-  --bg:#f5f6f4;--surface:#ffffff;--ink:#151916;--ink-2:#626a64;--ink-3:#959c97;--line:#e3e6e2;
-  --green:#16a34a;--green-soft:#e6f6ec;--on-green:#ffffff;--red:#e5484d;--amber:#f5a524;--blue:#3d6fd1;
+  --bg:#0b0d0c;--surface:#151917;--surface-2:#1d2320;--ink:#f2f4f2;--ink-2:#a5ada8;--ink-3:#6c746f;--line:#272e2a;
+  --green:#22c55e;--green-soft:#11301f;--on-green:#04210e;--red:#f2555a;--amber:#f5b54a;--blue:#7ea4f0;
   --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
   --f-display:"Black Han Sans","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  color-scheme:dark;
 }
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1210;--surface:#161b18;--ink:#eef1ee;--ink-2:#a6aea8;--ink-3:#727a74;--line:#262d29;--green:#22c55e;--green-soft:#123221;--on-green:#05200e;--red:#f2555a;--amber:#f5b54a;--blue:#7ea4f0;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#0e1210;--surface:#161b18;--ink:#eef1ee;--ink-2:#a6aea8;--ink-3:#727a74;--line:#262d29;--green:#22c55e;--green-soft:#123221;--on-green:#05200e;--red:#f2555a;--amber:#f5b54a;--blue:#7ea4f0;color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font:15px/1.6 var(--f-body);-webkit-font-smoothing:antialiased;word-break:keep-all}
 a{color:inherit;text-decoration:none}
 button{font:inherit;color:inherit;cursor:pointer}
 img,canvas{display:block;max-width:100%}
 :focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:6px}
-.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1320px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 h1,h2,h3{margin:0;text-wrap:balance}
 p{margin:0}
 .muted{color:var(--ink-2)}
 .tnum{font-variant-numeric:tabular-nums}
 
 /* 상단 */
-body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
-.gnb{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.gnb{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .gnb .wrap{display:flex;align-items:center;gap:18px;height:58px}
 .logo{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:21px;letter-spacing:-.01em;white-space:nowrap}
 .logo i{width:28px;height:28px;border-radius:50%;background:var(--green);display:grid;place-items:center}
 .logo svg{width:15px;height:15px;stroke:var(--on-green)}
 .logo small{font-family:var(--f-body);font-size:12px;font-weight:700;color:var(--green);margin-left:2px;align-self:flex-start;margin-top:4px}
 .menu{display:flex;gap:2px;height:100%}
-.menu a{display:flex;align-items:center;padding:0 12px;font-weight:700;color:var(--ink-2);border-bottom:3px solid transparent;margin-bottom:-1px}
-.menu a.on{color:var(--ink);border-bottom-color:var(--green)}
+.menu a{display:flex;align-items:center;padding:0 12px;font-weight:700;color:var(--ink-3);white-space:nowrap}
+.menu a:hover{color:var(--ink-2)}
+.menu a.on{color:var(--ink)}
 .gnb .right{margin-left:auto;display:flex;gap:8px;align-items:center}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;border:1px solid var(--line);background:var(--surface);white-space:nowrap}
 .btn.go{background:var(--green);border-color:var(--green);color:var(--on-green)}
@@ -57,75 +58,124 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
   .only-wide{display:none}
 }
 
-/* 홈 */
-.feature{margin-top:22px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);border-radius:16px;overflow:hidden;background:#141a17;color:#f2f4f2;min-height:260px}
-.feature .art{position:relative;min-height:220px}
-.feature .art canvas{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.feature .txt{padding:30px 30px 28px;display:grid;gap:12px;align-content:center}
-.feature .tag{font-size:12px;font-weight:700;color:#7ee2a3;letter-spacing:.06em}
-.feature h2{font-family:var(--f-display);font-weight:400;font-size:38px;line-height:1.15}
-.feature p{color:#c3cbc6}
-.feature .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
-.feature .btn{background:transparent;border-color:#4a554f;color:#f2f4f2}
-.feature .btn.go{background:#22c55e;border-color:#22c55e;color:#05200e}
-@media (max-width:760px){.feature{grid-template-columns:1fr}.feature .txt{padding:22px}.feature h2{font-size:30px}}
+/* 홈 — 큰 추천 화면 */
+.hero{position:relative;margin-top:10px;border-radius:20px;overflow:hidden;background:var(--surface);min-height:min(62vh,560px);display:grid;align-items:end;isolation:isolate}
+.hero .art{position:absolute;inset:0;z-index:-2}
+.hero .art img{width:100%;height:100%;object-fit:cover}
+.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(8,10,9,.92) 0%,rgba(8,10,9,.62) 38%,rgba(8,10,9,0) 68%),linear-gradient(0deg,rgba(8,10,9,.86) 0%,rgba(8,10,9,0) 46%)}
+.hero .txt{padding:clamp(20px,4vw,44px);display:grid;gap:12px;max-width:640px;min-width:0}
+.hero .kick{font-size:12.5px;font-weight:700;color:#7ee2a3;letter-spacing:.04em}
+.hero h2{font-family:var(--f-display);font-weight:400;font-size:clamp(40px,7vw,84px);line-height:1.02;letter-spacing:-.01em;text-shadow:0 2px 24px rgba(0,0,0,.45)}
+.hero .meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:13.5px;color:#d6dbd7;font-weight:500}
+.hero .meta i{font-style:normal;color:var(--ink-3)}
+.hero .meta .age{border:1px solid #7b837e;border-radius:4px;padding:0 5px;font-size:11.5px;font-weight:700;line-height:1.6}
+.hero p{color:#c9cfcb;max-width:52ch;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.hero .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.btn.play{background:#f2f4f2;border-color:#f2f4f2;color:#0b0d0c}
 
-.layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:32px;margin-top:30px;align-items:start}
-.layout>*{min-width:0}
-@media (max-width:980px){.layout{grid-template-columns:1fr}}
-.sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:14px}
-.sec-h h2{font-size:20px}
-.sec-h a{margin-left:auto;font-size:13px;color:var(--ink-2)}
-.days{display:flex;gap:4px;overflow-x:auto;padding-bottom:2px;margin-bottom:16px}
-.days button{flex:none;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:7px 14px;font-weight:700;font-size:14px;color:var(--ink-2)}
-.days button.on{background:var(--ink);border-color:var(--ink);color:var(--surface)}
-.days button .today{font-size:11px;color:var(--green);margin-left:3px}
-.days button.on .today{color:#7ee2a3}
-.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:18px 14px}
-@media (max-width:1180px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media (max-width:760px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 10px}}
-/* 홈의 한 줄 목록은 좁은 화면에서 옆으로 넘겨 봐요 */
-@media (max-width:1180px){.grid.swipe{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:calc((100% - 3*14px)/4.3);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:6px;scrollbar-width:none}.grid.swipe::-webkit-scrollbar{display:none}.grid.swipe>*{scroll-snap-align:start}}
-@media (max-width:760px){.grid.swipe{grid-auto-columns:calc((100% - 2*10px)/3.3)}}
-.card{display:grid;gap:7px;min-width:0}
-.card .th{position:relative;aspect-ratio:3/4;border-radius:10px;overflow:hidden;background:var(--line);max-width:100%}
-.card .th canvas{width:100%;height:100%}
-.badges{position:absolute;left:6px;top:6px;display:flex;gap:4px}
+.hero .fav.on{background:rgba(255,255,255,.14);border-color:transparent;color:#f2f4f2}
+.btn.glass{background:rgba(255,255,255,.14);border-color:transparent;color:#f2f4f2;backdrop-filter:blur(6px)}
+.hero .pager{position:absolute;right:clamp(14px,3vw,30px);bottom:clamp(14px,3vw,30px);display:flex;align-items:center;gap:8px}
+.hero .pager span{font-size:12.5px;font-weight:700;color:#d6dbd7;background:rgba(0,0,0,.5);border-radius:999px;padding:5px 11px}
+.hero .pager button{width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.5);color:#fff;display:grid;place-items:center}
+.hero .pager button:hover{background:rgba(0,0,0,.75)}
+@media (max-width:760px){.hero{min-height:74vw;border-radius:16px}.hero::after{background:linear-gradient(0deg,rgba(8,10,9,.94) 0%,rgba(8,10,9,.5) 46%,rgba(8,10,9,0) 80%)}.hero p{-webkit-line-clamp:2;font-size:14px}.hero .pager{top:14px;bottom:auto}.hero .pager button{display:none}}
+
+/* 옆으로 넘기는 줄 */
+.row{margin-top:34px;min-width:0}
+.sec-h{display:flex;align-items:baseline;gap:10px;margin-bottom:12px}
+.sec-h h2{font-size:19px;letter-spacing:-.01em}
+.sec-h small{color:var(--ink-3);font-size:12.5px;font-weight:500}
+.sec-h a{margin-left:auto;font-size:13px;color:var(--ink-2);white-space:nowrap}
+.sec-h a:hover{color:var(--ink)}
+.railw{position:relative}
+.rail{display:grid;grid-auto-flow:column;grid-auto-columns:calc((100% - 6*12px)/7);gap:12px;overflow-x:auto;scroll-snap-type:x proximity;scrollbar-width:none;padding-bottom:4px;overscroll-behavior-x:contain}
+.rail::-webkit-scrollbar{display:none}
+.rail>*{scroll-snap-align:start;min-width:0}
+.rail.wide{grid-auto-columns:calc((100% - 4*12px)/5)}
+.rail.top{grid-auto-columns:calc((100% - 4*12px)/5)}
+@media (max-width:1180px){.rail{grid-auto-columns:calc((100% - 4*12px)/5.3)}.rail.wide,.rail.top{grid-auto-columns:calc((100% - 2*12px)/3.3)}}
+@media (max-width:760px){.rail{grid-auto-columns:calc((100% - 2*10px)/3.25);gap:10px}.rail.wide{grid-auto-columns:calc((100% - 10px)/1.7)}.rail.top{grid-auto-columns:calc((100% - 10px)/1.9)}}
+.railb{position:absolute;top:0;bottom:4px;width:44px;border:0;color:#fff;display:none;place-items:center;z-index:2;background:linear-gradient(90deg,rgba(11,13,12,.9),rgba(11,13,12,0))}
+.railb.r{right:0;background:linear-gradient(270deg,rgba(11,13,12,.9),rgba(11,13,12,0))}
+.railb.l{left:0}
+@media (hover:hover) and (min-width:761px){.railw:hover .railb{display:grid}.railb[disabled]{display:none!important}}
+
+/* 포스터 카드 — 제목은 그림 위에 */
+.card{display:grid;gap:6px;min-width:0}
+.card .th{position:relative;aspect-ratio:2/3;border-radius:10px;overflow:hidden;background:var(--surface-2);max-width:100%;transition:transform .18s ease,box-shadow .18s ease}
+.card .th img{transition:transform .3s ease}
+@media (hover:hover){.card:hover .th{box-shadow:0 0 0 2px var(--ink)}.card:hover .th img{transform:scale(1.04)}}
+.badges{position:absolute;left:6px;top:6px;display:flex;gap:4px;flex-wrap:wrap}
 .bd{font-size:10.5px;font-weight:700;line-height:1;padding:4px 6px;border-radius:5px;background:rgba(10,12,11,.72);color:#fff}
 .bd.up{background:var(--red)}
 .bd.new{background:var(--green);color:var(--on-green)}
-.bd.ai{background:rgba(255,255,255,.9);color:#151916}
-.card b{font-size:14.5px;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.card .meta{display:flex;gap:6px;align-items:center;font-size:12.5px;color:var(--ink-2);min-width:0}
+.bd.ai{background:rgba(255,255,255,.92);color:#151916}
+.bd.free{background:#f5c542;color:#1c1500}
+.card .meta{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--ink-2);min-width:0;padding:0 2px}
 .card .meta span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .star{color:var(--amber);font-weight:700;flex:none}
-.empty{padding:40px 0;text-align:center;color:var(--ink-2)}
+.empty{padding:48px 0;text-align:center;color:var(--ink-2)}
 
-.side{display:grid;gap:22px}
-.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
-.rank{list-style:none;margin:0;padding:0;display:grid;gap:4px;counter-reset:r}
-.rank-wide{display:block;columns:2;column-gap:28px}
-.rank-wide li,.side .rank li{break-inside:avoid;margin-bottom:4px}
-@media (min-width:600px) and (max-width:980px){.side .rank{display:block;columns:2;column-gap:28px}.side .rank li{break-inside:avoid}.side{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:599px){.rank-wide{columns:1}}
-.rank li a{display:grid;grid-template-columns:22px 44px minmax(0,1fr);gap:10px;align-items:center;padding:6px 0}
-.rank .n{font-weight:700;font-size:16px;text-align:center}
+/* 이어 보기 */
+.cont{display:grid;gap:8px;min-width:0}
+.cont .th{position:relative;aspect-ratio:16/10;border-radius:10px;overflow:hidden;background:var(--surface-2)}
+.cont .bar{position:absolute;left:0;right:0;bottom:0;height:4px;background:rgba(255,255,255,.22)}
+.cont .bar i{display:block;height:100%;background:var(--green)}
+.cont .go{position:absolute;right:8px;bottom:12px;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,.6);display:grid;place-items:center;color:#fff}
+.cont b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.cont small{color:var(--ink-2);font-size:12.5px}
+
+/* TOP 10 — 큰 숫자 + 포스터 */
+.topi{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr);align-items:end;min-width:0}
+.topi .n{font-family:var(--f-display);font-size:clamp(84px,11vw,150px);line-height:.78;color:transparent;-webkit-text-stroke:2px #59615c;text-align:right;margin-right:-.12em;letter-spacing:-.06em;user-select:none}
+.topi:hover .n{-webkit-text-stroke-color:var(--ink)}
+.topi .th{position:relative;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--surface-2);z-index:1}
+
+/* 시간표 */
+.tt{margin-top:44px}
+.days{display:flex;justify-content:center;gap:clamp(2px,1.6vw,18px);overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
+.days::-webkit-scrollbar{display:none}
+.days button{flex:none;border:0;background:none;padding:8px 10px;font-family:var(--f-display);font-size:19px;color:var(--ink-3);position:relative;white-space:nowrap}
+.days button:hover{color:var(--ink-2)}
+.days button.on{color:var(--ink)}
+.days button.on::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:3px;border-radius:2px;background:var(--ink)}
+.days button .today{position:absolute;top:4px;right:2px;width:6px;height:6px;border-radius:50%;background:var(--green)}
+.chipsbar{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:18px}
+.fchip{border:0;border-radius:10px;padding:8px 14px;font-weight:700;font-size:13.5px;background:var(--surface-2);color:var(--ink-2);white-space:nowrap}
+.fchip.on{background:var(--ink);color:var(--bg)}
+.grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px 12px}
+@media (max-width:1180px){.grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (max-width:900px){.grid{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (max-width:640px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:14px 8px}.days{justify-content:flex-start}.days button{font-size:17px;padding:8px 9px}}
+
+/* 만들기 안내 띠 */
+.band{margin-top:48px;border-radius:20px;padding:clamp(22px,4vw,40px);display:flex;gap:18px 28px;align-items:center;flex-wrap:wrap;background:radial-gradient(120% 160% at 0% 0%,#1d5a36 0%,#11301f 46%,#151917 100%)}
+.band h3{font-family:var(--f-display);font-weight:400;font-size:clamp(24px,3.4vw,34px);line-height:1.15}
+.band p{color:#c2cbc5;margin-top:6px;max-width:56ch}
+.band>div:first-child{flex:1 1 320px;min-width:0}
+.band .acts{display:flex;gap:8px;flex-wrap:wrap}
+
+/* 랭킹 */
+.rank{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.rank li a{display:grid;grid-template-columns:54px 60px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 12px;border-radius:12px}
+.rank li a:hover{background:var(--surface)}
+.rank .n{font-family:var(--f-display);font-size:34px;line-height:1;text-align:center;color:var(--ink-3)}
 .rank li:nth-child(-n+3) .n{color:var(--green)}
-.rank .mini{width:44px;aspect-ratio:3/4;border-radius:6px;overflow:hidden}
-.rank .mini canvas{width:100%;height:100%}
-.rank b{display:block;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rank small{color:var(--ink-2);font-size:12px}
-.make{background:var(--green-soft);border-color:transparent;display:grid;gap:10px}
-.make h3{font-size:16px}
-.make p{font-size:13.5px;color:var(--ink-2)}
-.tabs2{display:flex;gap:2px;border-bottom:1px solid var(--line);margin-bottom:14px}
-.tabs2 button{border:0;background:none;padding:8px 12px;font-weight:700;color:var(--ink-2);border-bottom:2px solid transparent;margin-bottom:-1px}
-.tabs2 button.on{color:var(--ink);border-bottom-color:var(--ink)}
-.notice{margin-top:12px;font-size:13px;color:var(--ink-2);display:flex;gap:6px;align-items:flex-start}
+.rank .mini{width:60px;aspect-ratio:2/3;border-radius:6px;overflow:hidden;background:var(--surface-2)}
+.rank b{display:block;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank small{color:var(--ink-2);font-size:13px;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank .r{color:var(--amber);font-weight:700;font-size:14px;white-space:nowrap}
+@media (max-width:520px){.rank li a{grid-template-columns:34px 48px minmax(0,1fr);gap:10px;padding:8px 4px}.rank .n{font-size:26px}.rank .mini{width:48px}.rank .r{display:none}}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
+.notice{margin-top:16px;font-size:13px;color:var(--ink-2);display:flex;gap:6px;align-items:flex-start}
+.page-h{padding-block:26px 6px}
+.page-h h1{font-family:var(--f-display);font-weight:400;font-size:clamp(28px,4vw,40px)}
+.page-h p{color:var(--ink-2);margin-top:4px;font-size:14px}
 
 /* 작품 페이지 */
 .thead{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding-block:28px 22px;align-items:start}
-.thead .th{aspect-ratio:3/4;border-radius:12px;overflow:hidden;max-width:100%}
+.thead .th{aspect-ratio:2/3;border-radius:12px;overflow:hidden;max-width:100%}
 .thead .th canvas{width:100%;height:100%}
 .thead h1{font-family:var(--f-display);font-weight:400;font-size:36px;line-height:1.15}
 .thead .who{margin-top:6px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px}
@@ -158,7 +208,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .vbar .t small{color:var(--ink-2);font-size:12.5px}
 .ibtn{width:38px;height:38px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;flex:none}
 .ibtn[disabled]{opacity:.35;cursor:not-allowed}
-.strip{max-width:690px;margin:0 auto;background:#fff}
+.strip{max-width:690px;margin:0 auto;background:#fff;color-scheme:light}
 .cutv{position:relative}
 .cutv canvas{width:100%;height:auto}
 .bal{position:absolute;max-width:62%;background:#fff;color:#151916;border:2px solid #151916;border-radius:22px;padding:10px 16px;font-size:clamp(13px,2.4vw,17px);font-weight:500;line-height:1.45;text-align:center}
@@ -217,7 +267,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .src{display:grid;gap:10px}
 .srcw{display:grid;grid-template-columns:64px minmax(0,1fr) auto;gap:14px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 14px;cursor:pointer;background:var(--bg)}
 .srcw:has(input:checked){border-color:var(--green);background:var(--green-soft)}
-.srcw .mini{aspect-ratio:3/4;border-radius:6px;overflow:hidden}
+.srcw .mini{aspect-ratio:2/3;border-radius:6px;overflow:hidden}
 .srcw .mini canvas{width:100%;height:100%}
 .srcw small{color:var(--ink-2);font-size:12.5px}
 .eps{display:grid;gap:6px}
@@ -244,8 +294,6 @@ footer .wrap{display:flex;gap:6px 18px;flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
 </style>
 
-</head>
-<body>
 <header class="gnb" id="gnb">
   <div class="wrap">
     <a class="logo" href="/read" data-l=""><i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg></i>웹툰보드<small>연재</small></a>
@@ -281,6 +329,25 @@ const W=[
  {id:'barrier',title:'결계 아파트 304호',author:'도깨비불',genre:'액션',days:['mon','thu'],rate:9.41,eps:76,pal:['#10151f','#3a86ff','#8338ec'],motif:'rings',age:'15세',desc:'월세 20만 원짜리 집에는 이유가 있었다. 이 아파트는 도시의 결계였다.'},
  {id:'palace',title:'첫 출근은 용궁으로',author:'물방울',genre:'판타지',days:['wed','sat'],rate:9.69,eps:41,pal:['#023e8a','#00b4d8','#caf0f8'],motif:'waves',age:'전체',desc:'공채 합격 문자를 받고 간 곳은 바닷속 용궁 인사팀이었다.'},
  {id:'bakery',title:'달곰 동네 빵집',author:'곰손',genre:'일상',days:['tue'],rate:9.33,eps:18,pal:['#fff1d6','#d4a373','#6b4226'],motif:'dots',age:'전체',desc:'골목 끝 빵집의 하루. 오늘의 빵은 손님 사연으로 정해진다.'},
+ {id:'m1',title:'퇴근길 저승사자',author:'야근',genre:'판타지',days:['mon'],rate:9.55,eps:33,up:1,pal:['#1a1423', '#3d314a', '#e0b1cb'],motif:'moon',age:'전체',desc:'칼퇴가 소원인 9급 저승사자의 서울 근무기.'},
+ {id:'m2',title:'옥상 텃밭 동아리',author:'상추',genre:'일상',days:['mon'],rate:9.37,eps:19,pal:['#e9f5db', '#97a97c', '#40513b'],motif:'dots',age:'전체',desc:'학교 옥상에 몰래 만든 텃밭, 부원은 세 명.'},
+ {id:'m3',title:'검은 우산',author:'먹구름',genre:'미스터리',days:['mon', 'fri'],rate:9.62,eps:45,pal:['#0d1b2a', '#1b263b', '#e0e1dd'],motif:'rain',age:'15세',desc:'비 오는 날마다 같은 우산을 쓴 사람이 나타난다.'},
+ {id:'m4',title:'9회말 대타',author:'불펜',genre:'스포츠',days:['mon'],rate:9.29,eps:58,pal:['#003049', '#669bbc', '#fdf0d5'],motif:'rings',age:'전체',desc:'만년 2군 대타에게 온 마지막 타석.'},
+ {id:'t1',title:'유령 하숙집',author:'이불밖',genre:'개그',days:['tue'],rate:9.6,eps:27,up:1,pal:['#22223b', '#9a8c98', '#f2e9e4'],motif:'stars',age:'12세',desc:'월세가 싼 이유: 선입주자가 유령 넷.'},
+ {id:'t2',title:'황금 붕어빵',author:'팥앙금',genre:'드라마',days:['tue', 'sat'],rate:9.44,eps:36,pal:['#3d2c1e', '#bc6c25', '#fefae0'],motif:'dots',age:'전체',desc:'겨울 한 철 장사로 일 년을 버티는 부녀의 이야기.'},
+ {id:'t3',title:'달빛 검객',author:'서리',genre:'액션',days:['tue'],rate:9.51,eps:72,pal:['#03045e', '#0077b6', '#caf0f8'],motif:'moon',age:'15세',desc:'달이 뜨는 밤에만 칼을 뽑을 수 있는 검객.'},
+ {id:'w1',title:'오늘도 야근각',author:'과장',genre:'일상',days:['wed'],rate:9.35,eps:90,pal:['#f1faee', '#a8dadc', '#1d3557'],motif:'grid',age:'전체',desc:'입사 7년차, 퇴근은 여전히 어렵다.'},
+ {id:'w2',title:'마녀의 약국',author:'박하',genre:'판타지',days:['wed'],rate:9.72,eps:29,up:1,pal:['#2b2d42', '#8d99ae', '#ef233c'],motif:'cross',age:'전체',desc:'처방전 없이 소원을 조제해 드립니다.'},
+ {id:'w3',title:'7번 국도',author:'해안선',genre:'로맨스',days:['wed', 'sun'],rate:9.47,eps:24,pal:['#ffddd2', '#e29578', '#006d77'],motif:'waves',age:'전체',desc:'동해안을 따라 걷는 두 사람의 여름.'},
+ {id:'th1',title:'심야 라디오',author:'주파수',genre:'드라마',days:['thu'],rate:9.63,eps:40,pal:['#14213d', '#fca311', '#e5e5e5'],motif:'lines',age:'전체',desc:'새벽 두 시, 사연은 늘 한 통뿐이다.'},
+ {id:'th2',title:'학교 뒤 던전',author:'분필',genre:'판타지',days:['thu'],rate:9.26,eps:51,up:1,pal:['#1b4332', '#52b788', '#d8f3dc'],motif:'grid',age:'12세',desc:'체육창고 문을 열자 던전 1층이 나왔다.'},
+ {id:'f1b',title:'토요일의 탐정',author:'돋보기',genre:'미스터리',days:['fri'],rate:9.57,eps:34,pal:['#2f3e46', '#84a98c', '#cad2c5'],motif:'rings',age:'12세',desc:'주말에만 문을 여는 탐정 사무소.'},
+ {id:'f2b',title:'김밥천국 블루스',author:'단무지',genre:'개그',days:['fri'],rate:9.4,eps:63,up:1,pal:['#ffe8d6', '#cb997e', '#6b705c'],motif:'dots',age:'전체',desc:'24시간 분식집의 24시간.'},
+ {id:'s1',title:'고양이 택배',author:'츄르',genre:'일상',days:['sat'],rate:9.66,eps:21,up:1,pal:['#fff3b0', '#e09f3e', '#335c67'],motif:'dots',age:'전체',desc:'동네 고양이들이 밤마다 택배를 나른다.'},
+ {id:'s2',title:'철의 궁수',author:'화살촉',genre:'액션',days:['sat'],rate:9.31,eps:47,pal:['#1c1c1c', '#6c757d', '#e63946'],motif:'lines',age:'15세',desc:'활 하나로 성벽을 지킨 궁수의 기록.'},
+ {id:'su1',title:'일요일은 휴무',author:'월요병',genre:'일상',days:['sun'],rate:9.43,eps:38,pal:['#edf2f4', '#8d99ae', '#d90429'],motif:'grid',age:'전체',desc:'쉬는 날에만 벌어지는 사장님의 모험.'},
+ {id:'su2',title:'별을 줍는 아이',author:'은하수',genre:'판타지',days:['sun'],rate:9.75,eps:26,up:1,pal:['#10002b', '#5a189a', '#e0aaff'],motif:'stars',age:'전체',desc:'떨어진 별을 주워 하늘에 돌려놓는 일.'},
+ {id:'su3',title:'동네 복싱장',author:'레프트',genre:'스포츠',days:['sun'],rate:9.22,eps:55,pal:['#370617', '#9d0208', '#ffba08'],motif:'rings',age:'12세',desc:'폐업 직전 체육관에 들어온 마흔 살 신입.'},
  {id:'end1',title:'마지막 기차는 0시',author:'철길',genre:'미스터리',days:['end'],rate:9.81,eps:60,pal:['#1b1b1e','#5f0f40','#fb8b24'],motif:'lines',age:'15세',desc:'자정에만 서는 기차역. 내리는 사람은 있어도 타는 사람은 없다.'},
  {id:'end2',title:'우리 반 반장은 고양이',author:'냥펀치',genre:'개그',days:['end'],rate:9.74,eps:88,pal:['#f8edeb','#f9844a','#577590'],motif:'dots',age:'전체',desc:'반장 선거에서 고양이가 당선됐다. 공약은 낮잠 시간 확보.'},
 ];
@@ -324,12 +391,13 @@ function motif(g,w,W2,H,r){const [a,b,c]=w.pal;g.save();
  else if(w.motif==='lines'){g.strokeStyle=c;g.lineWidth=W2/80;for(let k=0;k<7;k++){g.globalAlpha=.3+k*.1;g.beginPath();g.moveTo(0,H*(.2+k*.08));g.lineTo(W2,H*(.1+k*.08));g.stroke();}}
  g.restore();}
 function figure(g,x,y,s,col){g.fillStyle=col;g.beginPath();g.arc(x,y-s*1.25,s*.42,0,7);g.fill();g.beginPath();g.moveTo(x-s*.62,y+s*.9);g.quadraticCurveTo(x-s*.6,y-s*.7,x,y-s*.72);g.quadraticCurveTo(x+s*.6,y-s*.7,x+s*.62,y+s*.9);g.closePath();g.fill();}
-function thumb(w,Wd=300,Ht=400){const k=w.id+w.title+Wd+'x'+Ht;if(TH[k])return TH[k];const cv=document.createElement('canvas');cv.width=Wd;cv.height=Ht;const g=cv.getContext('2d'),r=rnd(w.id);
+function thumb(w,Wd=400,Ht=600,bare){const k=w.id+w.title+Wd+'x'+Ht+(bare?'b':'');if(TH[k])return TH[k];const cv=document.createElement('canvas');cv.width=Wd;cv.height=Ht;const g=cv.getContext('2d'),r=rnd(w.id);
  const gr=g.createLinearGradient(0,0,0,Ht);gr.addColorStop(0,w.pal[0]);gr.addColorStop(1,w.pal[1]);g.fillStyle=gr;g.fillRect(0,0,Wd,Ht);motif(g,w,Wd,Ht,r);
+ if(bare){figure(g,Wd*.72,Ht*.95,Ht*.3,'rgba(10,12,11,.86)');figure(g,Wd*.86,Ht*1.02,Ht*.2,'rgba(10,12,11,.6)');return TH[k]=cv.toDataURL('image/jpeg',.88);}
  figure(g,Wd*.5,Ht*.86,Wd*.17,'rgba(10,12,11,.82)');
  const sh=g.createLinearGradient(0,Ht*.55,0,Ht);sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.6)');g.fillStyle=sh;g.fillRect(0,Ht*.55,Wd,Ht*.45);
  g.fillStyle='#fff';g.textAlign='center';g.textBaseline='alphabetic';let fs=Wd*(w.title.length>6?.12:.17);g.font=`${fs}px "Black Han Sans","Apple SD Gothic Neo",sans-serif`;
- const words=w.title.length>7?[w.title.slice(0,Math.ceil(w.title.length/2)).trim(),w.title.slice(Math.ceil(w.title.length/2)).trim()]:[w.title];
+ const words=(()=>{const t=w.title;if(t.length<=7)return [t];const mid=t.length/2;let best=-1;for(let i=1;i<t.length-1;i++)if(t[i]===' '&&(best<0||Math.abs(i-mid)<Math.abs(best-mid)))best=i;return best>0?[t.slice(0,best),t.slice(best+1)]:[t.slice(0,Math.ceil(mid)),t.slice(Math.ceil(mid))];})();
  words.forEach((t,i)=>g.fillText(t,Wd/2,Ht*.93-(words.length-1-i)*fs*1.1));
  return TH[k]=cv.toDataURL('image/jpeg',.86);}
 function img(src,alt){return `<img src="${src}" alt="${alt||''}" style="width:100%;height:100%;object-fit:cover">`;}
@@ -339,34 +407,54 @@ function cutCanvas(w,n,i){const r=rnd(w.id+n+'-'+i);const Wd=690,Ht=[560,720,620
  return cv.toDataURL('image/jpeg',.82);}
 
 /* ---------- 상태 ---------- */
-const S={day:TODAY,fav:new Set(['hyeonsang']),myRate:{},cm:{},freeSort:'new',pub:{step:1,src:'hyeonsang',eps:[1,2,3],title:'현상',genre:'스릴러',desc:'1944년 경성. 혼을 보는 견습 사진사가 사라진 스승을 찾아 나선다.',age:'15세',days:['mon'],mode:'free',ai:'yes',agree:[false,false,false]}};
+const S={hero:0,dsort:'rate',dup:false,cont:[{id:'hyeonsang',n:3,p:.62},{id:'conv',n:12,p:.3},{id:'mungu',n:40,p:.85},{id:'palace',n:7,p:.15},{id:'funeral',n:21,p:.5}],day:TODAY,fav:new Set(['hyeonsang']),myRate:{},cm:{},freeSort:'new',pub:{step:1,src:'hyeonsang',eps:[1,2,3],title:'현상',genre:'스릴러',desc:'1944년 경성. 혼을 보는 견습 사진사가 사라진 스승을 찾아 나선다.',age:'15세',days:['mon'],mode:'free',ai:'yes',agree:[false,false,false]}};
 try{const f=JSON.parse(localStorage.getItem('wbs-fav')||'null');if(Array.isArray(f))S.fav=new Set(f);}catch(e){}
 const $=s=>document.querySelector(s);
 function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),2200);}
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
 /* ---------- 화면 ---------- */
-function card(w){return `<a class="card" href="${U(w.id)}"><div class="th">${img(thumb(w),'')}<div class="badges">${w.up?'<span class="bd up">UP</span>':''}${w.isNew?'<span class="bd new">신작</span>':''}${w.ai?'<span class="bd ai">AI 활용</span>':''}</div></div><b>${esc(w.title)}</b><span class="meta">${w.rate?`<span class="star tnum">★ ${w.rate.toFixed(2)}</span>`:'<span class="star">새 작품</span>'}<span>${esc(w.author)}</span></span></a>`;}
-function dayTabs(){return `<div class="days" role="tablist" aria-label="요일">${DAYS.map(([k,l])=>`<button role="tab" aria-selected="${S.day===k}" class="${S.day===k?'on':''}" data-day="${k}">${l}${k===TODAY?'<span class="today">오늘</span>':''}</button>`).join('')}</div>`;}
-function dayGrid(){const L=W.filter(w=>w.days.includes(S.day)).sort((a,b)=>b.rate-a.rate);return L.length?`<div class="grid">${L.map(card).join('')}</div>`:`<p class="empty">이 요일에는 아직 연재 작품이 없어요</p>`;}
-function rankList(L,n=10){return `<ol class="rank">${L.slice(0,n).map((w,i)=>`<li><a href="${U(w.id)}"><span class="n tnum">${i+1}</span><span class="mini">${img(thumb(w),'')}</span><span style="min-width:0"><b>${esc(w.title)}</b><small>${esc(w.genre)} · ★ ${w.rate.toFixed(2)}</small></span></a></li>`).join('')}</ol>`;}
-function home(){const f=byId('hyeonsang');
- return `<div class="wrap">
-  <section class="feature" aria-label="오늘의 추천"><div class="art">${img(thumb(f,900,560),f.title+' 대표 그림')}</div><div class="txt"><span class="tag">오늘의 추천 · 매주 월요일</span><h2>${esc(f.title)}</h2><p>${esc(f.desc)}</p><div class="acts"><a class="btn go" href="${U('hyeonsang/1')}">첫 화 보기</a><a class="btn" href="${U('hyeonsang')}">작품 보기</a></div></div></section>
-  <div class="layout"><div>
-   <div class="sec-h"><h2>요일연재</h2><a href="${U('daily')}">전체 보기</a></div>${dayTabs()}<div id="dayGrid">${dayGrid()}</div>
-   <div class="sec-h" style="margin-top:34px"><h2>자유연재 새 작품</h2><a href="${U('free')}">전체 보기</a></div>
-   <div class="grid swipe">${FREE.slice(0,5).map(card).join('')}</div>
-   <p class="notice"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>자유연재는 누구나 올릴 수 있어요. 관심과 별점이 많이 모이면 요일연재 추천 후보가 돼요.</p>
-  </div>
-  <aside class="side">
-   <div class="box"><div class="sec-h" style="margin-bottom:6px"><h2 style="font-size:17px">실시간 랭킹</h2><a href="${U('rank')}">더 보기</a></div>${rankList(ALL().slice().sort((a,b)=>b.rate-a.rate),8)}</div>
-   <div class="box make"><h3>내 웹툰도 여기에</h3><p>웹툰보드에서 만든 회차는 「연재하기」 한 번으로 바로 올라가요. 파일을 따로 내보낼 필요가 없어요.</p><div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn go" href="${U('publish')}">연재하기</a><a class="btn" href="${PATH?'/':'https://toon.iux.kr'}">웹툰 만들기</a></div></div>
-  </aside></div></div>`;}
-function daily(){return `<div class="wrap" style="padding-block:24px 10px"><div class="sec-h"><h2>요일연재</h2><span class="muted" style="font-size:13px">별점 높은 순</span></div>${dayTabs()}<div id="dayGrid">${dayGrid()}</div></div>`;}
+const IC={play:'<svg class="ico" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M7 4.5v15l13-7.5z"/></svg>',info:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',plus:'<svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',check:'<svg class="ico" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>',l:'<svg class="ico" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>',r:'<svg class="ico" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>'};
+const dayLabel=w=>w.free?'자유연재':w.days[0]==='end'?'완결':w.days.map(d=>DAYS.find(x=>x[0]===d)[1]).join(' · ')+'요일 연재';
+function card(w){return `<a class="card" href="${U(w.id)}" aria-label="${esc(w.title)} · ${esc(w.author)}"><div class="th">${img(thumb(w),'')}<div class="badges">${w.up?'<span class="bd up">UP</span>':''}${w.isNew?'<span class="bd new">신작</span>':''}${w.ai?'<span class="bd ai">AI 활용</span>':''}</div></div><span class="meta">${w.rate?`<span class="star tnum">★ ${w.rate.toFixed(2)}</span>`:'<span class="star">새 작품</span>'}<span>${esc(w.author)}</span></span></a>`;}
+function rail(items,cls){return `<div class="railw"><button class="railb l" data-rail="-1" aria-label="앞으로" disabled>${IC.l}</button><div class="rail ${cls||''}">${items.join('')}</div><button class="railb r" data-rail="1" aria-label="다음">${IC.r}</button></div>`;}
+function row(h,sub,items,more,cls){return items.length?`<section class="row"><div class="sec-h"><h2>${h}</h2>${sub?`<small>${sub}</small>`:''}${more?`<a href="${U(more)}">전체 보기</a>`:''}</div>${rail(items,cls)}</section>`:'';}
+/* 큰 추천 화면 — 별점 높은 요일연재 세 편을 넘겨 봐요 */
+const HERO=()=>W.filter(w=>w.days[0]!=='end').sort((a,b)=>(b.id==='hyeonsang')-(a.id==='hyeonsang')||b.rate-a.rate).slice(0,3);
+function hero(){const L=HERO(),i=((S.hero|0)%L.length+L.length)%L.length,f=L[i],fav=S.fav.has(f.id);
+ return `<section class="hero" aria-label="추천 작품" aria-roledescription="carousel"><div class="art">${img(thumb(f,1600,800,true),'')}</div>
+  <div class="txt"><span class="kick">오늘의 추천 · ${esc(dayLabel(f))}</span><h2>${esc(f.title)}</h2>
+   <p class="meta"><span class="star tnum">★ ${f.rate.toFixed(2)}</span><i>·</i><span>${esc(f.genre)}</span><i>·</i><span>총 ${f.eps}화</span><i>·</i><span>${esc(f.author)}</span><span class="age">${esc(f.age)}</span>${f.ai?'<span class="age">AI 활용</span>':''}</p>
+   <p>${esc(f.desc)}</p>
+   <div class="acts"><a class="btn big play" href="${U(f.id+'/1')}">${IC.play}첫 화 보기</a><a class="btn big glass" href="${U(f.id)}">${IC.info}작품 정보</a><button class="btn big glass fav ${fav?'on':''}" data-fav="${f.id}" aria-pressed="${fav}">${fav?'관심 등록됨':'+ 관심'}</button></div></div>
+  <div class="pager"><button data-hero="-1" aria-label="이전 추천">${IC.l}</button><span class="tnum" aria-live="polite">${i+1} / ${L.length}</span><button data-hero="1" aria-label="다음 추천">${IC.r}</button></div></section>`;}
+function contCard(c){const w=byId(c.id);return `<a class="cont" href="${U(w.id+'/'+c.n)}"><div class="th">${img(cutCanvasThumb(w,c.n),'')}<span class="go" aria-hidden="true">${IC.play}</span><span class="bar"><i style="width:${Math.round(c.p*100)}%"></i></span></div><span style="min-width:0"><b>${esc(w.title)}</b><small>${c.n}화${epTitle(w,c.n)!==c.n+'화'?` · ${esc(epTitle(w,c.n))}`:''} · ${Math.round(c.p*100)}% 읽음</small></span></a>`;}
+function topCard(w,i){return `<a class="topi" href="${U(w.id)}" aria-label="${i+1}위 ${esc(w.title)}"><span class="n" aria-hidden="true">${i+1}</span><span class="th">${img(thumb(w),'')}</span></a>`;}
+/* 시간표 — 신작 · 월~일 · 완결, 정렬과 「새 회차만」 */
+const TT=[['new','신작']].concat(DAYS);
+function ttList(){let L=S.day==='new'?FREE.filter(w=>w.isNew).concat(W.filter(w=>w.eps<=24&&w.days[0]!=='end')):W.filter(w=>w.days.includes(S.day));
+ if(S.dup)L=L.filter(w=>w.up||w.isNew);return L.sort(S.dsort==='new'?(a,b)=>(b.up||b.isNew||0)-(a.up||a.isNew||0)||a.eps-b.eps:(a,b)=>b.rate-a.rate);}
+function timetable(){const L=ttList();return `<div class="days" role="tablist" aria-label="요일">${TT.map(([k,l])=>`<button role="tab" aria-selected="${S.day===k}" class="${S.day===k?'on':''}" data-day="${k}">${l}${k===TODAY?'<span class="today" title="오늘"></span>':''}</button>`).join('')}</div>
+ <div class="chipsbar"><button class="fchip ${S.dsort!=='new'&&!S.dup?'on':''}" data-ds="rate">전체 · 인기순</button><button class="fchip ${S.dsort==='new'&&!S.dup?'on':''}" data-ds="new">업데이트순</button><button class="fchip ${S.dup?'on':''}" data-ds="up" aria-pressed="${!!S.dup}">새 회차만</button></div>
+ ${L.length?`<div class="grid">${L.map(card).join('')}</div>`:`<p class="empty">${S.dup?'새 회차가 올라온 작품이 없어요':'이 요일에는 아직 연재 작품이 없어요'}</p>`}`;}
+function rankList(L,n=10){return `<ol class="rank">${L.slice(0,n).map((w,i)=>`<li><a href="${U(w.id)}"><span class="n tnum">${i+1}</span><span class="mini">${img(thumb(w),'')}</span><span style="min-width:0"><b>${esc(w.title)}</b><small>${esc(w.genre)} · ${esc(w.author)} · ${esc(dayLabel(w))}</small></span><span class="r tnum">★ ${w.rate.toFixed(2)}</span></a></li>`).join('')}</ol>`;}
+const byRate=L=>L.slice().sort((a,b)=>b.rate-a.rate);
+function home(){const G=(...g)=>byRate(ALL().filter(w=>g.includes(w.genre)));
+ return `<div class="wrap">${hero()}
+  ${row('이어 보기','보던 곳부터',S.cont.filter(c=>byId(c.id)).map(contCard),null,'wide')}
+  ${row('오늘의 TOP 10','최근 7일 별점 · 관심 기준',byRate(ALL()).slice(0,10).map(topCard),'rank','top')}
+  <section class="tt" id="tt" aria-label="연재 시간표">${timetable()}</section>
+  ${row('자유연재 새 작품','누구나 올리는 곳',FREE.map(card),'free')}
+  ${row('불 끄고 보는 이야기','스릴러 · 미스터리 · 액션',G('스릴러','미스터리','액션').map(card))}
+  ${row('가볍게 웃고 싶을 때','개그 · 일상',G('개그','일상').map(card))}
+  ${row('다른 세계로','판타지 · 로맨스 · 드라마',G('판타지','로맨스','드라마','스포츠').map(card))}
+  ${row('완결까지 한 번에','기다릴 필요 없는 완결작',W.filter(w=>w.days[0]==='end').concat(byRate(W).filter(w=>w.eps>=48&&w.days[0]!=='end')).map(card))}
+  <section class="band"><div><h3>내 웹툰도 여기에</h3><p>웹툰보드에서 만든 회차는 「연재하기」 한 번으로 바로 올라가요. 자유연재로 시작해서 관심과 별점이 모이면 요일연재 후보가 돼요.</p></div><div class="acts"><a class="btn big go" href="${U('publish')}">연재하기</a><a class="btn big glass" href="${PATH?'/':'https://toon.iux.kr'}">웹툰 만들기</a></div></section>
+ </div>`;}
+function daily(){return `<div class="wrap"><div class="page-h"><h1>요일연재</h1><p>오늘은 ${DAYS.find(d=>d[0]===TODAY)[1]}요일이에요</p></div><section class="tt" id="tt" style="margin-top:14px">${timetable()}</section></div>`;}
 function free(){const L=FREE.slice().sort(S.freeSort==='new'?(a,b)=>(b.isNew||0)-(a.isNew||0):(a,b)=>b.rate-a.rate);
- return `<div class="wrap" style="padding-block:24px 10px"><div class="sec-h"><h2>자유연재</h2></div><div class="tabs2"><button class="${S.freeSort==='new'?'on':''}" data-fs="new">최신 업데이트</button><button class="${S.freeSort==='rate'?'on':''}" data-fs="rate">별점순</button></div><div class="grid">${L.map(card).join('')}</div><p class="notice"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>운영정책에 맞지 않는 작품은 신고를 받아 숨김 처리될 수 있어요.</p></div>`;}
-function rank(){return `<div class="wrap" style="padding-block:24px 10px;max-width:960px"><div class="sec-h"><h2>실시간 랭킹</h2><span class="muted" style="font-size:13px">최근 7일 별점 · 관심 기준</span></div><div class="box">${rankList(ALL().slice().sort((a,b)=>b.rate-a.rate),20).replace('class="rank"','class="rank rank-wide"')}</div></div>`;}
+ return `<div class="wrap"><div class="page-h"><h1>자유연재</h1><p>누구나 올리는 곳 · 관심과 별점이 모이면 요일연재 후보가 돼요</p></div><div class="chipsbar" style="justify-content:flex-start;margin-top:10px"><button class="fchip ${S.freeSort==='new'?'on':''}" data-fs="new">최신 업데이트</button><button class="fchip ${S.freeSort==='rate'?'on':''}" data-fs="rate">별점순</button></div><div class="grid">${L.map(card).join('')}</div><p class="notice"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>운영정책에 맞지 않는 작품은 신고를 받아 숨김 처리될 수 있어요.</p></div>`;}
+function rank(){return `<div class="wrap" style="max-width:860px"><div class="page-h"><h1>실시간 랭킹</h1><p>최근 7일 별점 · 관심 기준</p></div>${rankList(byRate(ALL()),20)}</div>`;}
 function title(id){const w=byId(id);if(!w)return home();const fav=S.fav.has(w.id);const dl=w.days?w.days.map(d=>DAYS.find(x=>x[0]===d)[1]).join(' · '):'';
  const eps=[];for(let n=w.eps;n>=1;n--)eps.push(n);
  return `<div class="wrap"><section class="thead"><div class="th">${img(thumb(w),w.title+' 썸네일')}</div><div><h1>${esc(w.title)}</h1><p class="who"><span>글/그림 ${esc(w.author)}</span><span>${w.free?'자유연재':(w.days[0]==='end'?'완결':dl+'요일 연재')}</span><span>${esc(w.age)} 이용가</span></p><p class="desc">${esc(w.desc)}</p>
@@ -439,13 +527,18 @@ function render(){const g=segs();let html,m='';CUR={};
  window.scrollTo(0,0);}
 function go(p){if(PATH){history.pushState(null,'',p);render();}else location.hash=p;}
 window.addEventListener(PATH?'popstate':'hashchange',render);
+/* 줄 양끝에 닿으면 넘김 단추를 숨겨요 */
+document.addEventListener('scroll',e=>{const r=e.target;if(!r.classList||!r.classList.contains('rail'))return;const w=r.parentNode;w.querySelector('.railb.l').disabled=r.scrollLeft<8;w.querySelector('.railb.r').disabled=r.scrollLeft+r.clientWidth>r.scrollWidth-8;},true);
 document.querySelectorAll('[data-l]').forEach(a=>a.setAttribute('href',U(a.dataset.l)));
 if(!PATH)document.querySelectorAll('[data-make]').forEach(a=>{a.href='https://toon.iux.kr';a.target='_blank';a.rel='noopener';});
 if(PATH)document.addEventListener('click',e=>{const a=e.target.closest('a[href^="/read"]');if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;e.preventDefault();if(a.getAttribute('href')!==location.pathname)go(a.getAttribute('href'));},true);
 
 /* ---------- 동작 ---------- */
 document.addEventListener('click',e=>{const t=e.target.closest('button,a');if(!t)return;
- if(t.dataset.day){S.day=t.dataset.day;document.querySelectorAll('.days button').forEach(b=>{b.classList.toggle('on',b.dataset.day===S.day);b.setAttribute('aria-selected',b.dataset.day===S.day);});$('#dayGrid').innerHTML=dayGrid();}
+ if(t.dataset.day){S.day=t.dataset.day;$('#tt').innerHTML=timetable();}
+ else if(t.dataset.ds){if(t.dataset.ds==='up')S.dup=!S.dup;else{S.dsort=t.dataset.ds;S.dup=false;}$('#tt').innerHTML=timetable();}
+ else if(t.dataset.hero){S.hero=(S.hero|0)+(+t.dataset.hero);const h=document.querySelector('.hero');if(h){h.outerHTML=hero();document.querySelector(`.hero [data-hero="${t.dataset.hero}"]`)?.focus();}}
+ else if(t.dataset.rail){const r=t.parentNode.querySelector('.rail');r.scrollBy({left:+t.dataset.rail*r.clientWidth*.9,behavior:'smooth'});}
  else if(t.dataset.fs){S.freeSort=t.dataset.fs;render();}
  else if(t.dataset.fav){const id=t.dataset.fav;S.fav.has(id)?S.fav.delete(id):S.fav.add(id);try{localStorage.setItem('wbs-fav',JSON.stringify([...S.fav]))}catch(e){}const on=S.fav.has(id);t.classList.toggle('on',on);t.setAttribute('aria-pressed',on);t.textContent=on?'관심 등록됨':'+ 관심';toast(on?'관심 작품에 넣었어요 · 새 회차가 올라오면 알려 드려요':'관심 작품에서 뺐어요');}
  else if(t.hasAttribute('data-share')){const u=location.href;(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>toast('작품 주소를 복사했어요')).catch(()=>toast('주소창의 주소를 복사해 공유해 주세요'));}
