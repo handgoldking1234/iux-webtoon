@@ -199,7 +199,8 @@
       confirmBox({ title: 'AI는 회원만 쓸 수 있어요', body: '편집기는 가입 없이 그대로 쓸 수 있어요. AI 기획 · 콘티 · 이미지는 무료로 가입하면 열려요. 지금까지 만든 작품은 가입한 뒤에도 그대로 이어져요.', ok: '로그인 · 가입', danger: false }).then(function (y) { if (y) location.href = loginUrl(); });
     } else if (need === 'pro') {
       if (typeof paywall === 'function') paywall('txt'); else say('AI는 유료 회원만 쓸 수 있어요');
-    } else say('AI가 아직 연결되지 않았어요');
+    } else if (need === 'setup') say('AI는 로그인 기능이 준비된 뒤에 열려요 · 관리자: TEST_ACCOUNTS 또는 AI_ACCESS 환경 변수를 확인해 주세요');
+    else say('AI 키가 서버에 없어요 · 관리자: ANTHROPIC_API_KEY를 넣고 다시 배포해 주세요');
   }
   function txtAi() { var q = boot.quota.text; if (boot.isAdmin) return { used: q.used, left: 9999 }; return { used: q.used, left: Math.max(0, q.limit - q.used) }; }
   function imgLeft() { var q = boot.quota.image; return boot.isAdmin ? 9999 : Math.max(0, q.limit - q.used); }

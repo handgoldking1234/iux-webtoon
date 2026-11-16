@@ -43,8 +43,8 @@ P('로그인 창 대신 로그인 페이지', "else{$('#mLogin').hidden=false;se
 
 // 3-1) AI를 쓸 수 없을 때(손님 · 유료 전용 · 준비 중): 이유를 알려 주고 로그인 · 결제로 안내
 {
-  const T = "toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요')";
-  P('AI 막힘 안내', T, '(window.__WB&&__WB.boot.aiNeed?__WB.aiBlocked():' + T + ')', s.split(T).length - 1);
+  const T = "toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요')";
+  P('AI 막힘 안내', T, '(window.__WB?__WB.aiBlocked():' + T + ')', s.split(T).length - 1);
   if (!s.includes('__WB.aiBlocked():')) throw new Error('[studio patch] "AI 막힘 안내" — 바꿀 곳을 못 찾았어요');
 }
 
