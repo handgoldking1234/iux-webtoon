@@ -12,9 +12,10 @@ export const env = {
   bucket: process.env.SUPABASE_BUCKET || 'webtoon',
   readBucket: process.env.SUPABASE_READ_BUCKET || 'webtoon-read',
   adminEmails: (process.env.ADMIN_EMAILS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
-  anthropicKey: process.env.ANTHROPIC_API_KEY || '',
+  anthropicKey: (process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY || '').trim(),
   claudeModel: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',
-  geminiKey: process.env.GEMINI_API_KEY || '',
+  // 이름을 다르게 넣는 경우가 많아서 흔한 이름도 같이 읽어요
+  geminiKey: (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_KEY || '').trim(),
   geminiModel: process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image',
   geminiModelPro: process.env.GEMINI_IMAGE_MODEL_PRO || 'gemini-3-pro-image',
   openaiKey: process.env.OPENAI_API_KEY || '',
