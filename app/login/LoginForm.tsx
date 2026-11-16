@@ -88,7 +88,7 @@ export default function LoginForm({ next, initialMode, error }: { next: string; 
         {mode === 'login' && <button className="lnk" onClick={() => { setMode('reset'); setMsg(null); }}>비밀번호 찾기</button>}
         {(mode === 'magic' || mode === 'reset') && <button className="lnk" onClick={() => { setMode('login'); setMsg(null); }}>비밀번호로 로그인</button>}
       </div>
-      <p className="note">가입하면 AI 이미지 10장 · 글 AI 매달 30회를 무료로 쓸 수 있어요.</p>
+      <p className="note">가입하면 AI 이미지 20장 · 글 AI 매달 30회를 무료로 쓸 수 있어요.</p>
     </>
   );
 }

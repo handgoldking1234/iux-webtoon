@@ -30,7 +30,7 @@ P('작품 삭제', "WI=WI.filter(x=>x.id!==id);await worksSave();", "WI=WI.filte
 P('테스트 모드', 'const AI_TEST=true,', 'const AI_TEST=!window.__WB,');
 P('글 한도', 'const TXT_FREE=30;', 'const TXT_FREE=window.__WB?__WB.boot.quota.text.limit:30;');
 P('이미지 남은 장 수', 'AI_FREE-(st.aiUsed||0)', 'aiImgLeft(st)', 5);
-P('이미지 한도', 'const AI_FREE=10;', 'const AI_FREE=window.__WB?__WB.boot.quota.image.limit:10;function aiImgLeft(st){return window.__WB?__WB.imgLeft():AI_FREE-(st.aiUsed||0);}');
+P('이미지 한도', 'const AI_FREE=20;', 'const AI_FREE=window.__WB?__WB.boot.quota.image.limit:20;function aiImgLeft(st){return window.__WB?__WB.imgLeft():AI_FREE-(st.aiUsed||0);}');
 P('글 남은 횟수', 'function txtAi(){aiTestReset();', 'function txtAi(){if(window.__WB)return __WB.txtAi();aiTestReset();');
 P('글 사용 기록', 'function txtAiUse(n=1){', 'function txtAiUse(n=1){if(window.__WB)return;');
 P('이미지 남은 장 수(토스트)', 'Math.max(0,AI_FREE-st.aiUsed)', 'Math.max(0,aiImgLeft(st))');

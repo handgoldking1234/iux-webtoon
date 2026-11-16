@@ -36,7 +36,7 @@ export const env = {
   mailFrom: process.env.MAIL_FROM || '',
   limits: {
     freeText: n(process.env.FREE_TEXT_PER_MONTH, 30),
-    freeImage: n(process.env.FREE_IMAGE_TOTAL, 10),
+    freeImage: n(process.env.FREE_IMAGE_TOTAL, 20),
     proText: n(process.env.PRO_TEXT_PER_MONTH, 1000),
     proImage: n(process.env.PRO_IMAGE_PER_MONTH, 300),
   },
