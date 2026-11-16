@@ -4,6 +4,16 @@ import { NextResponse, type NextRequest } from 'next/server';
 const PROTECTED = ['/admin', '/account', '/read/publish'];
 
 export async function middleware(req: NextRequest) {
+  try {
+    return await run(req);
+  } catch (e) {
+    // 여기서 멈추면 사이트 전체가 500이 돼요 — 무슨 일이 있어도 페이지는 열리게
+    console.error('[웹툰보드] middleware', e);
+    return NextResponse.next();
+  }
+}
+
+async function run(req: NextRequest) {
   // 시험 배포: SITE_PASSWORD가 있으면 사이트 전체를 비밀번호로 잠가요 (아이디는 아무거나)
   const pw = process.env.SITE_PASSWORD;
   if (pw) {
