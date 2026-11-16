@@ -202,6 +202,8 @@
     } else if (need === 'setup') say('AI는 로그인 기능이 준비된 뒤에 열려요 · 관리자: TEST_ACCOUNTS 또는 AI_ACCESS 환경 변수를 확인해 주세요');
     else say('AI 키가 서버에 없어요 · 관리자: ANTHROPIC_API_KEY를 넣고 다시 배포해 주세요');
   }
+  var noKeyAt = 0;
+  function noImageKey() { if (Date.now() - noKeyAt < 8000) return; noKeyAt = Date.now(); say('이미지 AI 키가 서버에 없어서 예시 그림을 넣었어요 · 관리자: GEMINI_API_KEY를 넣고 다시 배포해 주세요'); }
   function txtAi() { var q = boot.quota.text; if (boot.isAdmin) return { used: q.used, left: 9999 }; return { used: q.used, left: Math.max(0, q.limit - q.used) }; }
   function imgLeft() { var q = boot.quota.image; return boot.isAdmin ? 9999 : Math.max(0, q.limit - q.used); }
 
@@ -343,6 +345,6 @@
     boot: boot, dbSuffix: cloud ? ':' + uid : '',
     sync: sync, pushWorks: pushWorks, deleteProject: deleteProject, putBlob: putBlob, getBlob: getBlob,
     txtAi: txtAi, imgLeft: imgLeft, image: image, refPrompt: refPrompt, sbPrompt: sbPrompt, refsFor: refsFor,
-    publish: publish, aiBlocked: aiBlocked,
+    publish: publish, aiBlocked: aiBlocked, noImageKey: noImageKey,
   };
 })();
