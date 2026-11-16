@@ -1500,6 +1500,12 @@ body.reader .stundo{display:none!important}
 .reader-head .rhw{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:4px}
 .rdback{display:none}
 /* 미리보기 — PC / 모바일 보기 전환 (PC 화면에서만) */
+.rdgap{display:none}
+body.reader .rdgap{display:inline-flex;align-items:center;gap:6px;position:fixed;top:14px;left:max(14px,env(safe-area-inset-left,0px));z-index:20;height:40px;padding:0 12px;border-radius:99px;background:var(--panel);box-shadow:0 4px 16px rgba(0,0,0,.14);font-size:13px;font-weight:700;white-space:nowrap}
+.rdgap input[type=range]{width:110px;accent-color:var(--accent)}.rdgap input[type=number]{width:54px;height:28px;padding:0 6px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:13px;text-align:right;background:var(--panel)}.rdgap i{font-style:normal;font-weight:500;color:var(--muted);margin-left:-2px}
+body.reader .coach{display:none}
+@media (max-width:980px){body.reader .rdgap{top:auto;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%)}}
+@media (max-width:420px){.rdgap input[type=range]{width:90px}}
 .rddev{display:none}
 @media (min-width:981px){
  body.reader .rddev{display:inline-flex;gap:2px;position:fixed;top:14px;left:50%;transform:translateX(-50%);z-index:20;padding:3px;border-radius:99px;background:var(--panel);box-shadow:0 4px 16px rgba(0,0,0,.14)}
@@ -1808,6 +1814,7 @@ body.reader .stundo{display:none!important}
   </main>
   <div class="rcol" id="rcol"><div class="rhead" id="rhead"><span class="acctslot"></span><span style="flex:1"></span><span class="rhseg"></span></div>
   <aside class="insp" id="insp"></aside></div>
+  <label class="rdgap" title="컷과 컷 사이를 띄워요 · 한 장으로 이어붙여 내보낼 때도 같은 간격이 들어가요"><span>컷 간격</span><input type="range" id="rdGap" min="0" max="300" step="10" aria-label="컷 간격"><input type="number" id="rdGapN" min="0" max="2000" step="10" aria-label="컷 간격 px"><i>px</i></label>
   <div class="rddev" role="group" aria-label="미리보기 화면 크기"><button data-act="rd-dev" data-v="pc" aria-pressed="true" title="PC에서 보이는 모습"><i data-ic="monitor"></i>PC</button><button data-act="rd-dev" data-v="mo" aria-pressed="false" title="휴대폰에서 보이는 모습"><i data-ic="phone"></i>모바일</button></div>
   <div class="tgr rdback"><div class="seg" role="group" aria-label="보기"><button data-act="view" data-v="edit" aria-pressed="false" title="편집 — 컷과 말풍선을 고치는 화면" aria-label="편집"><i data-ic="strip"></i>편집</button><button data-act="view" data-v="list" aria-pressed="false" title="목록 — 컷을 작게 모아 순서를 바꾸는 화면" aria-label="목록"><i data-ic="list"></i>목록</button><button data-act="view" data-v="read" aria-pressed="true" title="미리보기 — 독자가 보는 그대로" aria-label="미리보기"><i data-ic="eye"></i>미리보기</button></div></div>
  </div>
@@ -3741,7 +3748,7 @@ function renderStrip(){
  if(e){$('#rHead').innerHTML=`${(S.settings.workTitle||'').trim()?`<small class="rhw">${esc(S.settings.workTitle.trim())}</small>`:''}<b>${esc(e.num)}화${e.title&&!/^\d+화$|^새 회차$|^콘티$/.test(e.title.trim())?` · ${esc(e.title)}`:''}</b><span>${cuts.length}컷</span>`;
   const idx=S.episodes.indexOf(e),pv=S.episodes[idx-1],nx=S.episodes[idx+1];
   $('#rFoot').innerHTML=`<button class="btn" data-act="ep-go" data-ep="${pv?pv.id:''}" ${pv?'':'disabled'}>← 이전 화</button><button class="btn" data-act="view" data-v="edit">편집으로</button><button class="btn" data-act="ep-go" data-ep="${nx?nx.id:''}" ${nx?'':'disabled'}>다음 화 →</button>`;}
- document.documentElement.style.setProperty('--gap',(S.settings.gap|0)+'px');
+ rdGapSync();
 }
 function schedule(id){pending.add(id);if(!rafId)rafId=requestAnimationFrame(flush);}
 const drawTok=new Map();
@@ -6262,6 +6269,9 @@ async function addSamples(){
 /* ---------------- 이벤트 ---------------- */
 let toastT;function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,3200);}
 function arm(btn,label){if(btn.dataset.ok){delete btn.dataset.ok;return true;}confirmBox(armMsg(btn)).then(y=>{if(y&&btn.isConnected){btn.dataset.ok='1';btn.click();}});return false;}
+/* 미리보기 컷 간격 — 690px 원고 기준 값이라, 폰 크기로 볼 때는 같은 비율로 줄어들어요 */
+function rdGapSync(){const g=Math.max(0,S.settings.gap|0);document.documentElement.style.setProperty('--gap',(g/690*100)+'%');const a=$('#rdGap'),b=$('#rdGapN');if(a&&document.activeElement!==a)a.value=Math.min(300,g);if(b&&document.activeElement!==b)b.value=g;}
+document.addEventListener('input',ev=>{const t=ev.target;if(t.id!=='rdGap'&&t.id!=='rdGapN')return;const g=Math.max(0,Math.min(2000,parseInt(t.value,10)||0));S.settings.gap=g;S.settings.mergeGap=g;rdGapSync();clearTimeout(window.__rdG);window.__rdG=setTimeout(save,400);});
 function setView(v){
  view=v;document.body.classList.toggle('reader',v==='read');if(v==='read'){let d='pc';try{d=localStorage.getItem('wb_rddev')||'pc';}catch(_){}document.body.classList.toggle('rdmo',d==='mo');$$('[data-act="rd-dev"]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.v===d)));}sigs.clear();
  $$('[data-act=view]').forEach(b=>{if(b.closest('.seg'))b.setAttribute('aria-pressed',b.dataset.v===v);});
