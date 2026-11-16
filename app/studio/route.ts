@@ -5,7 +5,7 @@ import { getMe } from '@/lib/auth';
 import { getQuota } from '@/lib/quota';
 import { getSettings } from '@/lib/settings';
 import { engineReady } from '@/lib/ai';
-import { aiNeed } from '@/lib/ai-access';
+import { aiNeed, GUEST } from '@/lib/ai-access';
 import { activeNotices } from '@/lib/notices';
 
 export const dynamic = 'force-dynamic';
@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     // 손님: 편집기는 그대로 쓰고(이 브라우저에만 저장), AI · 클라우드 저장 · 연재는 가입하면 열려요
     boot = {
       mode: 'guest', user: null, isAdmin: false, plan: 'free',
-      quota: { plan: 'free', text: { used: 0, limit: st.limits.freeText, period: 'month' }, image: { used: 0, limit: st.limits.freeImage, period: 'total' } },
+      quota: need ? { plan: 'free', text: { used: 0, limit: st.limits.freeText, period: 'month' }, image: { used: 0, limit: st.limits.freeImage, period: 'total' } } : await getQuota(GUEST.profile),
       ai, aiNeed: need, notices,
     };
   } else {

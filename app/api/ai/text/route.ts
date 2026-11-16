@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { aiBlock } from '@/lib/ai-access';
-import { apiMe, err, isRes } from '@/lib/api';
+import { aiBlock, aiMe } from '@/lib/ai-access';
+import { err, isRes } from '@/lib/api';
 import { aiGate, logUsage } from '@/lib/quota';
 import { AiError, textJson } from '@/lib/ai';
 import { env } from '@/lib/env';
@@ -8,7 +8,7 @@ import { env } from '@/lib/env';
 export const maxDuration = 120;
 
 export async function POST(req: Request) {
-  const me = await apiMe();
+  const me = await aiMe();
   if (isRes(me)) return me;
   const blocked = aiBlock(me);
   if (blocked) return blocked;
