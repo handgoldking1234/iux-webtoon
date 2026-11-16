@@ -3,21 +3,20 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0b0d0c">
+<meta name="theme-color" content="#000000">
 <style>:root{color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>웹툰보드 연재</title>
 <meta name="description" content="웹툰보드에서 만든 웹툰을 요일연재 · 자유연재로 읽는 곳">
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=IBM+Plex+Sans+KR:wght@400;500;700&display=swap">
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
 /* 레이아웃: 독자용 연재관 — 어두운 바탕, 큰 추천 화면 → 옆으로 넘기는 줄(이어 보기 · TOP 10 · 주제별) → 요일 시간표(포스터 격자). 작품 · 세로 뷰어 · 연재하기는 주소로 바꿔 보여 줘요 */
 :root{
-  --bg:#0b0d0c;--surface:#151917;--surface-2:#1d2320;--ink:#f2f4f2;--ink-2:#a5ada8;--ink-3:#6c746f;--line:#272e2a;
-  --green:#22c55e;--green-soft:#11301f;--on-green:#04210e;--red:#f2555a;--amber:#f5b54a;--blue:#7ea4f0;
-  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
-  --f-display:"Black Han Sans","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --bg:#121212;--surface:#181818;--surface-2:#2a2a2a;--ink:#ffffff;--ink-2:#b3b3b3;--ink-3:#7c7c7c;--line:#2a2a2a;
+  --green:#1ed760;--green-soft:#12301c;--on-green:#000000;--red:#f2555a;--amber:#f5b54a;--blue:#7ea4f0;
+  --f-body:"Pretendard Variable",Pretendard,-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --f-display:var(--f-body);
   color-scheme:dark;
 }
 *{box-sizing:border-box}
@@ -36,7 +35,7 @@ p{margin:0}
 body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
 .gnb{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 84%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
 .gnb .wrap{display:flex;align-items:center;gap:18px;height:58px}
-.logo{display:flex;align-items:center;gap:8px;font-family:var(--f-display);font-size:21px;letter-spacing:-.01em;white-space:nowrap}
+.logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:21px;letter-spacing:-.01em;white-space:nowrap}
 .logo i{width:28px;height:28px;border-radius:50%;background:var(--green);display:grid;place-items:center}
 .logo svg{width:15px;height:15px;stroke:var(--on-green)}
 .logo small{font-family:var(--f-body);font-size:12px;font-weight:700;color:var(--green);margin-left:2px;align-self:flex-start;margin-top:4px}
@@ -59,27 +58,9 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 }
 
 /* 홈 — 큰 추천 화면 */
-.hero{position:relative;margin-top:10px;border-radius:20px;overflow:hidden;background:var(--surface);min-height:min(62vh,560px);display:grid;align-items:end;isolation:isolate}
-.hero .art{position:absolute;inset:0;z-index:-2}
-.hero .art img{width:100%;height:100%;object-fit:cover}
-.hero::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,rgba(8,10,9,.92) 0%,rgba(8,10,9,.62) 38%,rgba(8,10,9,0) 68%),linear-gradient(0deg,rgba(8,10,9,.86) 0%,rgba(8,10,9,0) 46%)}
-.hero .txt{padding:clamp(20px,4vw,44px);display:grid;gap:12px;max-width:640px;min-width:0}
-.hero .kick{font-size:12.5px;font-weight:700;color:#7ee2a3;letter-spacing:.04em}
-.hero h2{font-family:var(--f-display);font-weight:400;font-size:clamp(40px,7vw,84px);line-height:1.02;letter-spacing:-.01em;text-shadow:0 2px 24px rgba(0,0,0,.45)}
-.hero .meta{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;font-size:13.5px;color:#d6dbd7;font-weight:500}
-.hero .meta i{font-style:normal;color:var(--ink-3)}
-.hero .meta .age{border:1px solid #7b837e;border-radius:4px;padding:0 5px;font-size:11.5px;font-weight:700;line-height:1.6}
-.hero p{color:#c9cfcb;max-width:52ch;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.hero .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 .btn.play{background:#f2f4f2;border-color:#f2f4f2;color:#0b0d0c}
 
-.hero .fav.on{background:rgba(255,255,255,.14);border-color:transparent;color:#f2f4f2}
 .btn.glass{background:rgba(255,255,255,.14);border-color:transparent;color:#f2f4f2;backdrop-filter:blur(6px)}
-.hero .pager{position:absolute;right:clamp(14px,3vw,30px);bottom:clamp(14px,3vw,30px);display:flex;align-items:center;gap:8px}
-.hero .pager span{font-size:12.5px;font-weight:700;color:#d6dbd7;background:rgba(0,0,0,.5);border-radius:999px;padding:5px 11px}
-.hero .pager button{width:36px;height:36px;border-radius:50%;border:0;background:rgba(0,0,0,.5);color:#fff;display:grid;place-items:center}
-.hero .pager button:hover{background:rgba(0,0,0,.75)}
-@media (max-width:760px){.hero{min-height:74vw;border-radius:16px}.hero::after{background:linear-gradient(0deg,rgba(8,10,9,.94) 0%,rgba(8,10,9,.5) 46%,rgba(8,10,9,0) 80%)}.hero p{-webkit-line-clamp:2;font-size:14px}.hero .pager{top:14px;bottom:auto}.hero .pager button{display:none}}
 
 /* 옆으로 넘기는 줄 */
 .row{margin-top:34px;min-width:0}
@@ -128,7 +109,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* TOP 10 — 큰 숫자 + 포스터 */
 .topi{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1fr);align-items:end;min-width:0}
-.topi .n{font-family:var(--f-display);font-size:clamp(84px,11vw,150px);line-height:.78;color:transparent;-webkit-text-stroke:2px #59615c;text-align:right;margin-right:-.12em;letter-spacing:-.06em;user-select:none}
+.topi .n{font-weight:800;font-size:clamp(84px,11vw,150px);line-height:.78;color:transparent;-webkit-text-stroke:2px #59615c;text-align:right;margin-right:-.12em;letter-spacing:-.06em;user-select:none}
 .topi:hover .n{-webkit-text-stroke-color:var(--ink)}
 .topi .th{position:relative;aspect-ratio:2/3;border-radius:8px;overflow:hidden;background:var(--surface-2);z-index:1}
 
@@ -136,7 +117,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .tt{margin-top:44px}
 .days{display:flex;justify-content:center;gap:clamp(2px,1.6vw,18px);overflow-x:auto;scrollbar-width:none;margin-bottom:12px}
 .days::-webkit-scrollbar{display:none}
-.days button{flex:none;border:0;background:none;padding:8px 10px;font-family:var(--f-display);font-size:19px;color:var(--ink-3);position:relative;white-space:nowrap}
+.days button{flex:none;border:0;background:none;padding:8px 10px;font-weight:800;font-size:19px;color:var(--ink-3);position:relative;white-space:nowrap}
 .days button:hover{color:var(--ink-2)}
 .days button.on{color:var(--ink)}
 .days button.on::after{content:"";position:absolute;left:10px;right:10px;bottom:2px;height:3px;border-radius:2px;background:var(--ink)}
@@ -151,7 +132,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 
 /* 만들기 안내 띠 */
 .band{margin-top:48px;border-radius:20px;padding:clamp(22px,4vw,40px);display:flex;gap:18px 28px;align-items:center;flex-wrap:wrap;background:radial-gradient(120% 160% at 0% 0%,#1d5a36 0%,#11301f 46%,#151917 100%)}
-.band h3{font-family:var(--f-display);font-weight:400;font-size:clamp(24px,3.4vw,34px);line-height:1.15}
+.band h3{font-weight:800;font-size:clamp(24px,3.4vw,34px);line-height:1.15}
 .band p{color:#c2cbc5;margin-top:6px;max-width:56ch}
 .band>div:first-child{flex:1 1 320px;min-width:0}
 .band .acts{display:flex;gap:8px;flex-wrap:wrap}
@@ -160,7 +141,7 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .rank{list-style:none;margin:0;padding:0;display:grid;gap:2px}
 .rank li a{display:grid;grid-template-columns:54px 60px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 12px;border-radius:12px}
 .rank li a:hover{background:var(--surface)}
-.rank .n{font-family:var(--f-display);font-size:34px;line-height:1;text-align:center;color:var(--ink-3)}
+.rank .n{font-weight:800;font-size:34px;line-height:1;text-align:center;color:var(--ink-3)}
 .rank li:nth-child(-n+3) .n{color:var(--green)}
 .rank .mini{width:60px;aspect-ratio:2/3;border-radius:6px;overflow:hidden;background:var(--surface-2)}
 .rank b{display:block;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -170,14 +151,14 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px}
 .notice{margin-top:16px;font-size:13px;color:var(--ink-2);display:flex;gap:6px;align-items:flex-start}
 .page-h{padding-block:26px 6px}
-.page-h h1{font-family:var(--f-display);font-weight:400;font-size:clamp(28px,4vw,40px)}
+.page-h h1{font-weight:800;font-size:clamp(28px,4vw,40px)}
 .page-h p{color:var(--ink-2);margin-top:4px;font-size:14px}
 
 /* 작품 페이지 */
 .thead{display:grid;grid-template-columns:200px minmax(0,1fr);gap:28px;padding-block:28px 22px;align-items:start}
 .thead .th{aspect-ratio:2/3;border-radius:12px;overflow:hidden;max-width:100%}
 .thead .th canvas{width:100%;height:100%}
-.thead h1{font-family:var(--f-display);font-weight:400;font-size:36px;line-height:1.15}
+.thead h1{font-weight:800;font-size:36px;line-height:1.15}
 .thead .who{margin-top:6px;color:var(--ink-2);display:flex;flex-wrap:wrap;gap:4px 12px;font-size:14px}
 .thead .desc{margin-top:14px;max-width:62ch}
 .chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
@@ -292,6 +273,75 @@ body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset
 footer{border-top:1px solid var(--line);padding-block:24px 36px;color:var(--ink-3);font-size:12.5px;margin-top:20px}
 footer .wrap{display:flex;gap:6px 18px;flex-wrap:wrap}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+
+/* SPOTIFY — 스포티파이식 다듬기 (프리텐다드 · 검정 바탕 · 초록 재생 단추) */
+body{letter-spacing:-.01em}
+:focus-visible{outline-color:#fff}
+body::before{background:#000}
+.gnb{background:rgba(0,0,0,.86)}
+.logo{letter-spacing:-.03em}
+.menu a{color:var(--ink-2)}
+.menu a:hover{color:var(--ink)}
+.btn{background:transparent;border-color:#727272;transition:transform .12s ease,border-color .12s ease}
+@media (hover:hover){.btn:not([disabled]):hover{transform:scale(1.04);border-color:#fff}}
+.btn.go,.btn.play{background:var(--green);border-color:var(--green);color:#000}
+.btn.glass{background:transparent;border:1px solid #727272;color:#fff;backdrop-filter:none}
+.hero{--tint:#535353;position:relative;margin-top:10px;border-radius:12px;padding:clamp(18px,3.4vw,36px);display:grid;grid-template-columns:auto minmax(0,1fr);gap:clamp(16px,2.6vw,28px);align-items:end;background:linear-gradient(180deg,color-mix(in srgb,var(--tint) 88%,#000) 0%,color-mix(in srgb,var(--tint) 30%,var(--bg)) 100%)}
+.hero .cover{width:clamp(132px,17vw,220px);aspect-ratio:2/3;border-radius:6px;overflow:hidden;box-shadow:0 4px 60px rgba(0,0,0,.5);background:var(--surface-2)}
+.hero .cover img,.hero .cover canvas{width:100%;height:100%;object-fit:cover}
+.hero .txt{display:grid;gap:10px;min-width:0}
+.hero .kick{font-size:13.5px;font-weight:600}
+.hero h2{font-weight:900;font-size:clamp(34px,6.4vw,88px);line-height:1.04;letter-spacing:-.045em}
+.hero .desc{color:rgba(255,255,255,.74);max-width:60ch;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hero .meta{display:flex;flex-wrap:wrap;gap:2px 6px;align-items:center;font-size:14px;color:rgba(255,255,255,.74)}
+.hero .meta b{color:#fff;font-weight:700}
+.hero .meta i{font-style:normal}
+.hero .meta .age{border:1px solid rgba(255,255,255,.5);border-radius:3px;padding:0 5px;font-size:11.5px;font-weight:700;line-height:1.6;margin-left:4px}
+.hero .acts{grid-column:1/-1;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.hero .fav.on{background:transparent;border-color:var(--green);color:var(--green)}
+.hero .pager{position:absolute;right:clamp(12px,2.4vw,24px);top:clamp(12px,2.4vw,24px);display:flex;align-items:center;gap:8px}
+.hero .pager span{font-size:12.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.4);border-radius:999px;padding:5px 11px}
+.hero .pager button{width:32px;height:32px;border-radius:50%;border:0;background:rgba(0,0,0,.4);color:#fff;display:grid;place-items:center}
+.hero .pager button:hover{background:rgba(0,0,0,.7)}
+@media (max-width:640px){.hero{grid-template-columns:1fr;justify-items:start}.hero .cover{justify-self:center;width:min(48vw,190px)}.hero .pager button{display:none}}
+.sec-h h2{font-size:22px;font-weight:800;letter-spacing:-.03em}
+.sec-h a{font-weight:700}
+.sec-h a:hover{text-decoration:underline}
+.rail{gap:0;margin-inline:-10px;grid-auto-columns:calc(100%/7)}
+.rail.wide,.rail.top{gap:12px;margin-inline:0}
+.grid{gap:6px 0;margin-inline:-10px}
+@media (max-width:1180px){.rail{grid-auto-columns:calc(100%/5.3)}}
+@media (max-width:760px){.rail{grid-auto-columns:calc(100%/3.25);gap:0;margin-inline:-6px}.grid{gap:4px 0;margin-inline:-6px}}
+.card{padding:10px;border-radius:8px;gap:8px;align-content:start;transition:background .2s ease}
+@media (max-width:760px){.card{padding:6px}}
+.card .th{border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.card b{display:block;font-size:15px;font-weight:700;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card .meta{padding:0;font-size:13px;margin-top:-4px}
+.card .pl{position:absolute;right:8px;bottom:8px;width:44px;height:44px;border-radius:50%;background:var(--green);color:#000;display:grid;place-items:center;opacity:0;transform:translateY(8px);transition:opacity .2s ease,transform .2s ease;box-shadow:0 8px 8px rgba(0,0,0,.3)}
+.card .pl svg{width:20px;height:20px}
+@media (hover:hover){.card:hover{background:#1f1f1f}.card:hover .th{box-shadow:0 8px 24px rgba(0,0,0,.5)}.card:hover .th img,.card:hover .th canvas{transform:none}.card:hover .pl{opacity:1;transform:none}}
+.bd{border-radius:4px}
+.bd.new{color:#000}
+.cont .th{border-radius:6px}
+.topi .n{font-weight:900;color:#3e3e3e;-webkit-text-stroke:0;letter-spacing:-.08em}
+.topi:hover .n{color:var(--green)}
+.topi .th{border-radius:6px;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.days button{font-size:17px;letter-spacing:-.02em;color:var(--ink-2)}
+.days button:hover{color:var(--ink)}
+.days button.on::after{background:var(--green)}
+.fchip{border-radius:999px;background:#2a2a2a;color:#fff;font-weight:500;padding:7px 14px}
+.fchip:hover{background:#333}
+.fchip.on{background:#fff;color:#000}
+.band{border-radius:12px;background:linear-gradient(120deg,#1a6b3a 0%,#14402a 42%,#181818 100%)}
+.band h3{letter-spacing:-.035em}
+.rank li a{border-radius:6px}
+.rank li a:hover{background:rgba(255,255,255,.1)}
+.rank .n{font-size:20px;font-weight:600;color:var(--ink-2)}
+.rank .mini{border-radius:4px}
+.rank b{font-weight:600}
+.rank .r{color:var(--ink-2);font-weight:500}
+.page-h h1,.thead h1{font-weight:900;letter-spacing:-.04em}
+/* /SPOTIFY */
 </style>
 
 <header class="gnb" id="gnb">
@@ -396,7 +446,7 @@ function thumb(w,Wd=400,Ht=600,bare){const k=w.id+w.title+Wd+'x'+Ht+(bare?'b':''
  if(bare){figure(g,Wd*.72,Ht*.95,Ht*.3,'rgba(10,12,11,.86)');figure(g,Wd*.86,Ht*1.02,Ht*.2,'rgba(10,12,11,.6)');return TH[k]=cv.toDataURL('image/jpeg',.88);}
  figure(g,Wd*.5,Ht*.86,Wd*.17,'rgba(10,12,11,.82)');
  const sh=g.createLinearGradient(0,Ht*.55,0,Ht);sh.addColorStop(0,'rgba(0,0,0,0)');sh.addColorStop(1,'rgba(0,0,0,.6)');g.fillStyle=sh;g.fillRect(0,Ht*.55,Wd,Ht*.45);
- g.fillStyle='#fff';g.textAlign='center';g.textBaseline='alphabetic';let fs=Wd*(w.title.length>6?.12:.17);g.font=`${fs}px "Black Han Sans","Apple SD Gothic Neo",sans-serif`;
+ g.fillStyle='#fff';g.textAlign='center';g.textBaseline='alphabetic';let fs=Wd*(w.title.length>6?.12:.17);g.font=`800 ${fs}px "Pretendard Variable","Apple SD Gothic Neo",sans-serif`;
  const words=(()=>{const t=w.title;if(t.length<=7)return [t];const mid=t.length/2;let best=-1;for(let i=1;i<t.length-1;i++)if(t[i]===' '&&(best<0||Math.abs(i-mid)<Math.abs(best-mid)))best=i;return best>0?[t.slice(0,best),t.slice(best+1)]:[t.slice(0,Math.ceil(mid)),t.slice(Math.ceil(mid))];})();
  words.forEach((t,i)=>g.fillText(t,Wd/2,Ht*.93-(words.length-1-i)*fs*1.1));
  return TH[k]=cv.toDataURL('image/jpeg',.86);}
@@ -416,17 +466,17 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',
 /* ---------- 화면 ---------- */
 const IC={play:'<svg class="ico" viewBox="0 0 24 24" style="fill:currentColor;stroke:none"><path d="M7 4.5v15l13-7.5z"/></svg>',info:'<svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>',plus:'<svg class="ico" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>',check:'<svg class="ico" viewBox="0 0 24 24"><path d="m5 12 5 5 9-10"/></svg>',l:'<svg class="ico" viewBox="0 0 24 24"><path d="m15 5-7 7 7 7"/></svg>',r:'<svg class="ico" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></svg>'};
 const dayLabel=w=>w.free?'자유연재':w.days[0]==='end'?'완결':w.days.map(d=>DAYS.find(x=>x[0]===d)[1]).join(' · ')+'요일 연재';
-function card(w){return `<a class="card" href="${U(w.id)}" aria-label="${esc(w.title)} · ${esc(w.author)}"><div class="th">${img(thumb(w),'')}<div class="badges">${w.up?'<span class="bd up">UP</span>':''}${w.isNew?'<span class="bd new">신작</span>':''}${w.ai?'<span class="bd ai">AI 활용</span>':''}</div></div><span class="meta">${w.rate?`<span class="star tnum">★ ${w.rate.toFixed(2)}</span>`:'<span class="star">새 작품</span>'}<span>${esc(w.author)}</span></span></a>`;}
+function card(w){return `<a class="card" href="${U(w.id)}" aria-label="${esc(w.title)} · ${esc(w.author)}"><div class="th">${img(thumb(w),'')}<div class="badges">${w.up?'<span class="bd up">UP</span>':''}${w.isNew?'<span class="bd new">신작</span>':''}${w.ai?'<span class="bd ai">AI 활용</span>':''}</div><span class="pl" aria-hidden="true">${IC.play}</span></div><b>${esc(w.title)}</b><span class="meta">${w.rate?`<span class="star tnum">★ ${w.rate.toFixed(2)}</span>`:'<span class="star">새 작품</span>'}<span>${esc(w.author)}</span></span></a>`;}
 function rail(items,cls){return `<div class="railw"><button class="railb l" data-rail="-1" aria-label="앞으로" disabled>${IC.l}</button><div class="rail ${cls||''}">${items.join('')}</div><button class="railb r" data-rail="1" aria-label="다음">${IC.r}</button></div>`;}
 function row(h,sub,items,more,cls){return items.length?`<section class="row"><div class="sec-h"><h2>${h}</h2>${sub?`<small>${sub}</small>`:''}${more?`<a href="${U(more)}">전체 보기</a>`:''}</div>${rail(items,cls)}</section>`:'';}
 /* 큰 추천 화면 — 별점 높은 요일연재 세 편을 넘겨 봐요 */
 const HERO=()=>W.filter(w=>w.days[0]!=='end').sort((a,b)=>(b.id==='hyeonsang')-(a.id==='hyeonsang')||b.rate-a.rate).slice(0,3);
 function hero(){const L=HERO(),i=((S.hero|0)%L.length+L.length)%L.length,f=L[i],fav=S.fav.has(f.id);
- return `<section class="hero" aria-label="추천 작품" aria-roledescription="carousel"><div class="art">${img(thumb(f,1600,800,true),'')}</div>
+ return `<section class="hero" style="--tint:${f.pal[1]}" aria-label="추천 작품" aria-roledescription="carousel"><div class="cover">${img(thumb(f),'')}</div>
   <div class="txt"><span class="kick">오늘의 추천 · ${esc(dayLabel(f))}</span><h2>${esc(f.title)}</h2>
-   <p class="meta"><span class="star tnum">★ ${f.rate.toFixed(2)}</span><i>·</i><span>${esc(f.genre)}</span><i>·</i><span>총 ${f.eps}화</span><i>·</i><span>${esc(f.author)}</span><span class="age">${esc(f.age)}</span>${f.ai?'<span class="age">AI 활용</span>':''}</p>
-   <p>${esc(f.desc)}</p>
-   <div class="acts"><a class="btn big play" href="${U(f.id+'/1')}">${IC.play}첫 화 보기</a><a class="btn big glass" href="${U(f.id)}">${IC.info}작품 정보</a><button class="btn big glass fav ${fav?'on':''}" data-fav="${f.id}" aria-pressed="${fav}">${fav?'관심 등록됨':'+ 관심'}</button></div></div>
+   <p class="desc">${esc(f.desc)}</p>
+   <p class="meta"><b>${esc(f.author)}</b><i>·</i><span class="tnum">★ ${f.rate.toFixed(2)}</span><i>·</i><span>${esc(f.genre)}</span><i>·</i><span>총 ${f.eps}화</span><span class="age">${esc(f.age)}</span>${f.ai?'<span class="age">AI 활용</span>':''}</p></div>
+  <div class="acts"><a class="btn big play" href="${U(f.id+'/1')}">${IC.play}첫 화 보기</a><a class="btn big glass" href="${U(f.id)}">작품 정보</a><button class="btn big glass fav ${fav?'on':''}" data-fav="${f.id}" aria-pressed="${fav}">${fav?'관심 등록됨':'+ 관심'}</button></div>
   <div class="pager"><button data-hero="-1" aria-label="이전 추천">${IC.l}</button><span class="tnum" aria-live="polite">${i+1} / ${L.length}</span><button data-hero="1" aria-label="다음 추천">${IC.r}</button></div></section>`;}
 function contCard(c){const w=byId(c.id);return `<a class="cont" href="${U(w.id+'/'+c.n)}"><div class="th">${img(cutCanvasThumb(w,c.n),'')}<span class="go" aria-hidden="true">${IC.play}</span><span class="bar"><i style="width:${Math.round(c.p*100)}%"></i></span></div><span style="min-width:0"><b>${esc(w.title)}</b><small>${c.n}화${epTitle(w,c.n)!==c.n+'화'?` · ${esc(epTitle(w,c.n))}`:''} · ${Math.round(c.p*100)}% 읽음</small></span></a>`;}
 function topCard(w,i){return `<a class="topi" href="${U(w.id)}" aria-label="${i+1}위 ${esc(w.title)}"><span class="n" aria-hidden="true">${i+1}</span><span class="th">${img(thumb(w),'')}</span></a>`;}
