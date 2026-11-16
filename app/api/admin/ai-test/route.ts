@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { aiBlock } from '@/lib/ai-access';
 import { err } from '@/lib/api';
 import { getMe } from '@/lib/auth';
 import { AiError, makeImage, modelOf, textJson } from '@/lib/ai';
@@ -11,6 +12,8 @@ export const maxDuration = 120;
 export async function POST(req: Request) {
   const me = await getMe();
   if (!me?.isAdmin) return err('forbidden', '관리자만 시험할 수 있어요', 403);
+  const blocked = aiBlock(me);
+  if (blocked) return blocked;
   const kind = (await req.json().catch(() => ({}))).kind === 'image' ? 'image' : 'text';
   const st = await getSettings(), t0 = Date.now();
   try {

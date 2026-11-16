@@ -1,3 +1,4 @@
+import { aiBlock } from '@/lib/ai-access';
 import { apiMe, err, isRes } from '@/lib/api';
 import { aiGate, logUsage } from '@/lib/quota';
 import { AiError, makeImage } from '@/lib/ai';
@@ -7,6 +8,8 @@ export const maxDuration = 120;
 export async function POST(req: Request) {
   const me = await apiMe();
   if (isRes(me)) return me;
+  const blocked = aiBlock(me);
+  if (blocked) return blocked;
   const b = await req.json().catch(() => ({}));
   const prompt = String(b.prompt || '').slice(0, 8000);
   if (!prompt.trim()) return err('bad_request', '그릴 내용이 없어요');

@@ -1,7 +1,8 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 
-const PROTECTED = ['/studio', '/admin', '/account', '/read/publish'];
+// 편집기(/studio)는 누구나 열 수 있어요 — AI · 클라우드 저장 · 연재만 회원 기능
+const PROTECTED = ['/admin', '/account', '/read/publish'];
 
 export async function middleware(req: NextRequest) {
   // 시험 배포: SITE_PASSWORD가 있으면 사이트 전체를 비밀번호로 잠가요 (아이디는 아무거나)

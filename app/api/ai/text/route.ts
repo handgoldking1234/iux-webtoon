@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { aiBlock } from '@/lib/ai-access';
 import { apiMe, err, isRes } from '@/lib/api';
 import { aiGate, logUsage } from '@/lib/quota';
 import { AiError, textJson } from '@/lib/ai';
@@ -9,6 +10,8 @@ export const maxDuration = 120;
 export async function POST(req: Request) {
   const me = await apiMe();
   if (isRes(me)) return me;
+  const blocked = aiBlock(me);
+  if (blocked) return blocked;
   const { prompt } = await req.json().catch(() => ({}));
   if (typeof prompt !== 'string' || !prompt.trim()) return err('bad_request', '보낼 내용이 없어요');
   if (prompt.length > 150_000) return err('prompt_too_large', '한 번에 보내는 양이 너무 커요', 413);

@@ -39,10 +39,17 @@ P('AI 오류 문구', 'const SM_ERR={', "const SM_ERR={budget_exceeded:'이번 �
 // 3) 계정 메뉴: 진짜 로그인 · 내 계정 · 관리자
 P('로그아웃', "else if(a==='logout'){USER=null;", "else if(a==='account'){location.href='/account';}else if(a==='admin'){location.href='/admin';}else if(a==='logout'){if(window.__WB){location.href='/auth/signout';return;}USER=null;");
 P('계정 메뉴 항목', ' <button class="tbmi" data-am="home"><i>${ic(\'book\',15)}</i><span><b>내 작품</b></span></button>', ' <button class="tbmi" data-am="home"><i>${ic(\'book\',15)}</i><span><b>내 작품</b></span></button>${window.__WB&&__WB.boot.mode===\'cloud\'?`<button class="tbmi" data-am="account"><i>${ic(\'user\',15)}</i><span><b>내 계정 · 사용량</b></span></button>`:\'\'}${window.__WB&&__WB.boot.isAdmin?`<button class="tbmi" data-am="admin"><i>${ic(\'sliders\',15)}</i><span><b>관리자</b></span></button>`:\'\'}');
-P('로그인 창 대신 로그인 페이지', "else{$('#mLogin').hidden=false;setTimeout(()=>$('#lgEmail').focus(),50);}", "else{if(window.__WB&&__WB.boot.mode==='cloud'){location.href='/login?next=/studio';return;}$('#mLogin').hidden=false;setTimeout(()=>$('#lgEmail').focus(),50);}");
+P('로그인 창 대신 로그인 페이지', "else{$('#mLogin').hidden=false;setTimeout(()=>$('#lgEmail').focus(),50);}", "else{if(window.__WB&&__WB.boot.mode!=='local'){location.href='/login?next=/studio';return;}$('#mLogin').hidden=false;setTimeout(()=>$('#lgEmail').focus(),50);}");
+
+// 3-1) AI를 쓸 수 없을 때(손님 · 유료 전용 · 준비 중): 이유를 알려 주고 로그인 · 결제로 안내
+{
+  const T = "toast('여기서는 Claude를 부를 수 없어요 · 앱에서 열면 돼요')";
+  P('AI 막힘 안내', T, '(window.__WB&&__WB.boot.aiNeed?__WB.aiBlocked():' + T + ')', s.split(T).length - 1);
+  if (!s.includes('__WB.aiBlocked():')) throw new Error('[studio patch] "AI 막힘 안내" — 바꿀 곳을 못 찾았어요');
+}
 
 // 4) 이미지 AI: 프롬프트가 있으면 서버(Gemini)로, 없거나 키가 없으면 예시 그림
-P('이미지 생성기', 'function sbMockImg(W,H,seed,v){', 'async function sbMockImg(W,H,seed,v,prompt,refs){if(window.__WB&&__WB.boot.ai.image&&prompt){if(cancelFlag)return null;const b=await __WB.image(prompt,W,H,refs||[]);return b;}return sbMockImg0(W,H,seed,v);}\nfunction sbMockImg0(W,H,seed,v){');
+P('이미지 생성기', 'function sbMockImg(W,H,seed,v){', 'async function sbMockImg(W,H,seed,v,prompt,refs){if(window.__WB&&__WB.boot.aiNeed&&prompt){__WB.aiBlocked();return null;}if(window.__WB&&__WB.boot.ai.image&&prompt){if(cancelFlag)return null;const b=await __WB.image(prompt,W,H,refs||[]);return b;}return sbMockImg0(W,H,seed,v);}\nfunction sbMockImg0(W,H,seed,v){');
 P('시트 · 배경 그림', "let b=await sbMockImg(kind==='ch'?1200:1280,kind==='ch'?800:720,seed,kind==='ch'?1:2);", "let b=await sbMockImg(kind==='ch'?1200:1280,kind==='ch'?800:720,seed,kind==='ch'?1:2,window.__WB&&refMakePrompt(kind,o,view),mkRefs);if(!b){progEnd();return;}if(window.__WB&&__WB.boot.ai.image){}else ");
 P('장면 그림', 'const b=await sbMockImg(W,H,seed,v+(c&&c.sb.cands?c.sb.cands.length:0));', 'const b=await sbMockImg(W,H,seed,v+(c&&c.sb.cands?c.sb.cands.length:0),prompt,stuRefs().map(r=>r.k));if(!b)break;');
 P('콘티 컷 그림', 'const mk=async(w,h,v)=>{const b=await sbMockImg(Math.max(40,Math.round(w)),Math.max(40,Math.round(h)),c.sb.no,v);', "const mk=async(w,h,v)=>{if(cancelFlag)return null;const b=await sbMockImg(Math.max(40,Math.round(w)),Math.max(40,Math.round(h)),c.sb.no,v,window.__WB&&sbCutPrompt(c),window.__WB?sbCutRefs(c).map(r=>r.k):[]);if(!b){cancelFlag=true;return null;}");

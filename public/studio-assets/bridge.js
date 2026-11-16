@@ -7,6 +7,7 @@
   'use strict';
   var boot = window.__WB_BOOT || { mode: 'local', user: { id: 'local', name: '로컬 작가' }, isAdmin: true, quota: { text: { used: 0, limit: 30 }, image: { used: 0, limit: 10 } }, ai: { text: false, image: false } };
   var cloud = boot.mode === 'cloud';
+  var guest = boot.mode === 'guest';
   var uid = boot.user && boot.user.id;
 
   /* ---------- 작은 도우미 ---------- */
@@ -41,7 +42,7 @@
     DB = db;
     if (!cloud) return Promise.resolve();
     status('클라우드에서 불러오는 중…', true);
-    return Promise.all([api('/api/projects'), idbReq(db, 'kv', 'readonly', function (s) { return s.get('works'); })]).then(function (r) {
+    return adoptGuest(db).then(function () { return Promise.all([api('/api/projects'), idbReq(db, 'kv', 'readonly', function (s) { return s.get('works'); })]).then(function (r) {
       var list = r[0].projects || [], local = []; try { local = JSON.parse(r[1] || '[]') || []; } catch (_) {}
       var byId = {}; local.forEach(function (w) { byId[w.id] = w; });
       var cloudIds = {};
@@ -66,7 +67,42 @@
           setTimeout(function () { pushWorks(merged, db); }, 1500);
         });
       });
-    }).catch(function (e) { status('클라우드 연결 안 됨 · 이 브라우저에 저장 중', false); console.warn('[웹툰보드] sync', e); });
+    }); }).catch(function (e) { status('클라우드 연결 안 됨 · 이 브라우저에 저장 중', false); console.warn('[웹툰보드] sync', e); });
+  }
+
+  /* 가입 전에(손님으로) 이 브라우저에서 만든 작품을 내 계정으로 옮겨요 — 한 작품은 한 번만 */
+  function adoptGuest(db) {
+    var moved = LS.get('wb-guest-moved', {});
+    return new Promise(function (done) {
+      var rq; try { rq = indexedDB.open('webtoon-cut-studio', 1); } catch (_) { return done(); }
+      rq.onupgradeneeded = function () { try { rq.transaction.abort(); } catch (_) {} };
+      rq.onerror = function () { done(); };
+      rq.onsuccess = function () {
+        var g = rq.result, fin = function () { try { g.close(); } catch (_) {} done(); };
+        if (!g.objectStoreNames.contains('kv') || !g.objectStoreNames.contains('blobs')) return fin();
+        Promise.all([idbReq(g, 'kv', 'readonly', function (s) { return s.get('works'); }), idbReq(db, 'kv', 'readonly', function (s) { return s.get('works'); })]).then(function (r) {
+          var gw = [], mine = []; try { gw = JSON.parse(r[0] || '[]') || []; } catch (_) {} try { mine = JSON.parse(r[1] || '[]') || []; } catch (_) {}
+          var have = {}; mine.forEach(function (w) { have[w.id] = 1; });
+          var todo = gw.filter(function (w) { return w && w.id && !have[w.id] && !moved[w.id]; });
+          if (!todo.length) return;
+          var p = Promise.resolve(), n = 0;
+          todo.forEach(function (w) {
+            p = p.then(function () { return idbReq(g, 'kv', 'readonly', function (s) { return s.get('project:' + w.id); }); }).then(function (txt) {
+              if (!txt) return;
+              var keys = []; try { if (typeof projKeys === 'function') keys = Array.from(projKeys(JSON.parse(txt))); } catch (_) {}
+              var q = Promise.resolve();
+              keys.forEach(function (k) { q = q.then(function () { return idbReq(g, 'blobs', 'readonly', function (s) { return s.get(k); }); }).then(function (b) { if (b) return idbReq(db, 'blobs', 'readwrite', function (s) { return s.put(b, k); }); }).catch(function () {}); });
+              return q.then(function () { return idbReq(db, 'kv', 'readwrite', function (s) { return s.put(txt, 'project:' + w.id); }); }).then(function () { mine.push(Object.assign({}, w, { updated: Date.now() })); moved[w.id] = Date.now(); n++; });
+            }).catch(function () {});
+          });
+          return p.then(function () {
+            if (!n) return;
+            LS.set('wb-guest-moved', moved);
+            return idbReq(db, 'kv', 'readwrite', function (s) { return s.put(JSON.stringify(mine), 'works'); }).then(function () { setTimeout(function () { say('가입 전에 만든 작품 ' + n + '개를 내 계정으로 옮겼어요'); }, 1800); });
+          });
+        }).then(fin, fin);
+      };
+    });
   }
 
   // 작품 목록이 저장될 때마다: 바뀐 작품만 올려요
@@ -151,6 +187,20 @@
       });
     };
   }
+  /* AI를 쓸 수 없을 때: 왜 안 되는지 알려 주고(가입 · 유료 · 준비 중) 갈 곳을 안내해요 */
+  var blockedAt = 0;
+  function loginUrl() { return '/login?next=' + encodeURIComponent('/studio'); }
+  function aiBlocked() {
+    if (Date.now() - blockedAt < 2500 || document.getElementById('mConfirm')) return;
+    blockedAt = Date.now();
+    var need = boot.aiNeed;
+    if (need === 'login') {
+      if (typeof confirmBox !== 'function') { location.href = loginUrl(); return; }
+      confirmBox({ title: 'AI는 회원만 쓸 수 있어요', body: '편집기는 가입 없이 그대로 쓸 수 있어요. AI 기획 · 콘티 · 이미지는 무료로 가입하면 열려요. 지금까지 만든 작품은 가입한 뒤에도 그대로 이어져요.', ok: '로그인 · 가입', danger: false }).then(function (y) { if (y) location.href = loginUrl(); });
+    } else if (need === 'pro') {
+      if (typeof paywall === 'function') paywall('txt'); else say('AI는 유료 회원만 쓸 수 있어요');
+    } else say('AI가 아직 연결되지 않았어요');
+  }
   function txtAi() { var q = boot.quota.text; if (boot.isAdmin) return { used: q.used, left: 9999 }; return { used: q.used, left: Math.max(0, q.limit - q.used) }; }
   function imgLeft() { var q = boot.quota.image; return boot.isAdmin ? 9999 : Math.max(0, q.limit - q.used); }
 
@@ -202,6 +252,7 @@
   function applyUser() {
     try {
       if (typeof USER === 'undefined') return;
+      if (!boot.user) { USER = null; if (typeof renderAcct === 'function') renderAcct(); return; }
       USER = { name: boot.user.name || '작가', email: boot.user.email || '', provider: boot.user.provider || 'email' };
       if (typeof renderAcct === 'function') renderAcct();
     } catch (_) {}
@@ -230,6 +281,7 @@
   var READ_API = '/read/api/';
   function publish() {
     var e = null; try { e = ep(); } catch (_) {}
+    if (guest) { if (typeof confirmBox === 'function') confirmBox({ title: '연재는 회원만 할 수 있어요', body: '무료로 가입하면 이 회차를 연재관에 바로 올릴 수 있어요. 지금까지 만든 작품은 그대로 이어져요.', ok: '로그인 · 가입', danger: false }).then(function (y) { if (y) location.href = loginUrl(); }); else location.href = loginUrl(); return; }
     if (!e || e.kind === 'cover') { say('연재할 회차를 열어 주세요'); return; }
     var cuts = (e.cuts || []).filter(function (c) { return c.kind !== 'blank' || (c.items && c.items.length); });
     if (!cuts.length) { say('이 회차에는 올릴 컷이 없어요'); return; }
@@ -290,6 +342,6 @@
     boot: boot, dbSuffix: cloud ? ':' + uid : '',
     sync: sync, pushWorks: pushWorks, deleteProject: deleteProject, putBlob: putBlob, getBlob: getBlob,
     txtAi: txtAi, imgLeft: imgLeft, image: image, refPrompt: refPrompt, sbPrompt: sbPrompt, refsFor: refsFor,
-    publish: publish,
+    publish: publish, aiBlocked: aiBlocked,
   };
 })();
