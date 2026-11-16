@@ -11,7 +11,7 @@ export function testAccounts(): Map<string, string> {
     const i = part.indexOf(':');
     if (i < 1) continue;
     const id = part.slice(0, i).trim(), pw = part.slice(i + 1).trim();
-    if (/^[A-Za-z0-9_.-]{2,30}$/.test(id) && pw.length >= 8) m.set(id, pw);
+    if (/^[A-Za-z0-9_.-]{2,30}$/.test(id) && pw.length >= 4) m.set(id, pw);
   }
   return m;
 }
