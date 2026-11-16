@@ -2,8 +2,8 @@
 const n = (v: string | undefined, d: number) => (v && !isNaN(+v) ? +v : d);
 
 export const env = {
-  supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  supabaseAnon: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
+  supabaseUrl: (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim(),
+  supabaseAnon: (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim(),
   serviceRole: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   /** 웹툰보드 테이블이 사는 DB 구역 — 공용 Supabase(iux-cloud)에 얹어도 다른 서비스와 안 섞이게 */
@@ -50,5 +50,5 @@ export const env = {
 };
 
 /** Supabase 키가 다 있으면 true — 없으면 로그인 없이 브라우저 저장으로 동작 */
-export const dbReady = () => !!(env.supabaseUrl && env.supabaseAnon);
+export const dbReady = () => !!(env.supabaseAnon && /^https?:\/\/[^\s]+\.[^\s]+$/.test(env.supabaseUrl));
 export const adminReady = () => dbReady() && !!env.serviceRole;

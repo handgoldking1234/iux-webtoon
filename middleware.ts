@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { createServerClient } from '@supabase/ssr';
 
 // 편집기(/studio)는 누구나 열 수 있어요 — AI · 클라우드 저장 · 연재만 회원 기능
 const PROTECTED = ['/admin', '/account', '/read/publish'];
@@ -15,13 +14,17 @@ export async function middleware(req: NextRequest) {
   }
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL, anon = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   // DB 연동 전(로컬 시연 모드): 로그인 없이 통과
-  if (!url || !anon) return NextResponse.next();
+  // 주소가 올바르지 않으면(자리표시 값 등) 연결 안 된 것으로 봐요 — 여기서 멈추면 사이트 전체가 500이 돼요
+  if (!url || !anon || !/^https?:\/\/[^\s]+\.[^\s]+$/.test(url.trim())) return NextResponse.next();
+  try {
+  // Supabase를 쓸 때만 불러와요 (연결 전에는 이 모듈 때문에 미들웨어가 멈추지 않게)
+  const { createServerClient } = await import('@supabase/ssr');
 
   let res = NextResponse.next({ request: req });
-  const sb = createServerClient(url, anon, {
+  const sb = createServerClient(url.trim(), anon.trim(), {
     cookies: {
       getAll: () => req.cookies.getAll(),
-      setAll: (list) => {
+      setAll: (list: { name: string; value: string; options?: Record<string, unknown> }[]) => {
         list.forEach(({ name, value }) => req.cookies.set(name, value));
         res = NextResponse.next({ request: req });
         list.forEach(({ name, value, options }) => res.cookies.set(name, value, options));
@@ -40,6 +43,10 @@ export async function middleware(req: NextRequest) {
   const src = req.nextUrl.searchParams.get('utm_source');
   if (src && !req.cookies.get('wb_src')) res.cookies.set('wb_src', src.slice(0, 40), { maxAge: 60 * 60 * 24 * 30, path: '/' });
   return res;
+  } catch (e) {
+    console.error('[웹툰보드] middleware', e);
+    return NextResponse.next();
+  }
 }
 
 export const config = {
