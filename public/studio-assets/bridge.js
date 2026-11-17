@@ -182,7 +182,7 @@
     window.claude.use = function () {
       return Promise.resolve({
         json: function (prompt) {
-          return api('/api/ai/text', { method: 'POST', json: { prompt: String(prompt) } }).then(function (j) { setQuota(j.quota); return j.data; }).catch(function (e) { if (e.code === 'quota_exceeded') { setQuota(Object.assign({}, boot.quota, { text: { used: boot.quota.text.limit, limit: boot.quota.text.limit } })); } throw { code: e.code || 'upstream_error', message: e.message }; });
+          return api('/api/ai/text', { method: 'POST', json: { prompt: String(prompt) } }).then(function (j) { setQuota(j.quota); if (j.truncated) setTimeout(function () { say('AI 답이 길어서 뒷부분이 잘렸어요 · 받은 데까지만 넣었어요. 컷 수를 줄이거나 나머지를 한 번 더 만들어 주세요'); }, 600); return j.data; }).catch(function (e) { var why = { busy: 1, bad_key: 1, rate_limited: 1, budget_exceeded: 1, not_configured: 1, pro_only: 1, refused: 1 }[e.code] && e.message; if (why) setTimeout(function () { say(why); }, 600); if (e.code === 'quota_exceeded') { setQuota(Object.assign({}, boot.quota, { text: { used: boot.quota.text.limit, limit: boot.quota.text.limit } })); } throw { code: e.code || 'upstream_error', message: e.message }; });
         },
       });
     };
@@ -217,6 +217,14 @@
       return new Promise(function (res) { var fr = new FileReader(); fr.onload = function () { res({ mime: 'image/jpeg', data: String(fr.result).split(',')[1] }); }; fr.readAsDataURL(b); });
     });
   }
+  /* AI 그림은 PNG로 와서 한 장이 몇 MB예요 — 화질은 그대로 두고 WebP(안 되면 JPEG)로 바꿔 저장 · 올리기를 가볍게 해요 */
+  function slim(b) {
+    if (!b || b.size < 900 * 1024 || typeof createImageBitmap !== 'function') return b;
+    return createImageBitmap(b).then(function (bm) {
+      var c = document.createElement('canvas'); c.width = bm.width; c.height = bm.height; c.getContext('2d').drawImage(bm, 0, 0);
+      return new Promise(function (res) { c.toBlob(function (w) { if (w && w.type === 'image/webp' && w.size < b.size) return res(w); c.toBlob(function (j) { res(j && j.size < b.size ? j : b); }, 'image/jpeg', 0.92); }, 'image/webp', 0.92); });
+    }).catch(function () { return b; });
+  }
   function image(prompt, W, H, refKeys) {
     var map = (typeof blobs !== 'undefined' && blobs) || new Map();
     var refs = (refKeys || []).filter(function (k, i, a) { return k && a.indexOf(k) === i && map.has(k); }).slice(0, 3);
@@ -226,7 +234,7 @@
       return fetch('/api/ai/image', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: prompt, width: Math.round(W), height: Math.round(H), model: model, res: res, refs: R.filter(Boolean) }) });
     }).then(function (r) {
       var q = r.headers.get('x-wb-quota'); if (q) try { setQuota(JSON.parse(q)); } catch (_) {}
-      if (r.ok && (r.headers.get('content-type') || '').indexOf('image/') === 0) return r.blob();
+      if (r.ok && (r.headers.get('content-type') || '').indexOf('image/') === 0) return r.blob().then(slim);
       return r.json().catch(function () { return {}; }).then(function (j) {
         var m = { budget_exceeded: '이번 달 AI 사용량이 많아 잠시 멈췄어요', image_quota: 'AI 이미지를 다 썼어요', not_configured: '이미지 AI가 아직 연결되지 않았어요', blocked: 'AI가 이 장면은 그릴 수 없다고 했어요 · 설명을 바꿔 보세요', suspended: '이용이 정지된 계정이에요' }[j.code];
         say((m || j.message || '이미지를 만들지 못했어요') + ' · 사용 횟수는 줄지 않았어요');

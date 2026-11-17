@@ -5,7 +5,7 @@ import { aiGate, logUsage } from '@/lib/quota';
 import { AiError, textJson } from '@/lib/ai';
 import { env } from '@/lib/env';
 
-export const maxDuration = 120;
+export const maxDuration = 300;
 
 export async function POST(req: Request) {
   const me = await aiMe();
@@ -21,7 +21,7 @@ export async function POST(req: Request) {
   try {
     const r = await textJson(engine, prompt);
     await logUsage(me.profile, { kind: 'text', model: engine === 'openai' ? env.openaiTextModel : env.claudeModel, units: 1, in_tokens: r.inTokens, out_tokens: r.outTokens, cost_krw: g.settings.cost.text });
-    return NextResponse.json({ data: r.data, quota: { ...g.quota, text: { ...g.quota.text, used: g.quota.text.used + 1 } } });
+    return NextResponse.json({ data: r.data, truncated: r.truncated || undefined, quota: { ...g.quota, text: { ...g.quota.text, used: g.quota.text.used + 1 } } });
   } catch (e) {
     const a = e instanceof AiError ? e : new AiError('upstream_error', String(e));
     return err(a.code, a.message, a.status);
