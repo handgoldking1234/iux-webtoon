@@ -28,7 +28,7 @@ export const env = {
     accessKey: process.env.R2_ACCESS_KEY_ID || '',
     secret: process.env.R2_SECRET_ACCESS_KEY || '',
     bucket: process.env.R2_BUCKET || '',
-    /** 연재 그림을 바로 보여 줄 공개 주소 (R2 공개 버킷 · 커스텀 도메인), 예: https://img.toon.iux.kr */
+    /** 연재 그림을 바로 보여 줄 공개 주소 (R2 공개 버킷 · 커스텀 도메인), 예: https://img.webtoon.iux.kr */
     /** 연재 그림 전용 공개 버킷 (작품 원본 버킷과 따로) */
     readBucket: process.env.R2_READ_BUCKET || '',
     publicUrl: (process.env.R2_PUBLIC_URL || '').replace(/\/$/, ''),

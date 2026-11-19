@@ -3,10 +3,10 @@
 ## 한 줄 요약
 기획·콘티·AI 이미지·말풍선까지 웹툰 한 화를 한곳에서 만드는 편집기.
 
-- 주소: https://toon.iux.kr
+- 주소: https://webtoon.iux.kr (예전 toon.iux.kr은 여기로 넘어와요)
 
 ## 구조 (중요)
-- `main` 하나로 합침 (예전 `main` 단일 HTML + `dev` 실서비스 → 2026-11 통합). `main` = toon.iux.kr 배포.
+- `main` 하나로 합침 (예전 `main` 단일 HTML + `dev` 실서비스 → 2026-11 통합). `main` = webtoon.iux.kr 배포 (Vercel 프로젝트 `iux-webtoon`).
 - Next.js 15 + Supabase(Auth·Postgres·Storage) + Vercel. 글 AI = Claude API, 이미지 AI = Gemini(나노바나나).
 - 편집기 원본은 `prototype/studio.html` 한 곳. `scripts/build-studio.mjs`가 저장·회원·AI 연결 부분을 패치해 `/studio`로 내보낸다. 편집기를 고칠 때는 이 파일만 고친다.
 - AI 키(`ANTHROPIC_API_KEY`·`GEMINI_API_KEY`)와 접근 규칙(`AI_ACCESS`·`TEST_ACCOUNTS`·`SITE_PASSWORD`)은 Vercel 환경 변수. 자세한 건 README.md.

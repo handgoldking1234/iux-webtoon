@@ -362,7 +362,7 @@ body::before{background:#000}
 
 <main id="app" aria-live="polite"></main>
 
-<footer><div class="wrap"><span>웹툰보드 연재 · toon.iux.kr</span><span>시안 · 작품과 작가는 모두 예시예요</span><span>운영정책 · 신고하기 · 문의</span></div></footer>
+<footer><div class="wrap"><span>웹툰보드 연재 · webtoon.iux.kr</span><span>시안 · 작품과 작가는 모두 예시예요</span><span>운영정책 · 신고하기 · 문의</span></div></footer>
 
 <script>
 /* ---------- 예시 데이터 (실제 서비스에서는 서버에서 받아요) ---------- */
@@ -499,7 +499,7 @@ function home(){const G=(...g)=>byRate(ALL().filter(w=>g.includes(w.genre)));
   ${row('가볍게 웃고 싶을 때','개그 · 일상',G('개그','일상').map(card))}
   ${row('다른 세계로','판타지 · 로맨스 · 드라마',G('판타지','로맨스','드라마','스포츠').map(card))}
   ${row('완결까지 한 번에','기다릴 필요 없는 완결작',W.filter(w=>w.days[0]==='end').concat(byRate(W).filter(w=>w.eps>=48&&w.days[0]!=='end')).map(card))}
-  <section class="band"><div><h3>내 웹툰도 여기에</h3><p>웹툰보드에서 만든 회차는 「연재하기」 한 번으로 바로 올라가요. 자유연재로 시작해서 관심과 별점이 모이면 요일연재 후보가 돼요.</p></div><div class="acts"><a class="btn big go" href="${U('publish')}">연재하기</a><a class="btn big glass" href="${PATH?'/':'https://toon.iux.kr'}">웹툰 만들기</a></div></section>
+  <section class="band"><div><h3>내 웹툰도 여기에</h3><p>웹툰보드에서 만든 회차는 「연재하기」 한 번으로 바로 올라가요. 자유연재로 시작해서 관심과 별점이 모이면 요일연재 후보가 돼요.</p></div><div class="acts"><a class="btn big go" href="${U('publish')}">연재하기</a><a class="btn big glass" href="${PATH?'/':'https://webtoon.iux.kr'}">웹툰 만들기</a></div></section>
  </div>`;}
 function daily(){return `<div class="wrap"><div class="page-h"><h1>요일연재</h1><p>오늘은 ${DAYS.find(d=>d[0]===TODAY)[1]}요일이에요</p></div><section class="tt" id="tt" style="margin-top:14px">${timetable()}</section></div>`;}
 function free(){const L=FREE.slice().sort(S.freeSort==='new'?(a,b)=>(b.isNew||0)-(a.isNew||0):(a,b)=>b.rate-a.rate);
@@ -560,7 +560,7 @@ function publish(){const P=S.pub;const src=MY.find(m=>m.id===P.src);let body='';
  return `<div class="pub wrap"><h1>연재하기</h1>${P.step<5?pubSteps():''}${body}</div>`;}
 
 /* ---------- 주소 ---------- */
-/* toon.iux.kr/read/… 에서는 진짜 주소(/read/작품/화)로, 파일·미리보기에서는 #주소로 움직여요 */
+/* webtoon.iux.kr/read/… 에서는 진짜 주소(/read/작품/화)로, 파일·미리보기에서는 #주소로 움직여요 */
 const PATH=/^\/read(\/|$)/.test(location.pathname);
 function U(p){return PATH?'/read'+(p?'/'+p:''):'#'+(p?'r-'+p.split('/').join('--'):'home');}
 function segs(){if(PATH)return location.pathname.replace(/^\/read\/?/,'').split('/').filter(Boolean).map(decodeURIComponent);const h=location.hash.slice(1);return h.startsWith('r-')?h.slice(2).split('--'):[];}
@@ -580,7 +580,7 @@ window.addEventListener(PATH?'popstate':'hashchange',render);
 /* 줄 양끝에 닿으면 넘김 단추를 숨겨요 */
 document.addEventListener('scroll',e=>{const r=e.target;if(!r.classList||!r.classList.contains('rail'))return;const w=r.parentNode;w.querySelector('.railb.l').disabled=r.scrollLeft<8;w.querySelector('.railb.r').disabled=r.scrollLeft+r.clientWidth>r.scrollWidth-8;},true);
 document.querySelectorAll('[data-l]').forEach(a=>a.setAttribute('href',U(a.dataset.l)));
-if(!PATH)document.querySelectorAll('[data-make]').forEach(a=>{a.href='https://toon.iux.kr';a.target='_blank';a.rel='noopener';});
+if(!PATH)document.querySelectorAll('[data-make]').forEach(a=>{a.href='https://webtoon.iux.kr';a.target='_blank';a.rel='noopener';});
 if(PATH)document.addEventListener('click',e=>{const a=e.target.closest('a[href^="/read"]');if(!a||e.metaKey||e.ctrlKey||e.shiftKey||e.button)return;e.preventDefault();if(a.getAttribute('href')!==location.pathname)go(a.getAttribute('href'));},true);
 
 /* ---------- 동작 ---------- */

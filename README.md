@@ -69,7 +69,7 @@ npm test                     # 한도 · AI 엔진 · 편집기 패치 테스트
 
 ## AI만 먼저 시험하기 (회원 · DB 없이)
 
-1. Vercel에서 이 저장소로 **새 프로젝트**를 만들고 Production Branch를 `dev`로 해요 (toon.iux.kr 프로젝트와 따로).
+1. Vercel에서 이 저장소로 **새 프로젝트**를 만들고 시험용 브랜치를 Production Branch로 해요 (정식 사이트 webtoon.iux.kr 프로젝트와 따로).
 2. 환경 변수: `SITE_PASSWORD`(사이트 잠금) · `ANTHROPIC_API_KEY` · `GEMINI_API_KEY` · (선택) `CLAUDE_MODEL` · `GEMINI_IMAGE_MODEL`
 3. 배포 주소로 들어가 비밀번호를 넣으면 로그인 없이 편집기(`/studio`) · 관리자(`/admin`)가 열려요.
 4. **관리자 › 설정 › AI 연결 시험**에서 글 1번 · 그림 1장을 불러 키 · 모델 이름을 확인해요. 그다음 편집기에서 기획 AI · 콘티 · 이미지 만들기를 써 봐요.

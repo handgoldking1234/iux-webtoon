@@ -18,7 +18,7 @@ export default async function ReadLayout({ children }: { children: React.ReactNo
       <main>{children}</main>
       <footer className={k('foot')}>
         <div className={k('wrap')}>
-          <span>웹툰보드 연재 · toon.iux.kr</span>
+          <span>웹툰보드 연재 · webtoon.iux.kr</span>
           <a href="/read/policy">운영정책</a>
           <a href="/">웹툰 만들기</a>
         </div>
