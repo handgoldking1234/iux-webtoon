@@ -33,9 +33,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           </>
         ) : (
           <>
-            <h1>로컬 시연 모드</h1>
-            <p className="note" style={{ fontSize: 13, lineHeight: 1.6 }}>아직 DB(Supabase)가 연결되지 않아 로그인 없이 시작해요. 작품은 이 브라우저에만 저장돼요. <code>.env.local</code>에 Supabase 키를 넣으면 회원 로그인이 켜져요.</p>
-            <a className="btn pri lg" href={next}>작업실 열기</a>
+            <h1>로그인 준비 중이에요</h1>
+            <p className="note" style={{ fontSize: 13, lineHeight: 1.6 }}>회원가입 · 로그인을 곧 열어요. 그 전까지 편집기는 로그인 없이 쓸 수 있고, 작품은 이 브라우저에 저장돼요. AI 기획 · 콘티 · 이미지는 로그인이 열리면 쓸 수 있어요.</p>
+            <a className="btn pri lg" href={next}>편집기 열기</a>
             <Link className="btn" href="/">처음으로</Link>
           </>
         )}

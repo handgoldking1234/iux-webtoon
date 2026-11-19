@@ -194,13 +194,12 @@
     if (Date.now() - blockedAt < 2500 || document.getElementById('mConfirm')) return;
     blockedAt = Date.now();
     var need = boot.aiNeed;
-    if (need === 'login') {
+    if (need === 'login' || need === 'setup') {
       if (typeof confirmBox !== 'function') { location.href = loginUrl(); return; }
-      confirmBox({ title: 'AI는 회원만 쓸 수 있어요', body: '편집기는 가입 없이 그대로 쓸 수 있어요. AI 기획 · 콘티 · 이미지는 무료로 가입하면 열려요. 지금까지 만든 작품은 가입한 뒤에도 그대로 이어져요.', ok: '로그인 · 가입', danger: false }).then(function (y) { if (y) location.href = loginUrl(); });
+      confirmBox({ title: 'AI는 로그인을 해야 이용할 수 있어요', body: '편집기는 로그인 없이 그대로 쓸 수 있어요. AI 기획 · 콘티 · 이미지는 로그인하면 열려요. 지금까지 만든 작품은 로그인한 뒤에도 그대로 이어져요.', ok: '로그인하러 가기', danger: false }).then(function (y) { if (y) location.href = loginUrl(); });
     } else if (need === 'pro') {
       if (typeof paywall === 'function') paywall('txt'); else say('AI는 유료 회원만 쓸 수 있어요');
-    } else if (need === 'setup') say('AI는 로그인 기능이 준비된 뒤에 열려요 · 관리자: TEST_ACCOUNTS 또는 AI_ACCESS 환경 변수를 확인해 주세요');
-    else say('AI 키가 서버에 없어요 · 관리자: ANTHROPIC_API_KEY를 넣고 다시 배포해 주세요');
+    } else say('AI 키가 서버에 없어요 · 관리자: ANTHROPIC_API_KEY를 넣고 다시 배포해 주세요');
   }
   var noKeyAt = 0;
   function noImageKey() { if (Date.now() - noKeyAt < 8000) return; noKeyAt = Date.now(); say('이미지 AI 키가 서버에 없어서 예시 그림을 넣었어요 · 관리자: GEMINI_API_KEY를 넣고 다시 배포해 주세요'); }
