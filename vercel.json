@@ -1,5 +1,4 @@
 {
-  "rewrites": [
-    { "source": "/read/:path*", "destination": "/read/index.html" }
-  ]
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs"
 }
