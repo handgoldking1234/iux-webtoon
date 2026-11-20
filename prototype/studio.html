@@ -2206,7 +2206,7 @@ async function drawSb(ctx,c,W,H,out){
  ctx.textAlign='right';ctx.font=`${Math.round(13*u)}px ${FONTS.sans}`;ctx.fillText(s.ok?'콘티 확인 · 이미지 대기':'콘티',W-m-10*u,H-m-14*u);
 }
 /* ---------- 무료 AI 사용량 · 유료 안내 ---------- */
-const TXT_FREE=30;
+const TXT_FREE=30;/* 글 AI 남은 횟수 문구 — 로그인 전에는 '로그인하면', 관리자(한도 없음)에게는 '횟수 제한 없음'으로 보여 줘요 */function aiLeftLbl(n,pre='',b=false){const W=window.__WB;if(W&&W.boot&&W.boot.aiNeed==='login'||W&&W.boot&&W.boot.aiNeed==='setup')return `로그인하면 이번 달 무료 ${b?`<b>${TXT_FREE}</b>`:TXT_FREE}회`;if(n>9000)return '횟수 제한 없음';return `${pre}${b?`<b>${n}</b>`:n}/${TXT_FREE}회 남음`;}
 /* 테스트 모드 — 작품을 열 때마다(새로고침 포함) AI 횟수를 0으로 되돌려요. 출시 때 false로 */
 const AI_TEST=true,AI_RS=new WeakSet();
 function aiTestReset(force){const st=S&&S.settings;if(!AI_TEST||!st)return;if(!force&&AI_RS.has(st))return;AI_RS.add(st);st.aiUsed=0;st.txtAi={m:new Date().toISOString().slice(0,7),n:0};}
@@ -2334,7 +2334,7 @@ function plSimpleHTML(){const P=plan(),G=P.genres||[],C=plChars(),q=txtAi(),cur=
   <div class="pl2"><div class="plf"><span>연재 형식</span><div class="seg plseg">${['연재','단편','숏툰'].map(x=>`<button type="button" data-plfmt="${x}" aria-pressed="${(P.format||'연재')===x}">${x}</button>`).join('')}</div></div>
    <label class="plf plf2"><span>계획 화수</span><input data-plk="eps" type="number" min="1" max="999" value="${esc(P.eps||'')}" placeholder="예) 40"><small>화</small></label></div>
   <div class="plf"><span>그림체</span><div class="sbpre plpre">${SB_PRESETS.map(([n,v],i)=>{const x=SB_PRESET_EX[i]||{};return `<button data-placts="preset" data-v="${i}" aria-pressed="${cur===v}"><span class="sbpth" style="${x.img?'':'background:'+x.bg}">${x.img?`<img src="${x.img}" alt="${n} 예시" loading="lazy"><span class="sbzoom" data-stylezoom="${i}" role="button" tabindex="0" title="크게 보기" aria-label="${n} 크게 보기">${ic('expand',12)}</span>`:''}</span><b>${n}</b></button>`;}).join('')}</div></div>
-  ${!plan().detail?`<div class="plcta two"><div><b>더 자세히 쓰기</b><small>로그라인 · 기획의도 · 셀링 · 세계관과 장소 · 인물 상세 · 관계도 · 줄거리와 화수 배분까지 쓰면 AI 콘티 · 대사 · 그림이 훨씬 정확해져요.</small><small class="plcost">✦ AI로 채우기는 글 AI 1회 · 이번 달 무료 <b>${q.left}</b>/${TXT_FREE}회 남음 · 채운 뒤 하나씩 고칠 수 있어요</small></div><div class="plctab"><button class="btn pri" data-placts="full">${ic('wand',14)}AI로 자세히 채우기</button><button class="btn" data-placts="detail">${ic('edit',13)}직접 자세히 쓰기</button></div></div>`:`<div class="plcta"><div><b>✦ AI로 나머지 채우기</b><small>아래 빈 섹션(로그라인 · 기획의도 · 셀링 · 세계관과 장소 · 인물 상세 · 관계도 · 줄거리와 화수 배분)을 한 번에 채워요. 이미 쓴 칸은 그대로 둬요.</small><small class="plcost">글 AI 1회 · 이번 달 무료 <b>${q.left}</b>/${TXT_FREE}회 남음</small></div><button class="btn pri" data-placts="full">${ic('wand',14)}나머지 채우기</button></div>`}`;}
+  ${!plan().detail?`<div class="plcta two"><div><b>더 자세히 쓰기</b><small>로그라인 · 기획의도 · 셀링 · 세계관과 장소 · 인물 상세 · 관계도 · 줄거리와 화수 배분까지 쓰면 AI 콘티 · 대사 · 그림이 훨씬 정확해져요.</small><small class="plcost">✦ AI로 채우기는 글 AI 1회 · ${aiLeftLbl(q.left,'이번 달 무료 ',true)} · 채운 뒤 하나씩 고칠 수 있어요</small></div><div class="plctab"><button class="btn pri" data-placts="full">${ic('wand',14)}AI로 자세히 채우기</button><button class="btn" data-placts="detail">${ic('edit',13)}직접 자세히 쓰기</button></div></div>`:`<div class="plcta"><div><b>✦ AI로 나머지 채우기</b><small>아래 빈 섹션(로그라인 · 기획의도 · 셀링 · 세계관과 장소 · 인물 상세 · 관계도 · 줄거리와 화수 배분)을 한 번에 채워요. 이미 쓴 칸은 그대로 둬요.</small><small class="plcost">글 AI 1회 · ${aiLeftLbl(q.left,'이번 달 무료 ',true)}</small></div><button class="btn pri" data-placts="full">${ic('wand',14)}나머지 채우기</button></div>`}`;}
 async function planAIFull(){const P=plan();if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return;}if(!txtAi().left){paywall('txt');return;}
  if(!((P.idea||'').trim()||(P.logline||'').trim())){toast('「하고 싶은 이야기」를 한두 문장 적어 주세요');$('#mPlan [data-plk=idea]')?.focus();return;}
  prog('AI가 전문가 기획을 쓰는 중');progSet(.25,'간단 기획을 읽는 중…');
@@ -2355,7 +2355,7 @@ Use 3-6 characters, 2-5 locations, every main pair in rels. acts must cover 1..e
    const R=P.rels=P.rels||[];(res.rels||[]).forEach(r=>{const a=L.find(x=>x.name===r.a),b=L.find(x=>x.name===r.b);if(!a||!b||a===b)return;if(R.some(x=>(x.a===a.id&&x.b===b.id)||(x.a===b.id&&x.b===a.id)))return;R.push({a:a.id,b:b.id,t:PL_REL.some(x=>x[0]===r.t)?r.t:'기타',call:r.call||''});});
    if(!P.struct&&(res.struct==='ki'||res.struct==='3act'))P.struct=res.struct;const A=P.acts=P.acts||{};(res.acts||[]).forEach(x=>{if(!x||!x.step)return;const a=A[x.step]=A[x.step]||{};if(!(a.t||'').trim()&&x.t){a.t=x.t;a._ai=1;}if(!a.from&&x.from)a.from=x.from;if(!a.to&&x.to)a.to=x.to;});
    if(!(P.genres||[]).length&&P.genre)P.genres=P.genre.split(/\s*[·,]\s*/).filter(Boolean);P.qsFold=true;P.detail=true;});
-  txtAiUse(1);progEnd();PLT='ov';planRender();plGo('ov',true);toast(`기획을 채웠어요 · 이미 쓴 칸은 그대로예요 · 글 AI ${txtAi().left}/${TXT_FREE}회 남음`);}
+  txtAiUse(1);progEnd();PLT='ov';planRender();plGo('ov',true);toast(`기획을 채웠어요 · 이미 쓴 칸은 그대로예요 · 글 AI ${aiLeftLbl(txtAi().left,'',false)}`);}
  catch(x){progEnd();toast((SM_ERR[x&&x.code]||'AI가 답하지 못했어요')+' · 사용 횟수는 줄지 않았어요');}}
 
 /* ---------- 그림체 크게 보기 ---------- */
@@ -2435,7 +2435,7 @@ const PL_COMPACT=['ll','why','world','ch','rel','plot'];
 function plSecWrap(k){const P=plan();if(k==='qs')return plQuickHTML();if(PL_COMPACT.includes(k)&&!plDone(k)&&!(P.open||{})[k]&&!(PLREF&&PLREF.k===k)){const t=(PL_TABS.find(x=>x[0]===k)||[])[1];return `<div class="plcomp"><div class="plcompt"><h4>${t}</h4><span class="note" style="margin:0">비어 있음</span></div><button class="btn sm" data-placts="secopen" data-v="${k}">${ic('edit',12)}직접 쓰기</button><button class="btn sm plrfb" data-placts="secai" data-v="${k}">✦ AI로 채우기</button></div>`;}return plSecHTML(k);}
 function plSecHTML(k){const P=plan(),q=txtAi();
  const F=(k,l,ph,r=1,hint='')=>`<label class="plf"><span>${l}${plAI(k)?' <i class="aitag" title="AI가 쓴 칸 · 고치면 사라져요">AI</i>':''}${hint?` <small>${hint}</small>`:''}</span>${r>1?`<textarea data-plk="${k}" rows="${r}" placeholder="${esc(ph)}">${esc(P[k]||'')}</textarea>`:`<input data-plk="${k}" value="${esc(P[k]||'')}" placeholder="${esc(ph)}">`}</label>`;
- const cost=`<p class="note plcost">✦ 글 AI 1회 · 이번 달 무료 <b>${q.left}</b>/${TXT_FREE}회 남음</p>`;
+ const cost=`<p class="note plcost">✦ 글 AI 1회 · ${aiLeftLbl(q.left,'이번 달 무료 ',true)}</p>`;
  let h='';
  if(k==='ov'){h=`<div class="plsh4"><h4>톤 · 타깃</h4>${plRfBtn('ov')}</div>${plRfBox('ov')}<p class="sub">제목 · 장르 · 형식 · 화수는 위 「빠른 시작」에서 정해요.</p>
   <div class="pl2">${F('tone','톤','진지 70 · 코믹 30, 서늘하고 쓸쓸하게')}${F('target','타깃','20~30대 · 네이버 웹툰 독자')}</div>`;}
@@ -2484,7 +2484,7 @@ function plSecHTML(k){const P=plan(),q=txtAi();
    return `<div class="plpk"><div class="plpkH"><b>${ic('wand',14)}회차 패키지 만들기</b><span>고른 화마다 시놉시스 → 콘티(S#) → 컷별 이미지 프롬프트 → 말풍선을 한 번에 만들어요</span></div>
    <div class="plpkeps" role="group" aria-label="만들 화">${ns.map(n=>{const e=E.find(x=>+x.num===n),s=pkStat(e);return `<button data-placts="pksel" data-v="${n}" aria-pressed="${PLPK.sel.includes(n)}" class="${e?'':'new'}${s?' done':''}" title="${!e?'아직 없는 화 · 만들면 회차가 생겨요':s?`패키지 있음 (콘티 ${s.n}컷) · 건너뛰어요 · 아래 회차에서 고치거나 다시 만들어요`:'패키지 없음'}">${n}화${s?ic('check',10):''}</button>`;}).join('')}<button data-placts="pkall" class="pkall">${k===ns.length?'모두 빼기':'전체'}</button></div>
    <div class="plpkrow"><span>컷 수</span><div class="seg">${[0,12,20,30].map(v=>`<button data-placts="pkn" data-v="${v}" aria-pressed="${PLPK.n===v}">${v?v+'컷':'자동'}</button>`).join('')}</div><label class="pkin${[0,12,20,30].includes(PLPK.n)?'':' on'}"><input type="number" inputmode="numeric" min="1" max="80" data-pkn placeholder="직접" value="${[0,12,20,30].includes(PLPK.n)?'':PLPK.n}" aria-label="컷 수 직접 입력"><span>컷</span></label><button class="btn pri" data-placts="pkrun"${k?'':' disabled'}>${ic('wand',13)}${(()=>{const nn=PLPK.sel.filter(n=>!E.some(e=>+e.num===n&&pkStat(e))).length;return nn?nn+'화 패키지 만들기':k?'모두 만들어져 있어요':'패키지 만들기';})()}</button></div>
-   <p class="plpkn">이미 만든 화는 건너뛰어요 · 글 AI <b>${PLPK.sel.filter(n=>!E.some(e=>+e.num===n&&pkStat(e))).length}회</b> 사용 · 이번 달 ${q.left}/${TXT_FREE}회 남음 · 만든 뒤에는 <b>콘티·AI</b>에서 화마다 컷 · 이미지 · 말풍선으로 이어 가요${+P.eps?'':' · 「톤 · 타깃」에서 계획 화수를 적으면 뒤 화도 고를 수 있어요'}</p></div>`;})()}
+   <p class="plpkn">이미 만든 화는 건너뛰어요 · 글 AI <b>${PLPK.sel.filter(n=>!E.some(e=>+e.num===n&&pkStat(e))).length}회</b> 사용 · ${aiLeftLbl(q.left,'이번 달 ',false)} · 만든 뒤에는 <b>콘티·AI</b>에서 화마다 컷 · 이미지 · 말풍선으로 이어 가요${+P.eps?'':' · 「톤 · 타깃」에서 계획 화수를 적으면 뒤 화도 고를 수 있어요'}</p></div>`;})()}
   ${E.length?(()=>{if(!PLEPV.id||!E.some(e=>e.id===PLEPV.id)){const c=ep();PLEPV.id=(c&&c.kind!=='cover'?c:E[0]).id;}const e=E.find(x=>x.id===PLEPV.id),a=plActOf(e.num),st=pkStat(e),T='syn',PK=e.pack&&e.pack.cuts||[];
    const tabs=[['syn','시놉시스',(e.syn||'').trim()?'✓':'']];
    const none=`<div class="plevnone">${ic('wand',18)}<b>${e.num}화 패키지가 아직 없어요</b><small>시놉시스를 읽고 콘티 · 컷별 이미지 프롬프트 · 말풍선을 한 번에 만들어요 · 글 AI 1회</small><button class="btn sm pri" data-placts="pkone" data-v="${e.id}">${ic('wand',13)}${e.num}화 패키지 만들기</button></div>`;
@@ -2669,7 +2669,7 @@ Next panel: ${C[i+1]?C[i+1].scene:'(end of episode)'}
 "lines": 0-3 Korean lines {"who","type":"말풍선|생각|나레이션|효과음|외침|작게","text","pos":"왼쪽 위|오른쪽 위|가운데|왼쪽 아래|오른쪽 아래|"}.
 Answer JSON only: {"scene":"","notes":"","prompt":"","lines":[]}`,{cache:false});if(!o||!(o.scene||o.prompt))throw{code:'invalid_json'};txtAiUse(1);}
   else{await new Promise(r=>setTimeout(r,400));o={scene:c.scene+' (다시 · 예시)',notes:c.notes,prompt:`${style}. ${c.scene} — (예시 프롬프트 · 다시 만듦)`,lines:c.lines};}
-  const n=pkNorm({cuts:[{...o,no:c.no}]}).cuts[0];if(what==='prompt'){c.prompt=n.prompt;}else{Object.assign(c,{scene:n.scene||c.scene,notes:n.notes,prompt:n.prompt||c.prompt,lines:n.lines});}e.pack.at=Date.now();save();progEnd();planRender();toast(`S#${c.no}${what==='prompt'?' 이미지 프롬프트를':'를'} 다시 만들었어요${SM?` · 글 AI ${txtAi().left}/${TXT_FREE}회 남음`:' (예시)'}`);}
+  const n=pkNorm({cuts:[{...o,no:c.no}]}).cuts[0];if(what==='prompt'){c.prompt=n.prompt;}else{Object.assign(c,{scene:n.scene||c.scene,notes:n.notes,prompt:n.prompt||c.prompt,lines:n.lines});}e.pack.at=Date.now();save();progEnd();planRender();toast(`S#${c.no}${what==='prompt'?' 이미지 프롬프트를':'를'} 다시 만들었어요${SM?` · 글 AI ${aiLeftLbl(txtAi().left,'',false)}`:' (예시)'}`);}
  catch(x){progEnd();toast((SM_ERR[x&&x.code]||'AI가 답하지 못했어요')+' · 사용 횟수는 줄지 않았어요');}}
 async function pkRun(nums,N){nums=[...nums].sort((a,b)=>a-b);if(!nums.length){toast('만들 화를 골라 주세요');return;}
  const P=plan();if(!((P.story||P.logline||P.idea||'').trim()||Object.values(P.acts||{}).some(a=>(a.t||'').trim())||S.episodes.some(e=>nums.includes(+e.num)&&(e.syn||'').trim()))){toast('로그라인 · 줄거리나 회차 시놉시스를 먼저 적어 주세요');return;}
@@ -2680,7 +2680,7 @@ async function pkRun(nums,N){nums=[...nums].sort((a,b)=>a-b);if(!nums.length){to
   try{const pk=await pkMake(e,N);mutate(()=>{if(pk.syn&&!(e.syn||'').trim())e.syn=pk.syn;if(pk.title&&/^\d+화$|^새 회차$|^콘티$|^$/.test((e.title||'').trim()))e.title=pk.title;e.pack={at:Date.now(),cuts:pk.cuts};});if(SM)txtAiUse(1);ok++;}catch(x){err=x&&x.code||'upstream_error';break;}}
  progEnd();renderEps();if($('#mPlan'))planRender();if(typeof renderAll==='function')renderAll();
  if(err&&err!=='cancelled')toast((SM_ERR[err]||'AI가 답하지 못했어요')+(ok?` · ${ok}화는 만들어 뒀어요`:' · 사용 횟수는 줄지 않았어요'));
- else if(ok)toast(`${ok}화 패키지를 만들었어요${SM?'':' (예시)'} · ${$('#mWork')?'② 콘티를 확인하고 「원고에 컷 만들기」를 눌러요':'콘티·AI에서 콘티를 확인하고 원고에 컷을 만들어요'}${SM?` · 글 AI ${txtAi().left}/${TXT_FREE}회 남음`:''}`);}
+ else if(ok)toast(`${ok}화 패키지를 만들었어요${SM?'':' (예시)'} · ${$('#mWork')?'② 콘티를 확인하고 「원고에 컷 만들기」를 눌러요':'콘티·AI에서 콘티를 확인하고 원고에 컷을 만들어요'}${SM?` · 글 AI ${aiLeftLbl(txtAi().left,'',false)}`:''}`);}
 function txSrc(id,html){const el=$(id);if(!el)return;el.hidden=!html;el.innerHTML=html||'';}
 function extPrompt(kind){const e=ep(),st=S.settings,P=plan();const ctx=planFill()?planCtx(e):'(작품 기획 없음)';
  if(kind==='sb')return `너는 한국 세로 스크롤 웹툰 콘티 작가야. 아래 작품 설정을 읽고 ${e?e.num+'화':'이번 화'} 콘티를 써 줘.
@@ -2823,7 +2823,7 @@ Answer JSON only: {"genre":"","tone":"","target":"","world":"(3-5 sentences)","s
 ${planCtx(e)}
 Include: 이번 화 목표, 주요 사건 3~5개(번호), 마지막 장면(클리프행어), 심어 둘 복선. 8-14 lines.
 Answer JSON only: {"syn":"..."}`,{cache:false});if(!res||!res.syn)throw{code:'invalid_json'};mutate(()=>{e.syn=String(res.syn).trim();});}
-  txtAiUse(1);progEnd();renderEps();toast(`${kind==='draft'?'빈 칸에 초안을 채웠어요 · 이미 쓴 칸은 그대로예요':'시놉시스를 만들었어요'} · 글 AI ${txtAi().left}/${TXT_FREE}회 남음`);}
+  txtAiUse(1);progEnd();renderEps();toast(`${kind==='draft'?'빈 칸에 초안을 채웠어요 · 이미 쓴 칸은 그대로예요':'시놉시스를 만들었어요'} · 글 AI ${aiLeftLbl(txtAi().left,'',false)}`);}
  catch(x){progEnd();toast((SM_ERR[x&&x.code]||'AI가 답하지 못했어요')+' · 사용 횟수는 줄지 않았어요');}}
 /* ---------- AI로 콘티 쓰기 ---------- */
 function sbAiOpen(){let m=$('#mSbAi');if(m)m.remove();const q=txtAi();if(!q.left){paywall('txt');return;}
@@ -2834,7 +2834,7 @@ function sbAiOpen(){let m=$('#mSbAi');if(m)m.remove();const q=txtAi();if(!q.left
   <div class="fld" style="margin-top:10px"><span>컷 수</span><div class="seg" id="sbaiN">${['자동',10,20,30,45].map((v,i)=>`<button data-sbain="${v}" aria-pressed="${i===0}">${v==='자동'?v:v+'컷'}</button>`).join('')}</div></div>
   <label class="ck" style="display:flex;gap:6px;align-items:center;margin-top:6px;font-size:13px"><input type="checkbox" id="sbaiD" checked> 대사 · 나레이션도 넣기</label>
   <label class="ck" style="display:flex;gap:6px;align-items:center;margin-top:4px;font-size:13px"><input type="checkbox" id="sbaiA"${$('#sbTx').value.trim()?'':' disabled'}> 지금 원고 뒤에 이어 쓰기${$('#sbTx').value.trim()?'':' <small class="note" style="margin:0">(원고가 비어 있어요)</small>'}</label>
-  <div class="sbaicost">${ic('wand',13)}<span><b>글 AI 1회</b> 사용 · 이번 달 무료 <b>${q.left}</b>/${TXT_FREE}회 남음</span></div>
+  <div class="sbaicost">${ic('wand',13)}<span><b>글 AI 1회</b> 사용 · ${aiLeftLbl(q.left,'이번 달 무료 ',true)}</span></div>
   <div class="foot"><button class="btn" data-sbai="0">닫기</button><button class="btn pri" data-sbai="1">AI로 쓰기</button></div></div>`;
  document.body.appendChild(m);setTimeout(()=>$('#sbaiTx').focus(),0);
  m.addEventListener('click',async ev=>{const n=ev.target.closest('[data-sbain]');if(n){m.querySelectorAll('[data-sbain]').forEach(x=>x.setAttribute('aria-pressed',x===n));return;}
@@ -2857,7 +2857,7 @@ Answer JSON only: {"panels":[{"no":${start},"scene":"...","lines":["..."]}]}`,{c
   txt=Array.from({length:n},(_,i)=>{const sc=ss[Math.floor(i*ss.length/n)]||ss[ss.length-1];const shot=['전경','중간 컷','클로즈업','뒷모습','손 클로즈업','표정 클로즈업'][i%6];return `#${start+i} — ${shot} · ${sc.replace(/[.!?。]$/,'')}`+(dl&&i%3!==2?`\n- ${i%3===0?'나레이션':'인물'}: (대사 예시 — 고쳐 주세요)`:'');}).join('\n\n');}
  progEnd();if(!txt.trim()){toast('AI가 만든 장면이 없어요 · 줄거리를 조금 더 적어 주세요');return;}
  txtAiUse(1);$('#sbTx').value=ap&&cur?cur+'\n\n'+txt:txt;if(SBTAB==='cut'){SBC=sbSplit($('#sbTx').value);sbCutsRender();}sbSummary();
- const q=txtAi();toast(`AI가 콘티 ${txt.split(/\n#|^#/).length-1||'여러'}컷을 썼어요${SM?'':' (예시)'} · 글 AI ${q.left}/${TXT_FREE}회 남음`);}
+ const q=txtAi();toast(`AI가 콘티 ${txt.split(/\n#|^#/).length-1||'여러'}컷을 썼어요${SM?'':' (예시)'} · 글 AI ${aiLeftLbl(q.left,'',false)}`);}
 /* 컷별로 쓰기 — 글 상자와 같은 원고를 장면 단위로 나눠 보여줘요 */
 let SBTAB='all',SBC={pre:'',list:[]},SBIMGI=-1;
 function sbcSetImg(i,f){const c=SBC.list[i];if(!c||!f)return;const k='sb_'+uid();blobs.set(k,f);putBlob(k,f);c.img=k;sbCutsRender();}
@@ -3916,7 +3916,7 @@ function qpBody(it,k){const op=Math.round((it.op??1)*100);
   <textarea id="qaiTx" rows="2" placeholder="${img?'어떻게 바꿀까요?':'어떻게 다듬을까요?'}"></textarea>
   ${img?`<div class="qpre">${P.map(x=>`<button type="button" data-qaip="${x}">${x}</button>`).join('')}</div>`:QAIG.map(([g,L])=>`<div class="qpg"><span>${g}</span><div class="qpre">${L.map(([l,v])=>`<button type="button" data-qaip="${esc(v||l)}" title="${esc(v||l)}">${l}</button>`).join('')}</div></div>`).join('')}
   <div class="qairow"><select id="qaiModel" aria-label="모델">${(img?['나노바나나 2','나노바나나 Pro','GPT 이미지','미드저니']:['Claude']).map(m=>`<option>${m}</option>`).join('')}</select><button class="btn sm pri" data-act="qai-send">${img?'✦ 이미지 프롬프트 만들기':'다듬기'}</button></div>
-  <p class="qcost">${ic('wand',11)}<span><b>글 AI 1회</b> · 이번 달 무료 <b>${txtAi().left}</b>/${TXT_FREE}회 남음</span></p>
+  <p class="qcost">${ic('wand',11)}<span><b>글 AI 1회</b> · ${aiLeftLbl(txtAi().left,'이번 달 무료 ',true)}</span></p>
   ${img?`<div class="qprw"${it.aiPrompt?'':' hidden'}><span class="radh">프롬프트 <small>고쳐 써도 돼요</small></span><textarea id="qaiPr" rows="4" data-aipr>${esc(it.aiPrompt||'')}</textarea>
    <div class="qairow"><button class="btn sm" data-act="qai-copy">${ic('copy',12)}복사</button><span style="flex:1"></span><button class="btn sm" ${qpCut()?`data-act="rep" data-id="${it.id}"`:'data-act="layer-rep"'} title="AI로 만든 결과 이미지를 이 자리에 넣어요">결과 넣기</button><button class="btn sm pri" data-act="qai-regen" title="이미지 AI 연결 전에는 프롬프트 복사 + 원본 저장으로 동작해요">${ic('rotcw',12)}재생성</button></div></div>
    <p class="note">이미지 AI 연결은 개발 단계에서 해요. 지금 「재생성」은 프롬프트 복사 + 원본 저장 → 결과는 「결과 넣기」로.</p>`:''}</div>`;}
@@ -3952,7 +3952,7 @@ async function qaiSend(btn){const it=qpItem();if(!it)return;const isImg=it.type=
  if(!txtAi().left){paywall('txt');return;}
  const old=btn.textContent;btn.disabled=true;btn.textContent='다듬는 중…';
  try{const res=await SM.json(`You edit dialogue for a vertical Korean webtoon. Rewrite the ${KLABEL[it.type]||'text'} below following the instruction. Keep line breaks short enough for a speech balloon (max ~12 Korean characters per line). Instruction: ${q}\nFor a dialect or character voice, keep the meaning and the speaker's intent, make it sound natural and easy to read for Korean webtoon readers, and avoid slurs or profanity.\nText:\n${it.text}\n\nAnswer JSON only: {"text": "<rewritten text>"}`,{cache:false});
-  const nt=res&&(res.text||res.rewritten);if(!nt)throw{code:'invalid_json'};txtAiUse(1);mutate(()=>{it.text=String(nt).trim();});await ensureFonts([it]);renderOverlay(activeCut);renderInspector();qpRender();toast(`대사를 다듬었어요 · 글 AI ${txtAi().left}/${TXT_FREE}회 남음 · 마음에 안 들면 Ctrl+Z`);}
+  const nt=res&&(res.text||res.rewritten);if(!nt)throw{code:'invalid_json'};txtAiUse(1);mutate(()=>{it.text=String(nt).trim();});await ensureFonts([it]);renderOverlay(activeCut);renderInspector();qpRender();toast(`대사를 다듬었어요 · 글 AI ${aiLeftLbl(txtAi().left,'',false)} · 마음에 안 들면 Ctrl+Z`);}
  catch(x){toast(SM_ERR[x&&x.code]||'다듬지 못했어요 · 다시 눌러 주세요');}
  finally{btn.disabled=false;btn.textContent=old;}}
 var IAH=null;
@@ -5667,7 +5667,7 @@ function scAiOpen(){let m=$('#mScAi');if(m)m.remove();const q=txtAi();if(!q.left
   <label class="ck" style="display:flex;gap:6px;align-items:center;margin-top:6px;font-size:13px"><input type="checkbox" id="scaiN" checked> 나레이션 · 효과음도 넣기</label>
   <label class="ck" style="display:flex;gap:6px;align-items:center;margin-top:4px;font-size:13px"><input type="checkbox" id="scaiK"${filled?' checked':' disabled'}> 이미 적은 컷은 그대로 두기${filled?` <small class="note" style="margin:0">(${filled}컷)</small>`:''}</label>
   <p class="note" style="margin:8px 0 0">${(()=>{const L=[planFill()&&'작품 기획 · 인물 말투',scn&&`콘티 장면 ${scn}컷`,e.syn&&'이번 화 시놉시스'].filter(Boolean);return `${ic('list',12)} ${L.length?L.join(' · ')+'을(를) 참고해서 써요.':'참고할 기획 · 시놉시스가 없어요.'}${planFill()?'':' 왼쪽 「기획」을 채우면 더 정확해져요.'}`;})()}</p>
-  <div class="sbaicost">${ic('wand',13)}<span><b>글 AI 1회</b> 사용 · 이번 달 무료 <b>${q.left}</b>/${TXT_FREE}회 남음</span></div>
+  <div class="sbaicost">${ic('wand',13)}<span><b>글 AI 1회</b> 사용 · ${aiLeftLbl(q.left,'이번 달 무료 ',true)}</span></div>
   <div class="foot"><button class="btn" data-scai="0">닫기</button><button class="btn pri" data-scai="1">AI로 쓰기</button></div></div>`;
  document.body.appendChild(m);setTimeout(()=>$('#scaiTx').focus(),0);
  m.addEventListener('click',async ev=>{const a=ev.target.closest('[data-scaia]');if(a){m.querySelectorAll('[data-scaia]').forEach(x=>x.setAttribute('aria-pressed',x===a));return;}
@@ -5687,11 +5687,11 @@ ${SCC.list.map(c=>`#${c.no}${c.scene?` scene: ${c.scene}`:''}${c.body.trim()?` (
 Answer JSON only: {"panels":[{"no":<panel no>,"lines":["..."]}]} for the panels that are not "keep as is".`,{cache:false});
   const P=(res&&res.panels)||[];if(!P.length)throw{code:'invalid_json'};const by=new Map(P.map(x=>[+x.no,(x.lines||[]).map(l=>String(l).trim()).filter(Boolean)]));
   let n=0;SCC.list.forEach(c=>{if(keep&&c.body.trim())return;const L=by.get(c.no);if(L){c.body=L.join('\n');if(L.length)n++;}});
-  txtAiUse(1);$('#scTx').value=scJoin();if(SCTAB==='cut')scCutsRender();scriptSummary();progEnd();toast(`AI가 ${n}컷에 대사를 썼어요 · 확인하고 「컷에 적용」을 누르세요 · 글 AI ${txtAi().left}/${TXT_FREE}회 남음`);}
+  txtAiUse(1);$('#scTx').value=scJoin();if(SCTAB==='cut')scCutsRender();scriptSummary();progEnd();toast(`AI가 ${n}컷에 대사를 썼어요 · 확인하고 「컷에 적용」을 누르세요 · 글 AI ${aiLeftLbl(txtAi().left,'',false)}`);}
  catch(x){progEnd();toast((SM_ERR[x&&x.code]||'AI가 대사를 쓰지 못했어요')+' · 사용 횟수는 줄지 않았어요');}}
 
 function scToneRender(){const box=$('#scTone');if(!box)return;box.innerHTML=QAIG.filter(([g])=>g!=='번역').map(([g,L])=>`<div class="qpg"><span>${g}</span><div class="qpre">${L.map(([l,v])=>`<button type="button" data-sctone="${esc(v||l)}" aria-pressed="${SCTONE===(v||l)}" title="${esc(v||l)}">${l}</button>`).join('')}</div></div>`).join('');
- $('#scToneGo').disabled=!SCTONE;$('#scToneN').innerHTML=`글 AI 1회 · 무료 <b>${txtAi().left}</b>/${TXT_FREE}회 남음`;}
+ $('#scToneGo').disabled=!SCTONE;$('#scToneN').innerHTML=`글 AI 1회 · ${aiLeftLbl(txtAi().left,'무료 ',true)}`;}
 async function scTone(){const tx=$('#scTx'),src=tx.value.trim();if(!src){toast('대본을 먼저 적어 주세요');return;}if(!SCTONE)return;
  if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return;}if(!txtAi().left){paywall('txt');return;}
  const L=scSelLines(),lines=src.split('\n');const part=L?tx.value.split('\n').slice(L[0],L[1]+1).join('\n'):tx.value;
