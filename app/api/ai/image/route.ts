@@ -2,6 +2,7 @@ import { aiBlock, aiMe } from '@/lib/ai-access';
 import { err, isRes } from '@/lib/api';
 import { aiGate, logUsage } from '@/lib/quota';
 import { AiError, makeImage } from '@/lib/ai';
+import { env } from '@/lib/env';
 
 export const maxDuration = 300;
 
@@ -16,7 +17,9 @@ export async function POST(req: Request) {
   const refs = (Array.isArray(b.refs) ? b.refs : []).filter((r: { mime?: string; data?: string }) => r && /^image\//.test(r.mime || '') && typeof r.data === 'string' && r.data.length < 2_000_000);
   const g = await aiGate(me.profile, me.isAdmin, 'image');
   if (g.block) return err(...g.block);
-  const pro = b.model === 'pro', engine = g.settings.engines.image;
+  // 'gpt' = 이번 그림만 OpenAI(GPT 이미지)로 — 키가 있을 때만, 화질은 high
+  const gpt = b.model === 'gpt' && !!env.openaiKey;
+  const pro = b.model === 'pro' || gpt, engine = gpt ? 'openai' : g.settings.engines.image;
   try {
     const r = await makeImage(engine, prompt, +b.width || 768, +b.height || 1024, refs, pro, typeof b.res === 'string' ? b.res : undefined);
     await logUsage(me.profile, { kind: 'image', model: r.model, units: 1, cost_krw: pro ? g.settings.cost.imagePro : g.settings.cost.image });

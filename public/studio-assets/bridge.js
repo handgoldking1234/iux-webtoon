@@ -228,7 +228,7 @@
     var map = (typeof blobs !== 'undefined' && blobs) || new Map();
     var refs = (refKeys || []).filter(function (k, i, a) { return k && a.indexOf(k) === i && map.has(k); }).slice(0, 3);
     var model = '', res = '';
-    try { model = (S.settings.aiModel || '').indexOf('Pro') >= 0 ? 'pro' : ''; res = S.settings.sbRes === undefined ? '2K' : (S.settings.sbRes || ''); } catch (_) {}
+    try { var am = S.settings.aiModel || '나노바나나 Pro'; model = am.indexOf('GPT') >= 0 ? 'gpt' : am.indexOf('Pro') >= 0 ? 'pro' : ''; res = S.settings.sbRes === undefined ? '2K' : (S.settings.sbRes || ''); } catch (_) {}
     return Promise.all(refs.map(function (k) { return shrink(map.get(k)).catch(function () { return null; }); })).then(function (R) {
       return fetch('/api/ai/image', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: prompt, width: Math.round(W), height: Math.round(H), model: model, res: res, refs: R.filter(Boolean) }) });
     }).then(function (r) {
