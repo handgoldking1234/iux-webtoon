@@ -2945,7 +2945,7 @@ function sbFlowHTML(e){
   ${pr?`<div class="sbmini"><button class="btn sm ghost" data-act="sb-copy-all" title="S#별 이미지 프롬프트를 복사해 그림 AI에 붙여 넣어요">${ic('copy',13)}프롬프트 복사</button><button class="btn sm ghost" data-act="sb-txt" data-dl title="프롬프트를 파일로 저장해 두고 하나씩 써요">${ic('dl',13)}.txt로 받기</button></div>`:''}
   ${bar('컷 이미지',im)}
   ${pr?(()=>{const st=S.settings,left=Math.max(0,AI_FREE-(st.aiUsed||0)),nc=st.aiN||1,TG=k?L.filter(c=>selected.has(c.id)):L.filter(c=>c.sb.prompt&&!sbHasImg(c)),TGL=TG.length?TG:L,tg=TGL.length,tgN=TGL.reduce((a,c)=>a+sbNeed(c,nc),0);
-   return `<div class="sbai"><div class="sbaih"><b>${ic('wand',13)}이미지 만들기</b><span class="sbleft" title="맛보기로 무료로 만들 수 있는 장 수">맛보기 <b>${left}</b>/${AI_FREE}장</span></div>
+   return `<div class="sbai"><div class="sbaih"><b>${ic('wand',13)}이미지 만들기</b><span class="sbleft" title="맛보기로 무료로 만들 수 있는 장 수">${aiImgLbl(left)}</span></div>
    <div class="sbairow"><select data-sbai="aiModel" aria-label="모델">${['나노바나나 2','나노바나나 Pro'].map(m=>`<option${(st.aiModel||'나노바나나 2')===m?' selected':''}>${m}</option>`).join('')}</select><select data-sbai="aiN" aria-label="후보 수">${[1,2,4].map(v=>`<option value="${v}"${nc===v?' selected':''}>후보 ${v}장</option>`).join('')}</select></div>
    <button class="btn pri sbbig" data-act="sb-ai-gen">${ic('wand',14)}${k?`고른 ${k}컷`:im&&im<n?`남은 ${tg}컷`:`${tg}컷`} 이미지 만들기 <small style="opacity:.75;font-weight:500">· ${tgN}장</small></button></div>`;})():''}
   ${(()=>{const C=(S.settings.sbCharList||[]).filter(c=>c.name),no=C.filter(c=>!(c.refs||[]).length);return no.length?`<p class="stuwarn" style="margin:8px 0 0">${esc(no.map(c=>c.name).slice(0,3).join(', '))}${no.length>3?` 외 ${no.length-3}명`:''} — 캐릭터 시트가 없어 얼굴이 컷마다 달라질 수 있어요 · <button data-act="sb-prep">시트 만들기</button></p>`:'';})()}
@@ -3153,7 +3153,7 @@ function aiImgOpen(target,o){o=o||{};if(o.tab==='prep'){wkOpen('ch');return;}STU
  m.addEventListener('click',async ev=>{const t=ev.target;if(t===m||t.closest('[data-aix]')){m.remove();return;}const d=t.closest('[data-stu]');if(!d)return;const a=d.dataset.stu,v=d.dataset.v;
   if(a==='tab'||a==='gosheet'){m.remove();$('#mPlan')&&planClose();wkOpen('ch');}
   else if(a==='goplan'){m.remove();$('#mWork')&&wkClose();planOpen(v||'ch');}
-  else if(a==='src'){STU.src=v;if(v==='sb'){const L=ep()?ep().cuts.filter(c=>c.sb):[];if(!L.length){toast('먼저 콘티를 만들어 주세요');STU.src='free';}else stuPickCut(cutById(STU.cid)||L[0]);}stuRender();}
+  else if(a==='src'){STU.src=v;if(v==='sb'){const L=ep()?ep().cuts.filter(c=>c.sb):[];if(!L.length){STU.src='free';stuRender();stuNoSb(m);return;}stuPickCut(cutById(STU.cid)||L[0]);}stuRender();}
   else if(a==='cut'){stuPickCut(cutById(v));stuRender();}
   else if(a==='ch'){const i=STU.chars.indexOf(v);i>=0?STU.chars.splice(i,1):STU.chars.push(v);stuRender();}
   else if(a==='loc'){STU.loc=STU.loc===v?null:v;stuRender();}
@@ -3213,6 +3213,16 @@ const stuUseP=()=>STU.src==='sb'&&STU.hasP;
 function stuBase(){const st=S.settings,sh=SHOTS.find(x=>x[0]===STU.shot),an=ANGS.find(x=>x[0]===STU.ang);return stuUseP()?STU.p.trim():`${st.sbStyle||SB_STYLE}. ${sh[2]}, ${an[2]}. Scene: ${STU.p.trim()||'(장면 설명)'}`;}
 function stuPrompt(){const [W,H]=stuSize(),ch=stChars().filter(c=>STU.chars.includes(c.id)),l=stLocs().find(x=>x.id===STU.loc)||null;
  return stuBase()+(STU.src==='sb'?dirLine(cutById(STU.cid)):'')+refGuide(stuRefs(),ch,l,!stuUseP(),stuVmap())+`\nComposition for a ${W}×${H} webtoon panel, leave space for speech balloons, no text, no speech bubbles.`;}
+/* 「콘티 보고 만들기」를 눌렀는데 이 회차에 콘티 컷이 없을 때 — 이유를 알려 주고 갈 곳을 안내해요 */
+async function stuNoSb(m){let e=ep();const has=x=>x&&x.kind!=='cover'&&x.cuts.some(c=>c.sb);
+ if(!e||e.kind==='cover'||!pkStat(e)){const alt=S.episodes.filter(x=>x.kind!=='cover').sort((a,b)=>a.num-b.num).find(x=>has(x)||pkStat(x));
+  if(alt&&alt!==e){if(!(await confirmBox({title:`${alt.num}화 콘티로 갈까요?`,body:`지금 열린 ${!e||e.kind==='cover'?'표지':esc(e.num)+'화'}에는 콘티가 없어요. <b>${esc(alt.num)}화</b>에 ${has(alt)?'콘티 컷이':'기획에서 만든 콘티가'} 있어요.`,ok:`${alt.num}화로 가기`,danger:false})))return;
+   switchEp(alt.id);e=alt;if(has(alt)){m.remove();aiImgOpen(STU.t,{src:'sb'});return;}}}
+ const ps=pkStat(e);
+ if(ps){if(await confirmBox({title:'기획에서 만든 콘티를 불러올까요?',body:`<b>${esc(e.num)}화</b> 기획 패키지에 콘티 <b>${ps.n}컷</b>이 있어요. 아직 원고에 컷으로 만들지 않아서 여기서 고를 수 없어요.<br><br>콘티 창에 불러온 뒤 <b>「콘티 만들기」</b>를 누르면 컷이 생겨요. 그다음 이 창에서 컷을 골라 그리면 돼요.`,ok:'콘티 불러오기',danger:false})){m.remove();openSb();setTimeout(pkLoadSb,40);}return;}
+ if(await confirmBox({title:'아직 콘티가 없어요',body:'기획 › 회차 시놉시스에서 회차 패키지를 만들거나, 콘티 · AI에서 콘티를 먼저 만들어 주세요.<br><br>콘티 없이 바로 그리려면 <b>「콘티 없이 만들기」</b>를 쓰면 돼요.',ok:'콘티 만들러 가기',danger:false})){m.remove();openSb();}}
+/* 이미지 맛보기 남은 장 수 문구 — 로그인 전 · 한도 없는 관리자도 자연스럽게 */
+function aiImgLbl(left){const W=window.__WB;if(W&&W.boot&&(W.boot.aiNeed==='login'||W.boot.aiNeed==='setup'))return `로그인하면 맛보기 <b>${AI_FREE}</b>장`;if(left>9000)return '이미지 제한 없음';return `맛보기 <b>${left}</b>/${AI_FREE}장`;}
 function stuRender(){const m=$('#mAiImg');if(!m)return;const st=S.settings,left=Math.max(0,AI_FREE-(st.aiUsed||0)),nc=st.aiN||1,e=ep(),sbL=e?e.cuts.filter(c=>c.sb):[],CH=stChars(),LO=stLocs();
  const cur=STU.src==='sb'?cutById(STU.cid):null;const fo=document.activeElement&&document.activeElement.id;const chOk=CH.filter(c=>(c.refs||[]).length).length,loOk=LO.filter(l=>(l.refs||[]).length).length;
  const av=(k,txt)=>k&&urlOf(k)?`<img src="${urlOf(k)}" alt="">`:`<span>${esc((txt||'?').slice(0,1))}</span>`;
@@ -3239,7 +3249,7 @@ function stuRender(){const m=$('#mAiImg');if(!m)return;const st=S.settings,left=
   <div class="sbairow" style="margin-top:10px"><select data-aiq="aiModel" aria-label="모델">${['나노바나나 2','나노바나나 Pro'].map(x=>`<option${(st.aiModel||'나노바나나 2')===x?' selected':''}>${x}</option>`).join('')}</select><select data-aiq="aiN" aria-label="후보 수">${[1,2,4].map(v=>`<option value="${v}"${nc===v?' selected':''}>후보 ${v}장</option>`).join('')}</select></div>`;}
  m.innerHTML=`<div class="sheet stusheet" role="dialog" aria-modal="true" aria-labelledby="stuT"><div class="libhead"><h3 id="stuT">${ic('wand',16)} AI 이미지 만들기</h3><button class="btn icon ghost" data-aix aria-label="닫기">${ic('x',16)}</button></div>
   ${tabs}<div class="stubody">${body}</div>
-  <div class="foot"><span class="sbleft" style="margin-right:auto">맛보기 <b>${left}</b>/${AI_FREE}장</span><button class="btn" data-aix>취소</button><button class="btn pri" data-stu="go" ${STU.p.trim()?'':'disabled'}>${ic('wand',14)}${STU.src==='sb'&&cur?`S#${cur.sb.no} `:''}${nc}장 만들기</button></div></div>`;
+  <div class="foot"><span class="sbleft" style="margin-right:auto">${aiImgLbl(left)}</span><button class="btn" data-aix>취소</button><button class="btn pri" data-stu="go" ${STU.p.trim()?'':'disabled'}>${ic('wand',14)}${STU.src==='sb'&&cur?`S#${cur.sb.no} `:''}${nc}장 만들기</button></div></div>`;
  if(fo){const t=m.querySelector('#'+fo);if(t&&t.focus){t.focus();if(t.setSelectionRange&&t.value!=null)try{t.setSelectionRange(t.value.length,t.value.length);}catch(_){}}}}
 function stuMockLabel(b,label,kind){return new Promise(res=>{const im=new Image();im.onload=()=>{const cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;const x=cv.getContext('2d');x.drawImage(im,0,0);const w=cv.width,h=cv.height;
  if(kind==='ch'){x.fillStyle='rgba(255,255,255,.18)';[.2,.5,.8].forEach((p,i)=>{x.beginPath();x.arc(w*p,h*.3,h*.09,0,7);x.fill();x.fillRect(w*p-h*.08,h*.42,h*.16,h*.38);});x.font=`700 ${Math.round(h*.04)}px sans-serif`;x.fillStyle='rgba(255,255,255,.8)';x.textAlign='center';['정면','옆','뒤'].forEach((t,i)=>x.fillText(t,w*[.2,.5,.8][i],h*.88));}
