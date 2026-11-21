@@ -740,6 +740,43 @@ body:has(.modal:not([hidden]),#ed:not([hidden])) .coach{display:none}
 .btn.pri.aibusy,.aibusy.pri{background-image:linear-gradient(90deg,var(--accent),color-mix(in srgb,var(--accent) 70%,#7c5cff),var(--accent));background-size:200% 100%;animation:aiGlow 1.6s ease-in-out infinite}
 @keyframes aiSweep{from{background-position:120% 0}to{background-position:-120% 0}}
 @keyframes aiSpin{to{transform:rotate(360deg)}}
+/* AI로 한 화 만들기 (쉬운 흐름) */
+#mEasy{z-index:110}
+.ezsheet{width:min(720px,100%);height:min(88dvh,820px);display:flex;flex-direction:column;padding:0;overflow:hidden}
+.ezhd{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px 8px}.ezhd h3{margin:0;font-size:17px;display:flex;align-items:center;gap:6px}
+.ezsteps{display:flex;align-items:center;gap:6px;padding:0 18px 12px;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.ezst{display:inline-flex;align-items:center;gap:6px;height:30px;padding:0 10px 0 6px;border:0;border-radius:999px;background:none;font:inherit;font-size:12.5px;font-weight:600;color:var(--muted);cursor:pointer}
+.ezst i{display:inline-grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--line);color:var(--ink);font-style:normal;font-size:11px;font-weight:700}
+.ezst[aria-current=step]{color:var(--ink);background:color-mix(in srgb,var(--accent) 12%,transparent)}.ezst[aria-current=step] i{background:var(--accent);color:var(--on-accent)}
+.ezst:disabled{opacity:.45;cursor:default}.ezst:focus-visible,.ezrec:focus-visible,.ezsty:focus-visible,.ezchip:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ezar{color:var(--muted);font-size:12px}
+.ezbody{flex:1;min-height:0;overflow:auto;padding:16px 18px}
+.ezlead{margin:0 0 10px;font-size:16px;font-weight:700;letter-spacing:-.01em}.ezlead small{display:block;margin-top:3px;font-size:12px;font-weight:500;color:var(--muted)}
+.ezbody textarea,.ezreq input{width:100%;box-sizing:border-box;border:1px solid var(--line);border-radius:10px;padding:12px;font:inherit;font-size:14px;line-height:1.6;background:var(--panel);color:var(--ink)}
+.ezbody textarea:focus,.ezreq input:focus{outline:2px solid var(--accent);outline-offset:-1px}
+#ezStory{min-height:260px;resize:vertical}
+.ezrow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0}.ezrow .note{margin:0}
+.ezrecs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:4px 0 6px}
+.ezrec{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;color:var(--ink);cursor:pointer}
+.ezrec:hover{border-color:var(--accent)}.ezrec b{font-size:14px}.ezrec small{font-size:11.5px;color:var(--accent);font-weight:600}.ezrec span{font-size:12.5px;line-height:1.5;color:var(--muted);white-space:pre-line}
+.ezlab{margin:16px 0 8px;font-size:12.5px;font-weight:700}
+.ezstyles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.ezsty{display:flex;flex-direction:column;gap:4px;padding:4px 4px 6px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;font-size:11.5px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left}
+.ezsty img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;display:block}.ezsty span{padding:0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ezsty[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.ezchips{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 8px}
+.ezchip{height:30px;padding:0 12px;border:1px solid var(--line);border-radius:999px;background:none;font:inherit;font-size:12.5px;color:var(--ink);cursor:pointer}.ezchip:hover{border-color:var(--accent);color:var(--accent)}
+.ezreq{display:flex;gap:8px}.ezreq input{flex:1;min-width:0;height:40px;padding:0 12px;line-height:normal}.ezreq .btn{height:40px;flex:none}
+.ezcuts{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+.ezcuts>li{border:1px solid var(--line);border-radius:10px;padding:10px 12px}
+.ezc1{display:flex;gap:8px;align-items:baseline;font-size:13.5px;line-height:1.5}.ezc1 b{flex:none;font-size:12px;color:var(--accent)}
+.ezcuts ul{margin:6px 0 0;padding:0 0 0 18px;font-size:12.5px;line-height:1.55;color:var(--muted)}
+.ezcuts details{margin-top:6px;font-size:12px}.ezcuts summary{cursor:pointer;color:var(--muted);font-weight:600}.ezcuts details p{margin:6px 0;line-height:1.5;color:var(--muted);word-break:break-word}
+.ezfoot{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line)}.ezsp{flex:1}
+.ezcta{display:flex;align-items:center;gap:12px;width:100%;max-width:640px;margin:0 auto 12px;padding:16px;border:1px solid var(--accent);border-radius:12px;background:color-mix(in srgb,var(--accent) 8%,var(--panel));font:inherit;color:var(--ink);text-align:left;cursor:pointer}
+.ezcta:hover{background:color-mix(in srgb,var(--accent) 14%,var(--panel))}.ezcta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.ezcta .sti{flex:none;color:var(--accent)}.ezcta b{display:block;font-size:15px}.ezcta small{display:block;margin-top:2px;font-size:12.5px;color:var(--muted)}
+@media (max-width:560px){.ezrecs{grid-template-columns:1fr}.ezstyles{grid-template-columns:repeat(3,minmax(0,1fr))}.ezsheet{height:calc(100dvh - 32px)}.ezfoot .btn{flex:1 1 auto}.ezsp{display:none}}
 /* 진행 창: 제목 오른쪽 로딩 아이콘 */
 #mProg .phd{display:flex;align-items:center;justify-content:space-between;gap:12px}#mProg .phd h3{margin:0;min-width:0}#mProg .sheet>.phd{margin-bottom:6px}
 .pspin{flex:none;width:22px;height:22px;border-radius:50%;border:2.5px solid color-mix(in srgb,var(--accent) 22%,transparent);border-top-color:var(--accent);animation:aiSpin .8s linear infinite}
@@ -2642,10 +2679,10 @@ function pkSbText(e){return (e.pack.cuts||[]).map(c=>`#${c.no} — ${c.scene}`+(
 function pkScText(e){return (e.pack.cuts||[]).flatMap(c=>(c.lines||[]).map(l=>`${c.no} | ${KIND[(l.type||'').replace(/\s/g,'')]?l.type:'말풍선'} | ${l.text}${l.pos?' | '+l.pos:''}`)).join('\n');}
 function pkPromptsText(e){return (e.pack.cuts||[]).filter(c=>c.prompt).map(c=>`S#${c.no} — ${c.scene}\n${c.prompt}`).join('\n\n');}
 function pkNorm(r,N){const cuts=((r&&r.cuts)||[]).map((c,i)=>({no:+c.no||i+1,scene:String(c.scene||'').trim(),notes:String(c.notes||'').replace(/^\(|\)$/g,'').trim(),prompt:String(c.prompt||'').trim(),dir:(d=>({pos:String(d.pos||'').trim(),gaze:String(d.gaze||'').trim(),cam:String(d.cam||'').trim(),mood:String(d.mood||'').trim()}))(c.dir&&typeof c.dir==='object'?c.dir:{}),lines:(c.lines||[]).filter(l=>l&&String(l.text||'').trim()).map(l=>({who:String(l.who||'').trim(),type:String(l.type||'말풍선').trim(),text:String(l.text).trim(),pos:String(l.pos||'').trim()}))})).filter(c=>c.scene||c.prompt);return{syn:String((r&&r.syn)||'').trim(),title:String((r&&r.title)||'').trim().slice(0,30),cuts};}
-async function pkMake(e,N){const st=S.settings,P=plan(),style=st.sbStyle||SB_STYLE;
+async function pkMake(e,N,full){const st=S.settings,P=plan(),style=st.sbStyle||SB_STYLE;
  if(SM){const r=await SM.json(`You are a Korean vertical-scroll webtoon writer and storyboard artist. Build the full production package for episode ${e.num}.
 ${planCtx(e)}
-${(e.syn||'').trim()?`Use the 「${e.num}화 시놉시스(이번 화)」 given above as the outline; return "syn" as an empty string.`:`First write this episode's synopsis in Korean (이번 화 목표, 주요 사건 3~5개(번호), 마지막 장면(클리프행어), 심어 둘 복선; 8-14 lines), continuing from previous episodes and fitting the overall story.`}
+${full?`Below is the finished script of this episode. Follow it exactly: keep its scene order and reuse its dialogue word for word as "lines" (a line "- 이름: 대사" becomes who + text; "- (나레이션) …" becomes type 나레이션 with empty who); split a long scene into several panels when needed. Return "syn" as an empty string. Script: <<<${String(full).slice(0,12000)}>>>`:(e.syn||'').trim()?`Use the 「${e.num}화 시놉시스(이번 화)」 given above as the outline; return "syn" as an empty string.`:`First write this episode's synopsis in Korean (이번 화 목표, 주요 사건 3~5개(번호), 마지막 장면(클리프행어), 심어 둘 복선; 8-14 lines), continuing from previous episodes and fitting the overall story.`}
 Then split the episode into ${N||'12-24 (choose what fits)'} panels numbered from 1. For each panel:
 - "scene": one Korean line — shot + what we see, using the exact character names and location names from the lists above
 - When a character appears in one of their alternate looks (listed after 「다른 외형」), write the name as 이름(외형이름) — for example 해원(현대) — in both "scene" and "prompt", and describe that look instead of the usual one.
@@ -3222,6 +3259,113 @@ async function stuNoSb(m){let e=ep();const has=x=>x&&x.kind!=='cover'&&x.cuts.so
  if(ps){if(await confirmBox({title:'기획에서 만든 콘티를 불러올까요?',body:`<b>${esc(e.num)}화</b> 기획 패키지에 콘티 <b>${ps.n}컷</b>이 있어요. 아직 원고에 컷으로 만들지 않아서 여기서 고를 수 없어요.<br><br>콘티 창에 불러온 뒤 <b>「콘티 만들기」</b>를 누르면 컷이 생겨요. 그다음 이 창에서 컷을 골라 그리면 돼요.`,ok:'콘티 불러오기',danger:false})){m.remove();openSb();setTimeout(pkLoadSb,40);}return;}
  if(await confirmBox({title:'아직 콘티가 없어요',body:'기획 › 회차 시놉시스에서 회차 패키지를 만들거나, 콘티 · AI에서 콘티를 먼저 만들어 주세요.<br><br>콘티 없이 바로 그리려면 <b>「콘티 없이 만들기」</b>를 쓰면 돼요.',ok:'콘티 만들러 가기',danger:false})){m.remove();openSb();}}
 /* 이미지 맛보기 남은 장 수 문구 — 로그인 전 · 한도 없는 관리자도 자연스럽게 */
+/* ================= AI로 한 화 만들기 — 쉬운 흐름: ① 이야기 → ② 스토리(말로 고치기) → ③ 그림 · 말풍선 ================= */
+const EZ={step:1,ep:null,recs:[],busy:false,t:0},EZ_FREE=3;
+function ezEp(){let e=S.episodes.find(x=>x.id===EZ.ep&&x.kind!=='cover');if(e)return e;e=ep();if(!e||e.kind==='cover')e=S.episodes.filter(x=>x.kind!=='cover').sort((a,b)=>a.num-b.num)[0];
+ if(!e){e={id:uid(),num:1,title:'1화',cuts:[]};S.episodes.push(e);save();}EZ.ep=e.id;return e;}
+const ezHasCuts=e=>e.cuts.some(c=>c.sb);
+function ezOpen(o){o=o||{};EZ.ep=o.ep||null;const e=ezEp();EZ.step=o.step||(ezHasCuts(e)?3:(e.syn||'').trim()?2:1);EZ.recs=[];EZ.busy=false;
+ let m=$('#mEasy');if(m)m.remove();m=document.createElement('div');m.className='modal';m.id='mEasy';document.body.appendChild(m);
+ m.addEventListener('click',ezClick);m.addEventListener('input',ezInput);
+ m.addEventListener('keydown',ev=>{if(ev.key==='Enter'&&ev.target.id==='ezReq'&&!ev.isComposing){ev.preventDefault();ezRevise();}});
+ ezRender();setTimeout(()=>{const t=$('#ezIdea');if(t&&!t.value)t.focus();},140);}
+function ezClose(){const m=$('#mEasy');if(m)m.remove();}
+/* 빈 새 작품을 열면 먼저 띄워요 — 「직접 만들래요」를 누른 작품은 다시 띄우지 않아요 */
+function ezAuto(){try{const P=plan();if(S.settings.ezSkip||(P.idea||'').trim()||(P.logline||'').trim())return;if(S.episodes.some(e=>e.cuts.length||(e.syn||'').trim()||e.pack))return;if((S.settings.sbCharList||[]).some(c=>c.name))return;ezOpen();}catch(_){}}
+function ezRender(){const m=$('#mEasy');if(!m)return;const e=ezEp(),P=plan(),st=S.settings,hasStory=!!(e.syn||'').trim(),hasCuts=ezHasCuts(e),z=e.ez=e.ez||{hist:[],rev:0};
+ if(EZ.step===3&&!hasCuts)EZ.step=hasStory?2:1;if(EZ.step===2&&!hasStory)EZ.step=1;
+ const steps=[[1,'이야기'],[2,`${e.num}화 스토리`],[3,'그림 · 말풍선']].map(([n,l])=>`<button type="button" class="ezst" data-ez="step" data-v="${n}" aria-current="${EZ.step===n?'step':'false'}"${(n===2&&!hasStory)||(n===3&&!hasCuts)?' disabled':''}><i>${n}</i>${esc(l)}</button>`).join('<span class="ezar" aria-hidden="true">›</span>');
+ let body='',foot='';
+ if(EZ.step===1){const cur=st.sbStyle||SB_STYLE;
+  body=`<p class="ezlead">어떤 이야기를 만들까요? <small>한두 줄이면 충분해요 · 비워 두고 추천을 받아도 돼요</small></p>
+  <textarea id="ezIdea" rows="4" placeholder="예) 퇴사한 날 길고양이를 따라갔다가, 고양이들만 아는 골목 식당의 주방장이 된다">${esc(P.idea||'')}</textarea>
+  <div class="ezrow"><button type="button" class="btn sm" data-ez="rec">${ic('wand',13)}${EZ.recs.length?'다른 추천 받기':'스토리 추천받기'}</button><span class="note">글 AI 1회</span></div>
+  ${EZ.recs.length?`<div class="ezrecs">${EZ.recs.map((r,i)=>`<button type="button" class="ezrec" data-ez="pick" data-v="${i}"><b>${esc(r.title)}</b><small>${esc(r.genre)}</small><span>${esc(r.story)}</span></button>`).join('')}</div>`:''}
+  <p class="ezlab">그림체</p><div class="ezstyles">${SB_PRESETS.map(([n,v],i)=>{const x=SB_PRESET_EX[i]||{};return `<button type="button" class="ezsty" data-ez="style" data-v="${i}" aria-pressed="${cur===v}">${x.img?`<img src="${x.img}" alt="">`:''}<span>${esc(n)}</span></button>`;}).join('')}</div>`;
+  foot=`<button type="button" class="btn ghost" data-ez="skip">직접 만들래요</button><span class="ezsp"></span>${hasStory?`<button type="button" class="btn" data-ez="step" data-v="2">스토리 보기</button>`:''}<button type="button" class="btn pri" data-ez="write">${ic('wand',14)}${hasStory?'이 이야기로 다시 쓰기':'이 이야기로 시작'}</button>`;}
+ else if(EZ.step===2){const free=Math.max(0,EZ_FREE-(z.rev||0));
+  body=`<p class="ezlead">${esc(String(e.num))}화 스토리 <small>글을 눌러 바로 고쳐 써도 돼요</small></p>
+  <textarea id="ezStory" rows="14" spellcheck="false">${esc(e.syn||'')}</textarea>
+  <div class="ezchips">${['더 짧게','대사 줄이기','끝을 더 궁금하게','더 긴장감 있게'].map(t=>`<button type="button" class="ezchip" data-ez="quick" data-v="${t}">${t}</button>`).join('')}</div>
+  <div class="ezreq"><input id="ezReq" placeholder="어떻게 고칠까요? 예) 3번 장면을 빼 줘" autocomplete="off" aria-label="고칠 내용"><button type="button" class="btn pri" data-ez="revise">고쳐 줘</button></div>
+  <div class="ezrow"><span class="note">${free?`고치기 무료 ${free}회 남음`:'고치기 한 번에 글 AI 1회'}</span>${(z.hist||[]).length?`<button type="button" class="btn sm ghost" data-ez="undo">이전 버전으로 (${z.hist.length})</button>`:''}</div>`;
+  foot=`<button type="button" class="btn ghost" data-ez="step" data-v="1">← 이야기</button><span class="ezsp"></span>${hasCuts?`<button type="button" class="btn" data-ez="step" data-v="3">컷 보기</button>`:''}<button type="button" class="btn pri" data-ez="cuts">${ic('rows',14)}${hasCuts?'컷 다시 만들기':'이 스토리로 컷 만들기'}</button>`;}
+ else{const PK=((e.pack||{}).cuts)||[],sb=e.cuts.filter(c=>c.sb),ln=PK.reduce((a,c)=>a+(c.lines||[]).length,0),pr=sb.filter(c=>c.sb.prompt).length;
+  const rows=PK.length?PK.map(c=>({no:c.no,scene:c.scene,lines:(c.lines||[]).map(l=>(l.who?l.who+': ':'')+l.text),prompt:c.prompt})):sb.map(c=>({no:c.sb.no,scene:c.sb.scene,lines:[],prompt:c.sb.prompt}));
+  body=`<p class="ezlead">${esc(String(e.num))}화 컷 ${sb.length}개를 원고에 넣었어요 <small>말풍선 ${ln}개 · 이미지 프롬프트 ${pr}개</small></p>
+  <div class="ezrow"><button type="button" class="btn sm pri" data-ez="draw">${ic('wand',13)}그림 그리기</button><button type="button" class="btn sm" data-ez="cpp">${ic('copy',13)}프롬프트 모두 복사</button><button type="button" class="btn sm" data-ez="cpl">${ic('copy',13)}말풍선 모두 복사</button></div>
+  <p class="note">그림은 컷을 골라 한 장씩 그려요. 다른 그림 AI를 쓰려면 프롬프트를 복사해 가세요.</p>
+  <ol class="ezcuts">${rows.map(r=>`<li><div class="ezc1"><b>S#${esc(String(r.no))}</b><span>${esc(r.scene||'')}</span></div>${r.lines.length?`<ul>${r.lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul>`:''}${r.prompt?`<details><summary>이미지 프롬프트</summary><p>${esc(r.prompt)}</p><button type="button" class="btn sm ghost" data-ez="cp1" data-v="${esc(String(r.no))}">${ic('copy',12)}복사</button></details>`:''}</li>`).join('')}</ol>`;
+  foot=`<button type="button" class="btn ghost" data-ez="step" data-v="2">← 스토리</button><span class="ezsp"></span><button type="button" class="btn" data-ez="next">${(+e.num||0)+1}화 만들기</button><button type="button" class="btn pri" data-ez="close">원고 보기</button>`;}
+ m.innerHTML=`<div class="sheet ezsheet" role="dialog" aria-modal="true" aria-labelledby="ezT"><div class="ezhd"><h3 id="ezT">${ic('wand',16)} AI로 한 화 만들기</h3><button type="button" class="btn icon ghost" data-ez="close" aria-label="닫기">${ic('x',16)}</button></div><div class="ezsteps">${steps}</div><div class="ezbody">${body}</div><div class="ezfoot">${foot}</div></div>`;}
+function ezInput(ev){const t=ev.target;if(t.id==='ezIdea')plan().idea=t.value;else if(t.id==='ezStory')ezEp().syn=t.value;else return;clearTimeout(EZ.t);EZ.t=setTimeout(save,500);}
+function ezOk(){if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return false;}if(!txtAi().left){paywall('txt');return false;}return true;}
+function ezErr(x){progEnd();toast((SM_ERR[x&&x.code]||'AI가 답하지 못했어요')+' · 사용 횟수는 줄지 않았어요');}
+function ezCtx(e){const old=e.syn;e.syn='';let c='';try{c=planCtx(e);}finally{e.syn=old;}return c;}
+async function ezClick(ev){const b=ev.target.closest('[data-ez]');if(!b||EZ.busy)return;const a=b.dataset.ez,v=b.dataset.v,e=ezEp();
+ if(a==='close')ezClose();
+ else if(a==='skip'){S.settings.ezSkip=1;save();ezClose();}
+ else if(a==='step'){EZ.step=+v;ezRender();}
+ else if(a==='style'){const p=SB_PRESETS[+v];if(p){S.settings.sbStyle=p[1];save();ezRender();}}
+ else if(a==='pick'){const r=EZ.recs[+v];if(r){plan().idea=`${r.title}\n${r.story}`;save();ezRender();const t=$('#ezIdea');if(t)t.focus();}}
+ else if(a==='rec')await ezRecommend();
+ else if(a==='write')await ezWrite();
+ else if(a==='quick'){const i=$('#ezReq');if(i)i.value=v;await ezRevise();}
+ else if(a==='revise')await ezRevise();
+ else if(a==='undo'){const z=e.ez;if(z&&(z.hist||[]).length){e.syn=z.hist.pop();save();ezRender();toast('이전 버전으로 되돌렸어요');}}
+ else if(a==='cuts')await ezCuts();
+ else if(a==='draw'){ezClose();aiImgOpen(null,{src:'sb'});}
+ else if(a==='cpp'){const t=pkStat(e)?pkPromptsText(e):e.cuts.filter(c=>c.sb&&c.sb.prompt).map(c=>`S#${c.sb.no} — ${c.sb.scene}\n${c.sb.prompt}`).join('\n\n');if(t)copyTx(t,'이미지 프롬프트를 모두 복사했어요');else toast('복사할 프롬프트가 없어요');}
+ else if(a==='cpl'){const t=pkStat(e)?pkScText(e):'';if(t)copyTx(t,'말풍선을 모두 복사했어요');else toast('복사할 말풍선이 없어요');}
+ else if(a==='cp1'){const c=(((e.pack||{}).cuts)||[]).find(x=>String(x.no)===v),s2=e.cuts.find(x=>x.sb&&String(x.sb.no)===v),t=(c&&c.prompt)||(s2&&s2.sb.prompt)||'';if(t)copyTx(t,`S#${v} 프롬프트를 복사했어요`);}
+ else if(a==='next')await ezNext();}
+async function ezRecommend(){if(!ezOk())return;const hint=(plan().idea||'').trim();EZ.busy=true;prog('스토리를 추천하는 중');progSet(.3,'서로 다른 이야기 3개를 떠올리는 중…');
+ try{const r=await SM.json(`You are a Korean webtoon story planner. Suggest 3 clearly different story ideas for a vertical-scroll webtoon, in Korean.${hint?` Take this note from the creator as inspiration: <<<${hint.slice(0,600)}>>>`:''} Vary the genre and the mood between the three. Answer JSON only: {"ideas":[{"title":"(제목 2-12자)","genre":"(장르 1-2개, · 로 구분)","story":"(3줄: 주인공과 상황 / 벌어지는 사건 / 궁금증을 남기는 끝. 줄바꿈으로 구분)"}]}`,{cache:false});
+  const L=((r&&r.ideas)||[]).filter(x=>x&&x.story).slice(0,3).map(x=>({title:String(x.title||'').trim().slice(0,30),genre:String(x.genre||'').trim().slice(0,30),story:String(x.story).trim().slice(0,400)}));
+  if(!L.length)throw{code:'invalid_json'};EZ.recs=L;txtAiUse(1);progEnd();}catch(x){ezErr(x);}
+ EZ.busy=false;ezRender();}
+async function ezWrite(){const e=ezEp(),P=plan(),st=S.settings;if(!(P.idea||'').trim()){toast('이야기를 한두 줄 적거나 추천을 받아 주세요');const t=$('#ezIdea');if(t)t.focus();return;}
+ if((e.syn||'').trim()&&!(await confirmBox({title:`${e.num}화 스토리를 다시 쓸까요?`,body:'지금 스토리는 「이전 버전」에 남겨 둬요.',ok:'다시 쓰기',danger:false})))return;
+ if(!ezOk())return;const L=plChars(),need=!L.some(c=>c.name);
+ EZ.busy=true;prog(`${e.num}화 스토리를 쓰는 중`);progSet(.3,need?'인물과 배경을 정하고 이야기를 쓰는 중…':'앞 이야기를 읽고 쓰는 중…');
+ try{const r=await SM.json(`You are a veteran Korean webtoon writer. ${need?`From the creator's idea below, first decide the series basics (title, one-sentence logline, genre, 2-4 main characters each with a concrete visual look an image AI can draw, 1-3 key locations). Then write`:'Write'} the complete story of episode ${e.num} of this vertical-scroll webtoon in Korean, ready to be split into panels.
+${ezCtx(e)}
+Story format — plain text, no markdown: 10-16 numbered scenes. Each scene starts with "N. " followed by one or two sentences of what we see (where, who, action, emotion). Under it put that scene's dialogue, one per line, as "- 이름: 대사"; narration as "- (나레이션) …". Some scenes have no dialogue. Keep dialogue short like real webtoon balloons. ${+e.num>1?'Continue naturally from the previous episodes.':'Open with a hook that makes the reader curious.'} End on a cliffhanger.
+Answer JSON only: {${need?'"title":"(작품 제목 2-14자)","logline":"(한 문장)","genre":"(장르 1-2개, · 로 구분)","chars":[{"name":"","role":"(역할 · 나이)","pers":"(성격)","voice":"(말투)","look":"(외모: 머리 · 얼굴 · 체형을 그림 AI용으로 구체적으로)","outfit":"(고정 의상)"}],"locs":[{"name":"","desc":"(그림 AI용 장소 묘사)"}],':''}"ep_title":"(이번 화 제목 2-10자)","story":"1. …\\n- 이름: 대사\\n\\n2. …"}`,{cache:false});
+  const story=String((r&&r.story)||'').trim();if(!story)throw{code:'invalid_json'};
+  mutate(()=>{if(need){const t=String(r.title||'').trim();if(t&&(!(st.workTitle||'').trim()||/^새 작품 \d+$/.test(st.workTitle.trim()))){st.workTitle=t.slice(0,40);const w=$('#wTitle');if(w)w.value=st.workTitle;if(typeof lpmSync==='function')lpmSync();}
+    if(r.logline&&!(P.logline||'').trim())P.logline=String(r.logline).trim();
+    if(r.genre&&!(P.genres||[]).length){P.genre=String(r.genre).trim();P.genres=P.genre.split(/\s*[·,]\s*/).filter(Boolean).slice(0,3);}
+    (r.chars||[]).forEach(c=>{if(!c||!c.name||L.some(x=>x.name===String(c.name).trim()))return;const o={id:uid(),name:String(c.name).trim(),refs:[]};['role','pers','voice','look','outfit'].forEach(k=>{if(c[k])o[k]=String(c[k]).trim();});L.push(o);});st.sbChars=sbCharsText(L);
+    const LO=st.locs=st.locs||[];(r.locs||[]).forEach(l=>{if(l&&l.name&&!LO.some(x=>x.name===String(l.name).trim()))LO.push({id:uid(),name:String(l.name).trim(),desc:String(l.desc||'').trim(),refs:[]});});}
+   const z=e.ez=e.ez||{hist:[],rev:0};if((e.syn||'').trim()){z.hist.push(e.syn);z.hist=z.hist.slice(-5);}e.syn=story;
+   const et=String(r.ep_title||'').trim();if(et&&/^\d+화$|^새 회차$|^콘티$|^$/.test((e.title||'').trim()))e.title=et.slice(0,30);});
+  txtAiUse(1);progEnd();EZ.step=2;}catch(x){ezErr(x);}
+ EZ.busy=false;ezRender();}
+async function ezRevise(){const e=ezEp(),i=$('#ezReq'),req=((i&&i.value)||'').trim();if(!(e.syn||'').trim())return;if(!req){toast('어떻게 고칠지 한 줄로 적어 주세요');if(i)i.focus();return;}
+ if(!ezOk())return;const z=e.ez=e.ez||{hist:[],rev:0},old=e.syn;EZ.busy=true;prog(`${e.num}화 스토리를 고치는 중`);progSet(.3,'요청한 대로 다시 쓰는 중…');
+ try{const r=await SM.json(`You are editing the story of episode ${e.num} of a Korean vertical-scroll webtoon.
+${ezCtx(e)}
+Current story: <<<${old.slice(0,12000)}>>>
+The creator asks (in Korean): <<<${req.slice(0,500)}>>>
+Rewrite the whole story applying the request. Keep everything the request does not touch, and keep the same format: numbered scenes ("N. " + what we see), dialogue under each scene as "- 이름: 대사", narration as "- (나레이션) …". Renumber the scenes from 1. Answer JSON only: {"story":"…"}`,{cache:false});
+  const story=String((r&&r.story)||'').trim();if(!story)throw{code:'invalid_json'};
+  mutate(()=>{z.hist.push(old);z.hist=z.hist.slice(-5);e.syn=story;z.rev=(z.rev||0)+1;});if(z.rev>EZ_FREE)txtAiUse(1);progEnd();toast('고쳤어요 · 마음에 안 들면 「이전 버전으로」를 눌러요');}catch(x){ezErr(x);}
+ EZ.busy=false;ezRender();}
+async function ezCuts(){const e=ezEp();if(!(e.syn||'').trim())return;const had=e.cuts.filter(c=>c.sb);
+ if(had.length&&!(await confirmBox({title:'컷을 다시 만들까요?',body:`지금 있는 콘티 컷 <b>${had.length}개</b>가 그 안의 그림 · 말풍선과 함께 새 컷으로 바뀌어요.`,ok:'다시 만들기'})))return;
+ if(!ezOk())return;EZ.busy=true;prog(`${e.num}화 컷을 만드는 중`);progSet(.3,'장면을 컷으로 나누고 이미지 프롬프트 · 말풍선을 쓰는 중…');
+ try{const pk=await pkMake(e,null,e.syn);progSet(.85,'원고에 컷을 놓는 중…');
+  if(ep()!==e)switchEp(e.id);
+  mutate(()=>{if(had.length)e.cuts=e.cuts.filter(c=>!c.sb);if(pk.title&&/^\d+화$|^새 회차$|^콘티$|^$/.test((e.title||'').trim()))e.title=pk.title;e.pack={at:Date.now(),cuts:pk.cuts};});
+  SBo.forEp=e.id;$('#sbTx').value=pkSbText(e);SBo.where='here';SBo.ly=SBo.ly||'one';sbApply();wkCutSizes(e);
+  if(pkStat(e).ln){$('#scTx').value=pkScText(e);SC.mode='name';SC.how='replace';SC.scope='all';applyScript();}
+  txtAiUse(1);progEnd();EZ.step=3;}catch(x){ezErr(x);}
+ EZ.busy=false;ezRender();}
+async function ezNext(){const e=ezEp(),n=(+e.num||0)+1;let x=S.episodes.find(y=>y.kind!=='cover'&&+y.num===n);
+ if(!x){x={id:uid(),num:n,title:`${n}화`,cuts:[]};mutate(()=>{S.episodes.push(x);});}
+ switchEp(x.id);EZ.ep=x.id;EZ.recs=[];EZ.step=ezHasCuts(x)?3:(x.syn||'').trim()?2:1;ezRender();if(EZ.step===1&&(plan().idea||'').trim())await ezWrite();}
+document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-ezopen]');if(b){ev.preventDefault();ezOpen();}});
 function aiImgLbl(left){const W=window.__WB;if(W&&W.boot&&(W.boot.aiNeed==='login'||W.boot.aiNeed==='setup'))return `로그인하면 맛보기 <b>${AI_FREE}</b>장`;if(left>9000)return '이미지 제한 없음';return `맛보기 <b>${left}</b>/${AI_FREE}장`;}
 function stuRender(){const m=$('#mAiImg');if(!m)return;const st=S.settings,left=Math.max(0,AI_FREE-(st.aiUsed||0)),nc=st.aiN||1,e=ep(),sbL=e?e.cuts.filter(c=>c.sb):[],CH=stChars(),LO=stLocs();
  const cur=STU.src==='sb'?cutById(STU.cid):null;const fo=document.activeElement&&document.activeElement.id;const chOk=CH.filter(c=>(c.refs||[]).length).length,loOk=LO.filter(l=>(l.refs||[]).length).length;
@@ -4322,7 +4466,8 @@ function renderEmpty(){const box=$('#empty');if(!box)return;const e=ep();
  const last=S.settings.startPath,hasPrev=S.episodes.some(x=>x!==e&&x.kind!=='cover'&&x.cuts.length);
  const card=(act,icn,t,sub,extra='')=>`<button class="stc${last===act.slice(6)?' last':''}" data-act="${act}">${last===act.slice(6)?'<em>지난번에 쓴 방법</em>':''}<span class="sti">${ic(icn,20)}</span><b>${t}</b><small>${sub}</small>${extra}</button>`;
  box.innerHTML=`<h3>이 회차를 어떻게 시작할까요?</h3><p>가진 것에 맞춰 골라 주세요. 이미지는 언제든 이 화면에 끌어다 놓거나 Ctrl+V로 붙여 넣어도 돼요.</p>
-  <div class="stgrid">
+  <button type="button" class="ezcta" data-ezopen><span class="sti">${ic('wand',22)}</span><span><b>AI로 한 화 만들기</b><small>이야기 한두 줄만 적으면 스토리 → 컷 → 말풍선까지 만들어요</small></span></button>
+   <div class="stgrid">
    ${card('start-img','imgplus','그림이 있어요','이미지 · ZIP을 올리면 파일 이름순으로 컷이 돼요')}
    ${card('start-sb','rows','대본이 있어요','장면을 적으면 빈 콘티 컷이 생겨요','<span class="sttag">✦ AI 프롬프트도 만들 수 있어요</span>')}
    ${card('start-draw','brush','직접 만들래요','칸 나눈 레이아웃이나 빈 컷에서 처음부터 만들어요')}
@@ -6630,7 +6775,7 @@ function navPanel(n){
   return `<div class="npanel">${SG}<p class="note" style="padding:0 14px">인물 · 화풍 참고 이미지는 「기획」 탭으로 옮겼어요. 컷 · 말풍선 · 글자 추가는 아래 도구 막대에 있어요.</p></div>`;
  }
  if(n==='ai'){const e=ep();const nudge=planFill()<2?`<button class="plnudge" data-act="go-plan">${ic('list',15)}<span><b>작품 기획이 비어 있어요</b><small>로그라인 · 인물 · 화풍을 채우면 AI 콘티 · 그림이 더 정확해져요</small></span></button>`:'';
-  const quick=`<button class="aiquick" data-act="sb-aiimg">${ic('wand',15)}<span><b>콘티 없이 이미지만 만들기</b><small>설명 · 인물 · 배경 · 샷을 골라 바로 그려요</small></span></button>`;
+  const quick=`<button class="aiquick" data-ezopen>${ic('wand',15)}<span><b>AI로 한 화 만들기</b><small>이야기 → 스토리 → 컷 · 말풍선을 차례로 만들어요</small></span></button><button class="aiquick" data-act="sb-aiimg">${ic('wand',15)}<span><b>콘티 없이 이미지만 만들기</b><small>설명 · 인물 · 배경 · 샷을 골라 바로 그려요</small></span></button>`;
   if(!e||e.kind==='cover')return `<div class="npanel">${nudge}<div class="sec"><h2>콘티 · AI</h2><p class="note">회차를 고르면 시놉시스 → 콘티 → 이미지 → 대사 순서로 만들 수 있어요.</p></div>${quick}</div>`;
   const sbL=e.cuts.filter(c=>c.sb),sbn=sbL.length,syn=!!(e.syn||'').trim(),tx=e.cuts.filter(c=>(c.items||[]).some(i=>!i.frame&&(i.text||'').trim())).length,q=txtAi();
   const eps=S.episodes.filter(x=>x.kind!=='cover').sort((a,b)=>a.num-b.num),ix=eps.indexOf(e),pv=ix>0?eps[ix-1]:null;
@@ -6858,7 +7003,7 @@ async function openWork(id){
  view='edit';try{setView('edit');}catch(_){}
  updUndo();renderAll();$('#wTitle').value=S.settings.workTitle||'';lpmSync();
  $('#home').hidden=true;document.body.classList.remove('home-on');
- saveState('불러옴 · 자동 저장 켜짐',true);
+ saveState('불러옴 · 자동 저장 켜짐',true);ezAuto();
  if(!w.thumb){w.thumb=await makeThumb();worksSave();}
 }
 async function goHome(){
