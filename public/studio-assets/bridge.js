@@ -179,10 +179,27 @@
   /* ---------- 글 AI (Claude) — 편집기는 window.claude.use('sample').json(prompt)로 불러요 ---------- */
   if (boot.ai.text) {
     window.claude = window.claude || {};
+    var aiFail = function (e) { var why = { busy: 1, bad_key: 1, rate_limited: 1, budget_exceeded: 1, not_configured: 1, pro_only: 1, refused: 1 }[e.code] && e.message; if (why) setTimeout(function () { say(why); }, 600); if (e.code === 'quota_exceeded') { setQuota(Object.assign({}, boot.quota, { text: { used: boot.quota.text.limit, limit: boot.quota.text.limit } })); } throw { code: e.code || 'upstream_error', message: e.message }; };
+    /* 스트림으로 받은 글에서 JSON만 읽기 */
+    var looseJson = function (t) { t = String(t || '').trim(); var f = t.match(/```(?:json)?\s*([\s\S]*?)```/); if (f) t = f[1]; try { return JSON.parse(t); } catch (_) {} var s = t.indexOf('{'), e = t.lastIndexOf('}'); if (s >= 0 && e > s) { try { return JSON.parse(t.slice(s, e + 1)); } catch (_) {} } throw { code: 'invalid_json' }; };
     window.claude.use = function () {
       return Promise.resolve({
         json: function (prompt) {
-          return api('/api/ai/text', { method: 'POST', json: { prompt: String(prompt) } }).then(function (j) { setQuota(j.quota); if (j.truncated) setTimeout(function () { say('AI 답이 길어서 뒷부분이 잘렸어요 · 받은 데까지만 넣었어요. 컷 수를 줄이거나 나머지를 한 번 더 만들어 주세요'); }, 600); return j.data; }).catch(function (e) { var why = { busy: 1, bad_key: 1, rate_limited: 1, budget_exceeded: 1, not_configured: 1, pro_only: 1, refused: 1 }[e.code] && e.message; if (why) setTimeout(function () { say(why); }, 600); if (e.code === 'quota_exceeded') { setQuota(Object.assign({}, boot.quota, { text: { used: boot.quota.text.limit, limit: boot.quota.text.limit } })); } throw { code: e.code || 'upstream_error', message: e.message }; });
+          return api('/api/ai/text', { method: 'POST', json: { prompt: String(prompt) } }).then(function (j) { setQuota(j.quota); if (j.truncated) setTimeout(function () { say('AI 답이 길어서 뒷부분이 잘렸어요 · 받은 데까지만 넣었어요. 컷 수를 줄이거나 나머지를 한 번 더 만들어 주세요'); }, 600); return j.data; }).catch(aiFail);
+        },
+        /* 여러 조각을 동시에 물어요 — 서버가 한꺼번에 처리하고 사용 횟수는 1회예요 */
+        jsonAll: function (prompts) {
+          return api('/api/ai/text', { method: 'POST', json: { prompts: prompts.map(String) } }).then(function (j) { setQuota(j.quota); return j.datas || [j.data]; }).catch(aiFail);
+        },
+        /* 쓰는 대로 받아요 — onText(지금까지 받은 글) · 끝나면 읽은 JSON을 돌려줘요 */
+        stream: function (prompt, onText) {
+          return api('/api/ai/text', { method: 'POST', json: { prompt: String(prompt), stream: true } }).then(function (r) {
+            if (!r || !r.body || typeof r.body.getReader !== 'function') { setQuota(r && r.quota); return r && r.data; }
+            try { setQuota(JSON.parse(r.headers.get('x-quota') || 'null')); } catch (_) {}
+            var rd = r.body.getReader(), dec = new TextDecoder(), all = '';
+            var step = function () { return rd.read().then(function (x) { if (x.done) return; all += dec.decode(x.value, { stream: true }); try { if (onText) onText(all); } catch (_) {} return step(); }); };
+            return step().then(function () { return looseJson(all); });
+          }).catch(aiFail);
         },
       });
     };

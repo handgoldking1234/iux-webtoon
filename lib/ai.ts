@@ -63,6 +63,56 @@ export async function claudeJson(prompt: string) {
   return { data: pickJson(text), truncated: j.stop_reason === 'max_tokens', inTokens: j.usage?.input_tokens ?? 0, outTokens: j.usage?.output_tokens ?? 0 };
 }
 
+/** 글 AI(스트림) — 쓰는 대로 글자만 흘려보내요. 끝나면 onDone으로 쓴 양을 알려 줘요 */
+export async function claudeTextStream(prompt: string, onDone: (u: { inTokens: number; outTokens: number }) => void | Promise<void>): Promise<ReadableStream<Uint8Array>> {
+  if (!env.anthropicKey) throw new AiError('not_configured', '글 AI 키가 없어요', 503);
+  const r = await fetch(`${process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com'}/v1/messages`, {
+    method: 'POST',
+    headers: { 'x-api-key': env.anthropicKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
+    body: JSON.stringify({
+      model: env.claudeModel,
+      max_tokens: 24000,
+      stream: true,
+      system: 'You are the writing assistant inside 웹툰보드, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.',
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+  if (r.status === 429) throw new AiError('rate_limited', 'AI 요청이 몰려서 잠시 막혔어요 · 1분쯤 뒤에 다시 해 주세요', 429);
+  if (r.status === 529 || r.status === 503) throw new AiError('busy', 'AI가 잠시 붐벼요 · 조금 뒤에 다시 해 주세요', 503);
+  if (r.status === 401 || r.status === 403) throw new AiError('bad_key', '글 AI 키가 맞지 않아요 (관리자: ANTHROPIC_API_KEY 확인)', 502);
+  if (!r.ok || !r.body) throw new AiError('upstream_error', `Claude ${r.status}: ${(await r.text()).slice(0, 200)}`);
+  const reader = r.body.getReader(), dec = new TextDecoder(), enc = new TextEncoder();
+  let buf = '', inT = 0, outT = 0;
+  return new ReadableStream<Uint8Array>({
+    start(ctrl) {
+      (async () => {
+        try {
+          for (;;) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buf += dec.decode(value, { stream: true });
+            let i: number;
+            while ((i = buf.indexOf('\n')) >= 0) {
+              const line = buf.slice(0, i).trim();
+              buf = buf.slice(i + 1);
+              if (!line.startsWith('data:')) continue;
+              try {
+                const ev = JSON.parse(line.slice(5));
+                if (ev.type === 'content_block_delta' && ev.delta?.type === 'text_delta') ctrl.enqueue(enc.encode(ev.delta.text));
+                else if (ev.type === 'message_start') inT = ev.message?.usage?.input_tokens ?? 0;
+                else if (ev.type === 'message_delta') outT = ev.usage?.output_tokens ?? outT;
+              } catch { /* 조각난 줄은 건너뛰어요 */ }
+            }
+          }
+          try { await onDone({ inTokens: inT, outTokens: outT }); } catch { /* 기록 실패는 답에 영향 없게 */ }
+          ctrl.close();
+        } catch (e) { ctrl.error(e); }
+      })();
+    },
+    cancel() { reader.cancel().catch(() => {}); },
+  });
+}
+
 const RATIOS: [string, number][] = [['1:1', 1], ['2:3', 2 / 3], ['3:2', 1.5], ['3:4', 0.75], ['4:3', 4 / 3], ['4:5', 0.8], ['5:4', 1.25], ['9:16', 9 / 16], ['16:9', 16 / 9], ['21:9', 21 / 9]];
 export const nearestRatio = (w: number, h: number) => {
   const r = w > 0 && h > 0 ? w / h : 0.75;
