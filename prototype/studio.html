@@ -777,6 +777,11 @@ body:has(.modal:not([hidden]),#ed:not([hidden])) .coach{display:none}
 .ezcta:hover{background:color-mix(in srgb,var(--accent) 14%,var(--panel))}.ezcta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ezcta .sti{flex:none;color:var(--accent)}.ezcta b{display:block;font-size:15px}.ezcta small{display:block;margin-top:2px;font-size:12.5px;color:var(--muted)}
 @media (max-width:560px){.ezrecs{grid-template-columns:1fr}.ezstyles{grid-template-columns:repeat(3,minmax(0,1fr))}.ezsheet{height:calc(100dvh - 32px)}.ezfoot .btn{flex:1 1 auto}.ezsp{display:none}.ezar{display:none}.ezsteps{flex-wrap:nowrap;gap:2px;padding:0 12px 10px}.ezst{padding:0 8px 0 4px;font-size:12px;white-space:nowrap}.ezhd{padding:12px 14px 8px}.ezbody{padding:14px}.ezfoot{padding:10px 14px}}
+/* 진행 창: 기다리는 동안 바뀌는 한 줄 소개 */
+.ptip{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--accent) 8%,transparent);font-size:13px;font-weight:600;line-height:1.5;color:var(--ink);min-height:1.5em}
+.ptip:empty{display:none}.ptip.on{animation:ptipIn 3.6s ease both}
+@keyframes ptipIn{0%{opacity:0;transform:translateY(8px)}10%{opacity:1;transform:none}88%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
+@media (prefers-reduced-motion:reduce){.ptip.on{animation:none}}
 /* 진행 창: 제목 오른쪽 로딩 아이콘 */
 #mProg .phd{display:flex;align-items:center;justify-content:space-between;gap:12px}#mProg .phd h3{margin:0;min-width:0}#mProg .sheet>.phd{margin-bottom:6px}
 .pspin{flex:none;width:22px;height:22px;border-radius:50%;border:2.5px solid color-mix(in srgb,var(--accent) 22%,transparent);border-top-color:var(--accent);animation:aiSpin .8s linear infinite}
@@ -2013,6 +2018,7 @@ body.reader .coach{display:none}
 
 <div class="modal" id="mProg" hidden><div class="sheet" style="width:min(420px,100%)">
  <div class="phd"><h3 id="pT">만드는 중</h3><span class="pspin" role="img" aria-label="진행 중"></span></div><div class="bar"><i id="pBar"></i></div><p class="note" id="pTx"></p>
+ <p class="ptip" id="pTip" aria-hidden="true"></p>
  <div class="foot"><button class="btn" data-act="prog-cancel">취소</button></div>
 </div></div>
 <div id="toast" hidden role="status" aria-live="polite"></div>
@@ -6013,9 +6019,13 @@ document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!a
  const lab=(b.textContent||'').trim().slice(0,40),ak=b.dataset.placts?['placts',b.dataset.placts]:b.dataset.act?['act',b.dataset.act]:null,sel=ak?`[data-${ak[0]}="${ak[1]}"]`+(b.dataset.v?`[data-v="${b.dataset.v}"]`:''):'';const tick=()=>{const live=[...AIBTN].filter(x=>x.isConnected);
   if(aiBusyNow()||Date.now()-t0<700){/* 다시 그려져 버튼이 바뀌면 같은 글자의 새 버튼에 이어 붙여요 */if(!b.isConnected){const nb=(sel&&document.querySelector(sel))||[...document.querySelectorAll('button')].find(x=>(x.textContent||'').trim().slice(0,40)===lab);if(nb&&!nb.classList.contains('aibusy')&&aiBusyNow()){aiMark(nb);nb.classList.add('aibusy');AIBTN.add(nb);}}setTimeout(tick,250);return;}
   AIBTN.forEach(x=>{x.classList.remove('aibusy');x.removeAttribute('aria-busy');aiUnmark(x);});AIBTN.clear();};setTimeout(tick,250);},true);
-function prog(title){cancelFlag=false;$('#pT').textContent=title;$('#pBar').style.width='0%';$('#pTx').textContent='';$('#mProg').hidden=false;}
+/* 기다리는 동안 보여 주는 한 줄 소개 — 몇 초마다 바뀌어요 */
+const PROG_TIPS=['웹툰보드는 웹툰 한 화를 한곳에서 만드는 편집기예요','이야기 한두 줄만 적으면 AI가 스토리를 써 줘요','스토리는 「더 짧게」처럼 말로 고칠 수 있어요','컷마다 이미지 프롬프트와 말풍선을 같이 만들어요','말풍선은 원고에서 눌러 바로 고칠 수 있어요','프롬프트를 복사해 다른 그림 AI에서 그려도 돼요','캐릭터 시트를 만들어 두면 컷마다 얼굴이 같게 나와요','만든 컷은 이미지로 내보낼 수 있어요','작품은 이 브라우저에 자동으로 저장돼요'];
+let progTipT=0,progTipI=0;
+function progTip(){const el=$('#pTip');if(!el)return;el.textContent=PROG_TIPS[progTipI++%PROG_TIPS.length];el.classList.remove('on');void el.offsetWidth;el.classList.add('on');}
+function prog(title){cancelFlag=false;$('#pT').textContent=title;$('#pBar').style.width='0%';$('#pTx').textContent='';$('#mProg').hidden=false;clearInterval(progTipT);progTipI=Math.floor(Math.random()*PROG_TIPS.length);progTip();progTipT=setInterval(progTip,3600);}
 function progSet(f,t){$('#pBar').style.width=Math.round(f*100)+'%';$('#pTx').textContent=t||'';}
-function progEnd(){$('#mProg').hidden=true;}
+function progEnd(){$('#mProg').hidden=true;clearInterval(progTipT);progTipT=0;}
 async function epFiles(e,folder,list,manifest,base,total){
  for(let i=0;i<e.cuts.length;i++){
   if(cancelFlag)return false;
