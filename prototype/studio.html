@@ -3329,7 +3329,11 @@ function ezStoryPart(t){const i=t.indexOf('"story"');if(i<0)return'';const c=t.i
  return out;}
 /* 스토리를 쓰는 대로 화면에 보여 줘요 (서버가 흘려보내 줄 때만 · 아니면 다 쓴 뒤 한 번에) */
 function ezLive(text){if(!text)return;if(!EZ.live){EZ.live=true;EZ.liveText=text;ezProgEnd();EZ.step=2;ezRender();}EZ.liveText=text;const a=$('#ezStory');if(a){a.value=text;a.scrollTop=a.scrollHeight;}}
-async function ezAsk(prompt,live){if(live&&SM.stream)return SM.stream(prompt,t=>ezLive(ezStoryPart(t)));return SM.json(prompt,{cache:false});}
+async function ezAsk(prompt,live){if(live&&SM.stream){let got='';
+  try{return await SM.stream(prompt,t=>{got=t;ezLive(ezStoryPart(t));});}
+  catch(x){const part=ezStoryPart(got);if(x&&x.code==='invalid_json'&&part.length>200)return{story:part};/* 끝이 잘려도 받은 스토리는 살려요 */
+   if(got||!x||!['upstream_error','invalid_json'].includes(x.code))throw x;EZ.live=false;/* 흘려받기가 시작도 못 했으면 평소 방식으로 한 번 더 */}}
+ return SM.json(prompt,{cache:false});}
 /* 컷 만들기: 장면을 2~3묶음으로 나눠 동시에 만들어 빨리 끝내요 */
 async function ezPack(e){const story=e.syn||'',nums=[...story.matchAll(/^\s*(\d+)\.\s/gm)].map(m=>+m[1]),K=nums.length,G=SM.jsonAll?(K>=9?3:K>=5?2:1):1;
  if(G<2)return pkMake(e,null,story);
