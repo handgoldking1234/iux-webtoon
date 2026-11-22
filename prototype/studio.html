@@ -3190,13 +3190,13 @@ const stChars=()=>(S.settings.sbCharList||[]).filter(c=>c.name);
 function aiImgOpen(target,o){o=o||{};if(o.tab==='prep'){wkOpen('ch');return;}STU.t=target||null;STU.tab='shot';
  const e=ep(),sbL=e?e.cuts.filter(c=>c.sb):[];
  if(o.src)STU.src=o.src;else STU.src=sbL.length&&!o.free?'sb':'free';if(o.free)STU.src='free';
- if(STU.src==='sb'){const cid=o.cid||(target&&target.cid),c=cid?cutById(cid):activeCut&&cutById(activeCut);stuPickCut(c&&c.sb?c:(sbL.find(x=>!sbHasImg(x))||sbL[0]));}
+ if(STU.src==='sb'){const cid=o.cid||(target&&target.cid),c=cid?cutById(cid):null;stuPickCut(c&&c.sb?c:stuNextCut(sbL));}
  let m=$('#mAiImg');if(m)m.remove();m=document.createElement('div');m.className='modal';m.id='mAiImg';document.body.appendChild(m);stuRender();
  m.addEventListener('change',ev=>{const t=ev.target;if(t.dataset&&t.dataset.stuvar){(STU.vars=STU.vars||{})[t.dataset.stuvar]=t.value;stuRender();}});
  m.addEventListener('click',async ev=>{const t=ev.target;if(t===m||t.closest('[data-aix]')){m.remove();return;}const d=t.closest('[data-stu]');if(!d)return;const a=d.dataset.stu,v=d.dataset.v;
   if(a==='tab'||a==='gosheet'){m.remove();$('#mPlan')&&planClose();wkOpen('ch');}
   else if(a==='goplan'){m.remove();$('#mWork')&&wkClose();planOpen(v||'ch');}
-  else if(a==='src'){STU.src=v;if(v==='sb'){const L=ep()?ep().cuts.filter(c=>c.sb):[];if(!L.length){STU.src='free';stuRender();stuNoSb(m);return;}stuPickCut(cutById(STU.cid)||L[0]);}stuRender();}
+  else if(a==='src'){STU.src=v;if(v==='sb'){const L=ep()?ep().cuts.filter(c=>c.sb):[];if(!L.length){STU.src='free';stuRender();stuNoSb(m);return;}stuPickCut(stuNextCut(L));}stuRender();}
   else if(a==='cut'){stuPickCut(cutById(v));stuRender();}
   else if(a==='ch'){const i=STU.chars.indexOf(v);i>=0?STU.chars.splice(i,1):STU.chars.push(v);stuRender();}
   else if(a==='loc'){STU.loc=STU.loc===v?null:v;stuRender();}
@@ -3216,6 +3216,8 @@ function aiImgOpen(target,o){o=o||{};if(o.tab==='prep'){wkOpen('ch');return;}STU
   if(t.dataset.locd){const l=stLocs().find(x=>x.id===t.dataset.locd);if(l){l.desc=t.value;clearTimeout(window.__stuT);window.__stuT=setTimeout(save,400);}}});
  m.addEventListener('keydown',ev=>{if(ev.key==='Escape'){ev.stopPropagation();m.remove();}if(ev.key==='Enter'&&(ev.ctrlKey||ev.metaKey)&&STU.tab==='shot'){ev.preventDefault();stuGo();}});
  setTimeout(()=>m.querySelector('#stuP')?.focus(),30);}
+/* 다음에 그릴 컷 고르기 — 고른 컷에 그림이 없으면 그 컷, 있으면 그 뒤의 그림 없는 컷으로 넘어가요 (같은 컷을 실수로 두 번 그리지 않게) */
+function stuNextCut(L){const a=activeCut&&cutById(activeCut),i=a?L.indexOf(a):-1;if(i>=0&&!sbHasImg(a))return a;return L.slice(i+1).find(x=>!sbHasImg(x))||L.find(x=>!sbHasImg(x))||(i>=0?a:L[0]);}
 function stuPickCut(c){if(!c||!c.sb)return;STU.cid=c.id;STU.hasP=!!(c.sb.prompt||'').trim();STU.p=STU.hasP?c.sb.prompt:(c.sb.scene||'')+(c.sb.notes?` — ${c.sb.notes}`:'');
  const x=sbCast(c);STU.chars=x.chars.map(ch=>ch.id);STU.loc=x.loc?x.loc.id:null;STU.skip=[];STU.vars={};x.chars.forEach(ch=>{if(x.vmap[ch.id])STU.vars[ch.id]=x.vmap[ch.id].id;});}
 function stuVmap(){const m={};stChars().forEach(c=>{const v=(c.vars||[]).find(x=>x.id===(STU.vars||{})[c.id]);if(v&&STU.chars.includes(c.id))m[c.id]=v;});return m;}
@@ -3422,7 +3424,7 @@ function stuRender(){const m=$('#mAiImg');if(!m)return;const st=S.settings,left=
   <div class="sbairow" style="margin-top:10px"><select data-aiq="aiModel" aria-label="모델">${['나노바나나 2','나노바나나 Pro','GPT 이미지'].map(x=>`<option${(st.aiModel||'나노바나나 Pro')===x?' selected':''}>${x}</option>`).join('')}</select><select data-aiq="aiN" aria-label="후보 수">${[1,2,4].map(v=>`<option value="${v}"${nc===v?' selected':''}>후보 ${v}장</option>`).join('')}</select></div>`;}
  m.innerHTML=`<div class="sheet stusheet" role="dialog" aria-modal="true" aria-labelledby="stuT"><div class="libhead"><h3 id="stuT">${ic('wand',16)} AI 이미지 만들기</h3><button class="btn icon ghost" data-aix aria-label="닫기">${ic('x',16)}</button></div>
   ${tabs}<div class="stubody">${body}</div>
-  <div class="foot"><span class="sbleft" style="margin-right:auto">${aiImgLbl(left)}</span><button class="btn" data-aix>취소</button><button class="btn pri" data-stu="go" ${STU.p.trim()?'':'disabled'}>${ic('wand',14)}${STU.src==='sb'&&cur?`S#${cur.sb.no} `:''}${nc}장 만들기</button></div></div>`;
+  <div class="foot"><span class="sbleft" style="margin-right:auto">${aiImgLbl(left)}${STU.src==='sb'&&cur&&sbHasImg(cur)?`<br><b style="color:var(--accent)">S#${cur.sb.no}에는 이미 그림이 있어요</b> · 다시 만들면 후보로 더해져요`:''}</span><button class="btn" data-aix>취소</button><button class="btn pri" data-stu="go" ${STU.p.trim()?'':'disabled'}>${ic('wand',14)}${STU.src==='sb'&&cur?`S#${cur.sb.no} `:''}${nc}장 ${STU.src==='sb'&&cur&&sbHasImg(cur)?'더 ':''}만들기</button></div></div>`;
  if(fo){const t=m.querySelector('#'+fo);if(t&&t.focus){t.focus();if(t.setSelectionRange&&t.value!=null)try{t.setSelectionRange(t.value.length,t.value.length);}catch(_){}}}}
 function stuMockLabel(b,label,kind){return new Promise(res=>{const im=new Image();im.onload=()=>{const cv=document.createElement('canvas');cv.width=im.width;cv.height=im.height;const x=cv.getContext('2d');x.drawImage(im,0,0);const w=cv.width,h=cv.height;
  if(kind==='ch'){x.fillStyle='rgba(255,255,255,.18)';[.2,.5,.8].forEach((p,i)=>{x.beginPath();x.arc(w*p,h*.3,h*.09,0,7);x.fill();x.fillRect(w*p-h*.08,h*.42,h*.16,h*.38);});x.font=`700 ${Math.round(h*.04)}px sans-serif`;x.fillStyle='rgba(255,255,255,.8)';x.textAlign='center';['정면','옆','뒤'].forEach((t,i)=>x.fillText(t,w*[.2,.5,.8][i],h*.88));}
