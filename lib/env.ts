@@ -11,6 +11,8 @@ export const env = {
   /** Supabase Storage 버킷: 작품 원본(비공개) · 연재 그림(공개) */
   bucket: process.env.SUPABASE_BUCKET || 'webtoon',
   readBucket: process.env.SUPABASE_READ_BUCKET || 'webtoon-read',
+  /** 로그인 화면에 보일 방식 (쉼표로) — google · kakao · email. Supabase에서 켠 것만 넣어요 */
+  authProviders: (process.env.AUTH_PROVIDERS || 'google,kakao,email').split(',').map((s) => s.trim().toLowerCase()).filter((s) => ['google', 'kakao', 'email'].includes(s)),
   adminEmails: (process.env.ADMIN_EMAILS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
   anthropicKey: (process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY || '').trim(),
   claudeModel: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',

@@ -9,8 +9,9 @@ const ERR: Record<string, string> = {
   'Email not confirmed': '메일함에서 인증 링크를 먼저 눌러 주세요',
 };
 
-export default function LoginForm({ next, initialMode, error }: { next: string; initialMode: Mode; error?: string }) {
-  const [mode, setMode] = useState<Mode>(initialMode);
+export default function LoginForm({ next, initialMode, error, providers = ['google', 'kakao', 'email'] }: { next: string; initialMode: Mode; error?: string; providers?: string[] }) {
+  const has = (p: string) => providers.includes(p), useEmail = has('email'), social = has('google') || has('kakao');
+  const [mode, setMode] = useState<Mode>(providers.includes('email') ? initialMode : 'login');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [name, setName] = useState('');
@@ -60,19 +61,22 @@ export default function LoginForm({ next, initialMode, error }: { next: string; 
     setBusy(false);
   }
 
-  const title = { login: '로그인', signup: '무료로 시작하기', magic: '메일 링크로 로그인', reset: '비밀번호 찾기' }[mode];
+  const title = useEmail ? { login: '로그인', signup: '무료로 시작하기', magic: '메일 링크로 로그인', reset: '비밀번호 찾기' }[mode] : '로그인 · 가입';
   return (
     <>
       <h1>{title}</h1>
-      {(mode === 'login' || mode === 'signup') && (
+      {social && (mode === 'login' || mode === 'signup') && (
         <>
           <div className="oauth">
-            <button className="btn kakao" type="button" disabled={busy} onClick={() => oauth('kakao')}>카카오로 계속하기</button>
-            <button className="btn" type="button" disabled={busy} onClick={() => oauth('google')}>Google로 계속하기</button>
+            {has('kakao') && <button className="btn kakao" type="button" disabled={busy} onClick={() => oauth('kakao')}>카카오로 계속하기</button>}
+            {has('google') && <button className="btn" type="button" disabled={busy} onClick={() => oauth('google')}>Google로 계속하기</button>}
           </div>
-          <div className="or">또는 이메일</div>
+          {useEmail && <div className="or">또는 이메일</div>}
+          {!useEmail && msg && <div className={`msg ${msg.t}`} role="alert">{msg.s}</div>}
+          {!useEmail && <p className="note" style={{ margin: 0 }}>처음이면 누르는 것만으로 가입돼요.</p>}
         </>
       )}
+      {useEmail && (<>
       <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
         {mode === 'signup' && <label className="fld">이름(필명)<input value={name} onChange={(e) => setName(e.target.value)} placeholder="작가 이름" autoComplete="nickname" /></label>}
         <label className="fld">이메일<input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" /></label>
@@ -88,6 +92,7 @@ export default function LoginForm({ next, initialMode, error }: { next: string; 
         {mode === 'login' && <button className="lnk" onClick={() => { setMode('reset'); setMsg(null); }}>비밀번호 찾기</button>}
         {(mode === 'magic' || mode === 'reset') && <button className="lnk" onClick={() => { setMode('login'); setMsg(null); }}>비밀번호로 로그인</button>}
       </div>
+      </>)}
       <p className="note">가입하면 AI 이미지 20장 · 글 AI 매달 30회를 무료로 쓸 수 있어요.</p>
     </>
   );

@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { dbReady } from '@/lib/env';
+import { dbReady, env } from '@/lib/env';
 import { getMe } from '@/lib/auth';
 import { Logo } from '@/components';
 import { testReady } from '@/lib/test-accounts';
@@ -17,7 +17,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       <div className="authcard">
         <span className="logo"><Logo size={22} /></span>
         {dbReady() ? (
-          <LoginForm next={next} initialMode={sp.mode === 'signup' ? 'signup' : 'login'} error={sp.error} />
+          <LoginForm next={next} initialMode={sp.mode === 'signup' ? 'signup' : 'login'} error={sp.error} providers={env.authProviders} />
         ) : testReady() ? (
           <>
             <h1>시험 계정 로그인</h1>
