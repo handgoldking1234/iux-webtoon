@@ -266,6 +266,7 @@ html,body{margin:0}
 .oauth{display:flex;flex-direction:column;gap:8px}
 .oauth .btn{height:42px;font-size:13px}
 .btn.kakao{background:#fee500;border-color:#fee500;color:#191600}
+.btn.naver{background:#03c75a;border-color:#03c75a;color:#fff}
 .or{display:flex;align-items:center;gap:10px;color:var(--faint);font-size:12px}.or::before,.or::after{content:"";flex:1;height:1px;background:var(--line)}
 .authcard input{height:40px;width:100%;box-sizing:border-box}
 .authcard .lnk{border:0;background:none;color:var(--accText);font-weight:700;cursor:pointer;padding:0;font-size:12.5px}

@@ -58,7 +58,7 @@ export async function getMe(): Promise<Me | null> {
     const u = data.user, md = (u.user_metadata || {}) as Record<string, string | undefined>;
     let src: string | null = md.signup_source || null;
     try { src = src || (await cookies()).get('wb_src')?.value || null; } catch { /* 쿠키 없음 */ }
-    const row = { id: u.id, email: u.email ?? null, name: md.name || md.full_name || u.email?.split('@')[0] || '작가', avatar_url: md.avatar_url ?? null, provider: (u.app_metadata?.provider as string) || 'email', signup_source: src };
+    const row = { id: u.id, email: u.email ?? null, name: md.name || md.full_name || md.nickname || md.preferred_username || u.email?.split('@')[0] || '작가', avatar_url: md.avatar_url ?? null, provider: (u.app_metadata?.provider as string) || 'email', signup_source: src };
     if (adminReady()) {
       const { data: made } = await supabaseAdmin().from('profiles').upsert(row, { onConflict: 'id', ignoreDuplicates: true }).select('*').maybeSingle();
       p = made || (await supabaseAdmin().from('profiles').select('*').eq('id', u.id).maybeSingle()).data;

@@ -19,7 +19,7 @@ export default function PrivacyPage() {
       <div className="tbl"><table>
         <thead><tr><th>구분</th><th>항목</th><th>목적</th></tr></thead>
         <tbody>
-          <tr><td>회원가입 · 로그인 (구글)</td><td>이메일, 이름, 프로필 사진 주소, 구글 계정 고유 번호</td><td>회원 확인, 로그인 유지, 문의 답변</td></tr>
+          <tr><td>회원가입 · 로그인 (구글 · 카카오 · 네이버)</td><td>이메일, 이름(닉네임), 프로필 사진 주소, 로그인한 계정의 고유 번호</td><td>회원 확인, 로그인 유지, 문의 답변</td></tr>
           <tr><td>작품 저장</td><td>작품 내용(기획 · 스토리 · 콘티 · 말풍선), 직접 올리거나 AI로 만든 그림</td><td>여러 기기에서 작품을 이어서 작업</td></tr>
           <tr><td>AI 기능</td><td>AI에 보낸 글(이야기 · 요청 내용)과 참고 그림, 사용 횟수 · 시각</td><td>AI 결과 만들기, 무료 한도 관리, 비용 관리</td></tr>
           <tr><td>연재관</td><td>필명, 연재한 작품, 별점 · 댓글 · 관심 · 신고 기록</td><td>작품 공개와 독자 활동 제공</td></tr>
@@ -46,6 +46,8 @@ export default function PrivacyPage() {
           <tr><td>Vercel Inc. (미국)</td><td>웹사이트 호스팅</td><td>접속 기록</td></tr>
           <tr><td>Anthropic PBC (미국)</td><td>글 AI(Claude)</td><td>AI에 보낸 글</td></tr>
           <tr><td>Google LLC (미국)</td><td>구글 로그인, 이미지 AI(Gemini)</td><td>로그인 정보, AI에 보낸 글 · 참고 그림</td></tr>
+          <tr><td>(주)카카오 (한국)</td><td>카카오 로그인</td><td>로그인 정보</td></tr>
+          <tr><td>네이버(주) (한국)</td><td>네이버 로그인</td><td>로그인 정보</td></tr>
           <tr><td>OpenAI, L.L.C. (미국)</td><td>이미지 AI(GPT 이미지, 고를 때만)</td><td>AI에 보낸 글 · 참고 그림</td></tr>
         </tbody>
       </table></div>
@@ -64,7 +66,7 @@ export default function PrivacyPage() {
       <ul>
         <li>모든 통신은 암호화(HTTPS)합니다.</li>
         <li>데이터베이스는 이용자 본인의 정보만 읽고 쓸 수 있도록 접근을 막아 둡니다.</li>
-        <li>비밀번호를 직접 받지 않고 구글 로그인을 씁니다.</li>
+        <li>비밀번호를 직접 받지 않고 구글 · 카카오 · 네이버 로그인을 씁니다.</li>
         <li>관리 권한은 운영자에게만 줍니다.</li>
       </ul>
 

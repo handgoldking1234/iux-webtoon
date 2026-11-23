@@ -10,7 +10,7 @@ const ERR: Record<string, string> = {
 };
 
 export default function LoginForm({ next, initialMode, error, providers = ['google', 'kakao', 'email'] }: { next: string; initialMode: Mode; error?: string; providers?: string[] }) {
-  const has = (p: string) => providers.includes(p), useEmail = has('email'), social = has('google') || has('kakao');
+  const has = (p: string) => providers.includes(p), useEmail = has('email'), social = has('google') || has('kakao') || has('naver');
   const [mode, setMode] = useState<Mode>(providers.includes('email') ? initialMode : 'login');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
@@ -21,9 +21,9 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
   const cb = () => `${location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
   const src = () => (typeof document !== 'undefined' ? document.cookie.match(/(?:^|; )wb_src=([^;]+)/)?.[1] : undefined);
 
-  async function oauth(provider: 'google' | 'kakao') {
+  async function oauth(provider: 'google' | 'kakao' | 'custom:naver') {
     setBusy(true);
-    const { error } = await sb.auth.signInWithOAuth({ provider, options: { redirectTo: cb() } });
+    const { error } = await sb.auth.signInWithOAuth({ provider: provider as 'google', options: { redirectTo: cb() } });
     if (error) { setMsg({ t: 'bad', s: error.message }); setBusy(false); }
   }
 
@@ -69,6 +69,7 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
         <>
           <div className="oauth">
             {has('kakao') && <button className="btn kakao" type="button" disabled={busy} onClick={() => oauth('kakao')}>카카오로 계속하기</button>}
+            {has('naver') && <button className="btn naver" type="button" disabled={busy} onClick={() => oauth('custom:naver')}>네이버로 계속하기</button>}
             {has('google') && <button className="btn" type="button" disabled={busy} onClick={() => oauth('google')}>Google로 계속하기</button>}
           </div>
           {useEmail && <div className="or">또는 이메일</div>}
