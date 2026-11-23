@@ -10,7 +10,7 @@
 - Next.js 15 + Supabase(Auth·Postgres·Storage) + Vercel. 글 AI = Claude API, 이미지 AI = Gemini(나노바나나).
 - 편집기 원본은 `prototype/studio.html` 한 곳. `scripts/build-studio.mjs`가 저장·회원·AI 연결 부분을 패치해 `/studio`로 내보낸다. 편집기를 고칠 때는 이 파일만 고친다.
 - AI 키(`ANTHROPIC_API_KEY`·`GEMINI_API_KEY`)와 접근 규칙(`AI_ACCESS`·`TEST_ACCOUNTS`·`SITE_PASSWORD`)은 Vercel 환경 변수. 자세한 건 README.md.
-- 회원: Supabase `iux-cloud`의 `webtoon` 구역(테이블 15개, 버킷 `webtoon`·`webtoon-read`). 로그인은 구글·카카오·네이버(`AUTH_PROVIDERS=google,kakao,naver`, 네이버는 Supabase 사용자 지정 제공자 `custom:naver`) — 카카오·네이버 앱은 내니요와 같이 쓰고, 구글은 Google Cloud 프로젝트 `IUX Login`의 OAuth 클라이언트 "Supabase iux-cloud"를 내니요와 같이 써요. 관리자 = `ADMIN_EMAILS`(handgoldking@gmail.com).
+- 회원: Supabase `iux-cloud`의 `webtoon` 구역(테이블 15개, 버킷 `webtoon`·`webtoon-read`). 로그인은 구글·카카오·네이버(코드에서 늘 켜 둠, 이메일은 `AUTH_PROVIDERS=email`로 추가, 네이버는 Supabase 사용자 지정 제공자 `custom:naver`) — 카카오·네이버 앱은 내니요와 같이 쓰고, 구글은 Google Cloud 프로젝트 `IUX Login`의 OAuth 클라이언트 "Supabase iux-cloud"를 내니요와 같이 써요. 관리자 = `ADMIN_EMAILS`(handgoldking@gmail.com).
 - 방침 페이지: `/privacy` · `/terms` (app/privacy · app/terms).
 
 ## 확정된 결정

@@ -12,7 +12,8 @@ export const env = {
   bucket: process.env.SUPABASE_BUCKET || 'webtoon',
   readBucket: process.env.SUPABASE_READ_BUCKET || 'webtoon-read',
   /** 로그인 화면에 보일 방식 (쉼표로) — google · kakao · email. Supabase에서 켠 것만 넣어요 */
-  authProviders: (process.env.AUTH_PROVIDERS || 'google,kakao,email').split(',').map((s) => s.trim().toLowerCase()).filter((s) => ['google', 'kakao', 'naver', 'email'].includes(s)),
+  // 구글·카카오·네이버는 Supabase iux-cloud에 연결돼 늘 켜 둔다. AUTH_PROVIDERS로 이메일 등을 더 켤 수 있다.
+  authProviders: ['google', 'kakao', 'naver', 'email'].filter((p) => ['google', 'kakao', 'naver'].includes(p) || (process.env.AUTH_PROVIDERS || '').split(',').map((s) => s.trim().toLowerCase()).includes(p)),
   adminEmails: (process.env.ADMIN_EMAILS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
   anthropicKey: (process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY || '').trim(),
   claudeModel: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',
