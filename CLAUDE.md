@@ -10,6 +10,8 @@
 - Next.js 15 + Supabase(Auth·Postgres·Storage) + Vercel. 글 AI = Claude API, 이미지 AI = Gemini(나노바나나).
 - 편집기 원본은 `prototype/studio.html` 한 곳. `scripts/build-studio.mjs`가 저장·회원·AI 연결 부분을 패치해 `/studio`로 내보낸다. 편집기를 고칠 때는 이 파일만 고친다.
 - AI 키(`ANTHROPIC_API_KEY`·`GEMINI_API_KEY`)와 접근 규칙(`AI_ACCESS`·`TEST_ACCOUNTS`·`SITE_PASSWORD`)은 Vercel 환경 변수. 자세한 건 README.md.
+- 회원: Supabase `iux-cloud`의 `webtoon` 구역(테이블 15개, 버킷 `webtoon`·`webtoon-read`). 로그인은 구글만(`AUTH_PROVIDERS=google`) — Google Cloud 프로젝트 `IUX Login`의 OAuth 클라이언트 "Supabase iux-cloud"를 내니요와 같이 써요. 관리자 = `ADMIN_EMAILS`(handgoldking@gmail.com).
+- 방침 페이지: `/privacy` · `/terms` (app/privacy · app/terms).
 
 ## 확정된 결정
 | 항목 | 결정 |
@@ -17,7 +19,7 @@
 | 이름 | 웹툰보드 (웹툰 컷 편집실 → 웹툰컷 → 웹툰보드) |
 | 출시 | 우선 무료 오픈, 반응 보고 결제 연결 |
 | AI 이미지 | 맛보기만 — 가입 시 20장 |
-| DB | Supabase 구성은 사용자가 직접 정의 (DB 연동은 묻고 진행) |
+| DB | Supabase `iux-cloud`에 `webtoon` 구역으로 얹음 (2026-11 연결, 바꿀 때는 묻고 진행) |
 | 시놉 | `iux-synop`(시놉)을 기획 부분에 통합 — 기획은 팝업 |
 | 저장 | 브라우저(IndexedDB·localStorage) 먼저, dev에서는 바뀐 작품만 Storage로 |
 | 테스트 모드 | `AI_TEST=true`면 작품 열 때마다 AI 횟수 초기화 → **출시 때 false** |
