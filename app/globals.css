@@ -271,8 +271,8 @@ html,body{margin:0}
 .authcard input{height:40px;width:100%;box-sizing:border-box}
 .authcard .lnk{border:0;background:none;color:var(--accText);font-weight:700;cursor:pointer;padding:0;font-size:12.5px}
 .msg{font-size:12.5px;padding:10px 12px;border-radius:10px}.msg.ok{background:var(--accSoft);color:var(--accText)}.msg.bad{background:var(--badSoft);color:var(--badText)}.msg.info{background:var(--noteSoft);color:var(--noteText)}
-.hero{min-height:100vh;display:flex;flex-direction:column;background:var(--bg)}
-.hero header{display:flex;align-items:center;gap:10px;padding:16px max(24px,env(safe-area-inset-left));border-bottom:1px solid var(--line);background:var(--panel)}
+.hero{min-height:100vh;display:flex;flex-direction:column;background:var(--panel)}
+.hero header{display:flex;align-items:center;gap:10px;padding:16px max(24px,env(safe-area-inset-left));background:var(--panel)}
 .hero header .sp{flex:1}
 .hero .in{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding:48px 24px}
 .hero h1{font-size:clamp(28px,5vw,44px);font-weight:800;letter-spacing:-1px;margin:0}
@@ -281,7 +281,6 @@ html,body{margin:0}
 .feat div{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;text-align:left}
 .feat b{display:block;margin-bottom:6px;font-size:15.5px}.feat small{color:var(--mute);line-height:1.65;font-size:13px}
 .feat em{display:block;font-style:normal;font-size:10.5px;font-weight:800;letter-spacing:.08em;color:var(--accText);margin-bottom:6px}
-.hero p.lead{color:var(--ink2);font-size:17px;font-weight:600}
 .who{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;width:min(960px,100%);margin-top:8px}
 .who>div{display:flex;flex-direction:column;gap:6px;text-align:left;padding:24px;border-radius:14px;background:var(--accSoft);border:1px solid transparent}
 .who>div.pro{background:var(--panel);border-color:var(--line)}
@@ -295,3 +294,16 @@ html,body{margin:0}
 a.btn,a.svc,a.kpi,a.row{text-decoration:none}
 a.btn{color:var(--ink)}a.btn.pri{color:var(--accInk)}
 .seg a{text-decoration:none}.tabs a{text-decoration:none}
+
+/* 첫 화면 상단 (큰 영문 제목 + 한글 부제 + 버튼 두 개) */
+.hero .top{display:flex;flex-direction:column;align-items:center;text-align:center;padding:56px 0 72px}
+.hero h1.big{font-family:Figtree,'Noto Sans KR',sans-serif;font-size:clamp(56px,11vw,140px);font-weight:800;line-height:.98;letter-spacing:-.045em;margin:0;color:var(--ink)}
+.hero .top h2{font-size:clamp(22px,3.2vw,32px);font-weight:800;line-height:1.4;letter-spacing:-.03em;margin:44px 0 0;color:var(--ink)}
+.hero .top p{font-size:clamp(14.5px,1.5vw,16.5px);line-height:2.1;color:var(--mute);max-width:620px;margin:28px 0 0}
+.hero .cta{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-top:48px}
+.btn.xl{height:64px;padding:0 40px;border-radius:14px;font-size:16px;font-weight:800;min-width:200px;justify-content:center}
+.btn.pri.xl{box-shadow:0 10px 24px -8px color-mix(in srgb,var(--acc) 65%,transparent)}
+.btn.out{background:transparent;border:2px solid var(--acc);color:var(--accText);font-weight:800}
+a.btn.out{color:var(--accText)}.btn.out:hover{background:var(--accSoft)}
+.hero .feat{scroll-margin-top:24px}
+@media (max-width:520px){.hero .top{padding:32px 0 48px}.hero .top h2{margin-top:32px}.hero .top p br{display:none}.btn.xl{height:56px;min-width:0;flex:1;padding:0 20px}.hero .cta{width:100%;gap:10px}}
