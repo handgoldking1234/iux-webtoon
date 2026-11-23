@@ -94,6 +94,7 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
       </div>
       </>)}
       <p className="note">가입하면 AI 이미지 20장 · 글 AI 매달 30회를 무료로 쓸 수 있어요.</p>
+      <p className="authlegal">계속하면 <a href="/terms" target="_blank">이용약관</a>과 <a href="/privacy" target="_blank">개인정보처리방침</a>에 동의하는 것으로 봐요.</p>
     </>
   );
 }

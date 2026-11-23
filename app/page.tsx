@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import './legal.css';
 import { getMe } from '@/lib/auth';
 import { dbReady } from '@/lib/env';
 import { Logo } from '@/components';
@@ -41,6 +42,7 @@ export default async function Home() {
           <div><b>클라우드 저장</b><small>로그인하면 작품과 그림이 계정에 저장돼 다른 기기에서도 이어서 작업해요.</small></div>
         </div>
       </div>
+      <footer className="sitefoot"><Link href="/terms">이용약관</Link><Link href="/privacy"><b>개인정보처리방침</b></Link><a href="mailto:handgoldking@gmail.com">문의</a></footer>
     </div>
   );
 }
