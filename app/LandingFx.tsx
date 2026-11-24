@@ -47,6 +47,7 @@ export default function LandingFx() {
       const id = a.getAttribute('href')!.slice(1), t = id ? document.getElementById(id) : null;
       if (!t) return;
       e.preventDefault();
+      if (a.closest('.lp-nav')) { moveInd(a); lockUntil = Date.now() + 1100; }
       const top = t.getBoundingClientRect().top + scrollY - ((nav as HTMLElement)?.offsetHeight || 0);
       scrollTo({ top: Math.max(0, top), behavior: calm ? 'auto' : 'smooth' });
       history.replaceState(null, '', '#' + id);
@@ -54,6 +55,22 @@ export default function LandingFx() {
     root.addEventListener('click', onClick);
 
     const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.lp-nav nav a'));
+    // 지금 구역 밑줄: 하나의 막대가 메뉴 사이를 미끄러지듯 옮겨 가요
+    const navEl = document.querySelector('.lp-nav nav');
+    let ind = navEl?.querySelector<HTMLElement>('.ind') || null;
+    if (navEl && !ind) { ind = document.createElement('span'); ind.className = 'ind'; ind.setAttribute('aria-hidden', 'true'); navEl.appendChild(ind); }
+    let indAt: HTMLAnchorElement | null = null, lockUntil = 0;
+    const moveInd = (a: HTMLAnchorElement | null) => {
+      if (!ind || a === indAt) return;
+      indAt = a;
+      if (!a) { ind.classList.remove('on'); return; }
+      const pad = 12;
+      ind.style.width = Math.max(0, a.offsetWidth - pad * 2) + 'px';
+      ind.style.transform = `translateX(${a.offsetLeft + pad}px)`;
+      ind.classList.add('on');
+    };
+    const onResize = () => { const a = indAt; indAt = null; moveInd(a); };
+    addEventListener('resize', onResize);
     const secs = links.map((a) => document.getElementById(a.hash.slice(1))).filter(Boolean) as HTMLElement[];
     const onScroll = () => {
       nav?.classList.toggle('scrolled', scrollY > 8);
@@ -61,10 +78,11 @@ export default function LandingFx() {
       let cur = '';
       secs.forEach((s) => { if (s.offsetTop <= y) cur = s.id; });
       links.forEach((a) => a.classList.toggle('cur', a.hash === '#' + cur));
+      if (Date.now() > lockUntil) moveInd(links.find((a) => a.hash === '#' + cur) || null);
     };
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });
-    return () => { root.removeEventListener('click', onClick); removeEventListener('scroll', onScroll); };
+    return () => { root.removeEventListener('click', onClick); removeEventListener('scroll', onScroll); removeEventListener('resize', onResize); };
   }, []);
   return null;
 }

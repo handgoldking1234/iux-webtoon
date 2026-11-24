@@ -20,7 +20,9 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-nav nav a{position:relative;padding:8px 12px;border-radius:8px;color:var(--mute);font-size:var(--fs-sm);font-weight:700;transition:color .15s,background .15s}
 .lp-nav nav a:hover{color:var(--ink);background:var(--soft2)}
 .lp-nav nav a.cur{color:var(--accText)}
-.lp-nav nav a.cur::after{content:'';position:absolute;left:12px;right:12px;bottom:2px;height:2px;border-radius:2px;background:var(--acc)}
+.lp-nav nav{position:relative}
+.lp-nav nav .ind{position:absolute;left:0;bottom:2px;height:2px;width:0;border-radius:2px;background:var(--acc);opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.22,.8,.2,1),width .45s cubic-bezier(.22,.8,.2,1),opacity .25s}
+.lp-nav nav .ind.on{opacity:1}
 .lp-nav .sp{flex:1}
 .lp-txt{color:var(--ink2);font-size:var(--fs-sm);font-weight:700}
 .lp-txt:hover{color:var(--ink)}
@@ -270,7 +272,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp.fx [data-r]{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.2,.7,.2,1),transform .7s cubic-bezier(.2,.7,.2,1),box-shadow .25s,border-color .25s;transition-delay:calc(var(--d,0) * 90ms)}
 .lp.fx [data-r].on{opacity:1;transform:none}
 .lp.fx article[data-r].on:hover{transform:translateY(-4px);transition-delay:0s}
-@media (prefers-reduced-motion:reduce){html:has(.lp){scroll-behavior:auto}.lp-strip .track,.phone .roll{animation:none}.lp *{transition:none!important}}
+@media (prefers-reduced-motion:reduce){.lp-nav nav .ind{transition:none}html:has(.lp){scroll-behavior:auto}.lp-strip .track,.phone .roll{animation:none}.lp *{transition:none!important}}
 
 /* 화면 크기별 */
 @media (max-width:960px){
