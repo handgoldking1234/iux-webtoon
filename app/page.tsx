@@ -68,6 +68,7 @@ export default async function Home() {
         <div className="lp-w">
           <a href="#top" className="lp-logo"><i><Logo /></i><b>바로웹툰</b></a>
           <nav>
+            <a href="#edit">따로 고치기</a>
             <a href="#why">왜 바로웹툰</a>
             <a href="#feat">기능</a>
             <a href="#who">창작자</a>
@@ -101,7 +102,7 @@ export default async function Home() {
       <section className="lp-hero lp-w" id="top">
         <h1 data-r>Story +<br />Webtoon</h1>
         <h2 data-r style={{ ['--d' as string]: 1 }}>상상한 이야기를,<br />나만의 웹툰으로</h2>
-        <p data-r style={{ ['--d' as string]: 2 }}>웹툰 제작이 처음이라도 괜찮아요.<br />기획부터 콘티, 캐릭터, 그림, 말풍선까지 AI가 도와드려요.<br />AI로 빠르게 만들고, 직접 그리고 자유롭게 편집하세요.</p>
+        <p data-r style={{ ['--d' as string]: 2 }}>웹툰 제작이 처음이라도 괜찮아요.<br />기획부터 콘티, 캐릭터, 그림, 말풍선까지 AI가 도와드려요.<br />AI가 그려도 그림과 말풍선은 따로라서, 대사는 바로 고치고 마음에 안 드는 컷만 다시 그려요.</p>
         <div className="lp-cta" data-r style={{ ['--d' as string]: 3 }}>
           <a className="lp-btn pri" href={start}>{startLbl}</a>
           <a className="lp-btn out" href="#feat">기능 둘러보기</a>
@@ -110,7 +111,7 @@ export default async function Home() {
           <div><dt>가입하면 바로</dt><dd><span data-count="20">20</span><em>장</em></dd><small>AI 이미지 무료</small></div>
           <div><dt>매달 새로</dt><dd><span data-count="30">30</span><em>회</em></dd><small>글 AI 무료</small></div>
           <div><dt>한 화를 완성하는</dt><dd><span data-count="5">5</span><em>단계</em></dd><small>기획부터 말풍선까지</small></div>
-          <div><dt>시작 비용</dt><dd><span>0</span><em>원</em></dd><small>설치 없이 웹에서</small></div>
+          <div><dt>대사 고칠 때 AI 비용</dt><dd><span>0</span><em>원</em></dd><small>그림을 다시 만들지 않아요</small></div>
         </dl>
       </section>
 
@@ -129,7 +130,42 @@ export default async function Home() {
 
       {/* 3. 해시태그 */}
       <section className="lp-tags lp-w" aria-label="바로웹툰 키워드" data-r>
-        {['#작품기획', '#AI콘티', '#캐릭터시트', '#AI이미지', '#말풍선', '#클라우드저장', '#초보환영', '#직접편집'].map((t) => <span key={t}>{t}</span>)}
+        {['#작품기획', '#AI콘티', '#캐릭터시트', '#AI이미지', '#말풍선따로', '#대사바로수정', '#컷만다시', '#초보환영', '#직접편집'].map((t) => <span key={t}>{t}</span>)}
+      </section>
+
+      {/* 4. 핵심 장점: 그림과 말풍선이 따로 */}
+      <section className="lp-sec" id="edit">
+        <div className="lp-w">
+          <header className="lp-head" data-r>
+            <em>EDIT FREELY</em>
+            <h3>AI 웹툰의 단점, 바로웹툰이 해결했어요</h3>
+            <p>보통 AI 웹툰은 말풍선까지 그림에 붙어서 나와요. 대사 한 줄만 바꾸려 해도 그림을 통째로 다시 만들어야 하고, 그때마다 AI 비용이 또 들어요.<br />바로웹툰은 그림과 말풍선을 따로 다뤄서, 고치고 싶은 것만 고치면 돼요.</p>
+          </header>
+          <div className="lp-split">
+            <div className="lp-layer" data-r aria-hidden="true">
+              <div className="ly img"><span className="tag">그림 레이어</span><span className="fig" /><span className="re"><I n="spark" s={13} /> 이 컷만 다시 그리기</span></div>
+              <div className="ly txt"><span className="tag">말풍선 레이어</span><span className="bub">오늘도 우산 안 가져왔지<b>?</b><i className="caret" /></span></div>
+            </div>
+            <div className="lp-pts">
+              <article data-r>
+                <i><I n="pen" s={20} /></i>
+                <div><b>대사는 글자처럼 바로 고쳐요</b><p>말풍선을 눌러 바로 고치면 끝이에요. 그림을 다시 만들지 않으니 AI 비용이 들지 않아요.</p></div>
+              </article>
+              <article data-r style={{ ['--d' as string]: 1 }}>
+                <i><I n="grid" s={20} /></i>
+                <div><b>마음에 안 드는 컷만 다시 그려요</b><p>한 화 전체가 아니라 그 컷 하나만 다시 만들어요. 잘 나온 컷과 대사는 그대로 남아요.</p></div>
+              </article>
+              <article data-r style={{ ['--d' as string]: 2 }}>
+                <i><I n="layers" s={20} /></i>
+                <div><b>말풍선 모양과 위치도 자유롭게</b><p>말풍선 크기 · 꼬리 방향 · 위치를 직접 옮기고, 같은 그림에 다른 대사를 얹어 볼 수도 있어요.</p></div>
+              </article>
+            </div>
+          </div>
+          <div className="lp-cmp" data-r>
+            <div><span>일반 AI 웹툰</span><b>대사 1줄 수정</b><em>그림 전체 다시 생성 · AI 비용 또 발생</em></div>
+            <div className="on"><span>바로웹툰</span><b>대사 1줄 수정</b><em>말풍선만 바로 고침 · AI 비용 0원</em></div>
+          </div>
+        </div>
       </section>
 
       {/* 4. 비교 */}
@@ -331,7 +367,7 @@ export default async function Home() {
         <div className="lp-w">
           <div className="top">
             <a href="#top" className="lp-logo"><i><Logo /></i><b>바로웹툰</b></a>
-            <nav><a href="#why">왜 바로웹툰</a><a href="#feat">기능</a><a href="#who">창작자</a><a href="#price">요금</a><a href="#how">만드는 순서</a></nav>
+            <nav><a href="#edit">따로 고치기</a><a href="#why">왜 바로웹툰</a><a href="#feat">기능</a><a href="#who">창작자</a><a href="#price">요금</a><a href="#how">만드는 순서</a></nav>
           </div>
           <div className="info">
             <b>바로웹툰 · AI로 바로 만드는 나만의 웹툰</b>
