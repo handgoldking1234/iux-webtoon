@@ -32,7 +32,11 @@ Format — plain text: 4 numbered scenes. Each scene starts with "N. " + one or 
 Answer JSON only: {"title":"","story":"(the whole story text)"}`],
 ];
 
-const DEFAULT = ['claude-fable-5-2', 'claude-opus-5-5', 'gpt-6.2-astra'];
+const SETS: [string, string[]][] = [
+  ['최상위끼리', ['claude-fable-5-2', 'claude-opus-5-5', 'gpt-6.2-astra']],
+  ['중간값끼리', ['claude-opus-5-5', 'claude-sonnet-5-5', 'gpt-6.2-sol']],
+];
+const DEFAULT = SETS[0][1];
 
 function Lines({ data }: { data: unknown }) {
   const d = data as { panels?: { no: number; lines?: string[] }[]; story?: string; title?: string } | undefined;
@@ -59,6 +63,8 @@ export default function Compare() {
       <div className="hd"><h2>글 AI 비교</h2><span className="note r">같은 요청을 모델마다 1번씩 보내요 · 실제 비용이 들어요</span></div>
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 8 }}>
         {SAMPLES.map(([l, p]) => <button key={l} type="button" className="btn" onClick={() => setPrompt(p)}>{l}</button>)}
+        <span style={{ flex: 1 }} />
+        {SETS.map(([l, m]) => <button key={l} type="button" className="btn" onClick={() => setModels(m)}>{l}</button>)}
       </div>
       <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={8} style={{ width: '100%', font: '12px/1.6 ui-monospace,monospace', padding: 10, border: '1px solid var(--line)', borderRadius: 8 }} />
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center', margin: '10px 0' }}>
