@@ -41,7 +41,7 @@ export const env = {
   resendKey: process.env.RESEND_API_KEY || '',
   mailFrom: process.env.MAIL_FROM || '',
   limits: {
-    freeText: n(process.env.FREE_TEXT_PER_MONTH, 5),
+    freeText: n(process.env.FREE_TEXT_PER_MONTH, 3),
     freeImage: n(process.env.FREE_IMAGE_TOTAL, 10),
     proText: n(process.env.PRO_TEXT_PER_MONTH, 1000),
     proImage: n(process.env.PRO_IMAGE_PER_MONTH, 300),
