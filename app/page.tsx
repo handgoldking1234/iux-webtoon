@@ -405,7 +405,7 @@ export default async function Home() {
           <header className="lp-head" data-r>
             <em>PRICING</em>
             <h3>부담 없이 시작하고, 자유롭게 만들어 보세요</h3>
-            <p>가입만 하면 웹툰 제작 기능을 무료로 바로 써 볼 수 있어요. 더 많이 쓰고 싶은 분을 위한 요금제는 준비 중이에요.</p>
+            <p>가입만 하면 무료로 바로 써 볼 수 있어요. 더 많이 쓰고 싶은 분을 위한 요금제는 준비 중이에요.</p>
           </header>
           <div className="lp-price">
             <article data-r>
@@ -433,8 +433,26 @@ export default async function Home() {
                 <li><I n="check" s={15} />고화질 내보내기</li>
                 <li><I n="check" s={15} />새 기능 먼저 써 보기</li>
               </ul>
-              <a className="lp-btn out sm" href="mailto:handgoldking@gmail.com?subject=%5B%EC%9B%B9%ED%88%B0%EB%B3%B4%EB%93%9C%5D%20%ED%94%84%EB%A1%9C%20%EC%86%8C%EC%8B%9D%20%EB%B0%9B%EA%B8%B0">소식 받기</a>
+              <a className="lp-btn out sm" href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%ED%94%84%EB%A1%9C%20%EC%86%8C%EC%8B%9D%20%EB%B0%9B%EA%B8%B0">소식 받기</a>
             </article>
+            <article className="prem" data-r style={{ ['--d' as string]: 2 }}>
+              <span className="badge">COMING SOON</span>
+              <em>PREMIUM</em>
+              <b>프리미엄</b>
+              <small>여러 작품을 연재하는 작가 · 스튜디오께</small>
+              <div className="amt soon">준비 중</div>
+              <ul>
+                <li><I n="check" s={15} />프로보다 넉넉한 AI 이미지</li>
+                <li><I n="check" s={15} />고해상도 AI 그림 (나노바나나 Pro)</li>
+                <li><I n="check" s={15} />여러 작품 · 회차 연재 관리</li>
+                <li><I n="check" s={15} />먼저 답하는 1:1 문의</li>
+              </ul>
+              <a className="lp-btn out sm" href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84%20%EC%86%8C%EC%8B%9D%20%EB%B0%9B%EA%B8%B0">소식 받기</a>
+            </article>
+          </div>
+          <div className="lp-extra" data-r>
+            <div><i><I n="zap" s={18} /></i><p><b>구독 없이 필요한 만큼</b>AI 이미지를 묶음으로 충전해서 쓰는 충전팩 (준비 중)</p></div>
+            <div><i><I n="users" s={18} /></i><p><b>학교 · 학원 · 팀</b>수업이나 팀 작업용 단체 요금 — <a href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%EB%8B%A8%EC%B2%B4%20%EC%9A%94%EA%B8%88%20%EB%AC%B8%EC%9D%98">문의하기</a></p></div>
           </div>
         </div>
       </section>

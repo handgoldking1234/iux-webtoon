@@ -260,7 +260,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-pillars li span{font-size:var(--fs-sm);color:var(--mute)}
 
 /* 8. 요금 */
-.lp-price{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);max-width:840px;margin:0 auto}
+.lp-price{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);max-width:1080px;margin:0 auto}
 .lp-price article{padding:32px}
 .lp-price b{font-size:24px;font-weight:800;letter-spacing:var(--ls-tight);margin-top:8px}
 .lp-price small{color:var(--mute);font-size:var(--fs-sm);margin-top:4px}
@@ -270,6 +270,22 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-price ul{flex:1;margin:24px 0 32px;padding-top:24px;border-top:1px solid var(--line2)}
 .lp-price .lp-btn{align-self:stretch}
 .lp-price .pro{border:2px solid var(--acc);background:linear-gradient(180deg,var(--accRow),var(--panel) 50%)}
+.lp-extra{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:1080px;margin:var(--gap) auto 0}
+.lp-extra>div{display:flex;align-items:center;gap:14px;padding:18px 22px;border-radius:14px;background:var(--panel);border:1px dashed var(--line)}
+.lp-extra i{flex:none;width:38px;height:38px;border-radius:11px;background:var(--accSoft);color:var(--accText);display:flex;align-items:center;justify-content:center}
+.lp-extra p{font-size:var(--fs-sm);color:var(--mute);line-height:1.6}
+.lp-extra b{display:block;color:var(--ink);font-size:15px;font-weight:800}
+.lp-extra a{color:var(--accText);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.lp-price .prem{background:#141a16;border-color:#141a16;color:#eef1ef}
+.lp-price .prem em{color:#4fdc85}
+.lp-price .prem small{color:#9aa39d}
+.lp-price .prem .amt.soon{color:#6b746e}
+.lp-price .prem ul{border-top-color:#263029}
+.lp-price .prem li{color:#dfe5e1}
+.lp-price .prem li svg{color:#4fdc85}
+.lp-price .prem .badge{background:#2fd06a;color:#08130c}
+.lp-price .prem .lp-btn.out{border-color:#3a443e;color:#eef1ef;background:transparent}
+.lp-price .prem .lp-btn.out:hover{border-color:#2fd06a;color:#4fdc85}
 .lp-price .badge{position:absolute;top:24px;right:24px;font-family:Figtree,sans-serif;font-size:10.5px;font-weight:800;letter-spacing:.08em;padding:4px 10px;border-radius:999px;background:var(--ink);color:var(--panel)}
 
 /* 9. 장르 */
@@ -338,6 +354,9 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
   .lp-steps{grid-template-columns:1fr 1fr}
   .lp-feat{grid-template-columns:1fr 1fr}
   .lp-more{grid-template-columns:1fr 1fr}
+  .lp-price{grid-template-columns:1fr 1fr}
+  .lp-price .prem{grid-column:1/-1}
+  .lp-extra{grid-template-columns:1fr}
   .lp-pillars ul{grid-template-columns:1fr 1fr}
   .lp-stats{grid-template-columns:1fr 1fr}
   .lp-stats div:nth-child(3){border-left:0}
