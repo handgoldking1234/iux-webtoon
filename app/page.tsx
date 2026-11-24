@@ -99,17 +99,17 @@ const CUTS = [
   ['s12', '붉은 번개 속 사진관 앞에 선 사람들'],
 ];
 
-// 휴대폰 예시 한 화: 그림 위에 말풍선 · 나레이션을 따로 얹어요 (x · y는 % 위치)
-type Txt = { k: 'say' | 'nar' | 'sfx'; s: string; x: number; y: number; r?: boolean };
-const EP: { n: number; t?: Txt[] }[] = [
-  { n: 1, t: [{ k: 'nar', s: '재개발 구역에 마지막까지 남은 사진관.', x: 6, y: 6 }] },
-  { n: 2, t: [{ k: 'nar', s: '그 사진관엔 오래된 소문이 있었다.', x: 8, y: 82 }] },
-  { n: 3 },
-  { n: 4, t: [{ k: 'say', s: '…어서 오세요.', x: 54, y: 8 }] },
-  { n: 5, t: [{ k: 'sfx', s: '번쩍', x: 66, y: 30 }, { k: 'nar', s: '그날, 그의 눈이 변했다.', x: 6, y: 88 }] },
-  { n: 6 },
-  { n: 7, t: [{ k: 'say', s: '이 사진… 누가 찍은 거죠?', x: 8, y: 8 }] },
-  { n: 8, t: [{ k: 'say', s: '설마…!', x: 58, y: 70, r: true }] },
+// 휴대폰 예시 한 화: 바로웹툰으로 만든 「현상」 1화의 컷 (말풍선 · 나레이션 · 효과음까지 얹은 완성본)
+const EP: { n: number; h: number; alt: string }[] = [
+  { n: 1, h: 752, alt: '문을 부수고 들어온 조사관이 "한 장 남았군"이라고 말하는 컷' },
+  { n: 2, h: 752, alt: '사진관 주인이 "손님을 받기엔 늦은 시간입니다"라고 답하는 컷' },
+  { n: 3, h: 752, alt: '조사관의 안경에 사진관 주인이 비친 클로즈업과 나레이션' },
+  { n: 4, h: 752, alt: '사진기를 든 주인의 속마음 "마지막 손님은 저입니다"' },
+  { n: 5, h: 752, alt: '사진기의 종을 당기며 "어머니, 부탁드립니다"라고 말하는 컷' },
+  { n: 6, h: 752, alt: '검은 개가 달려들고 조사관이 "그만둬라!"라고 외치는 컷' },
+  { n: 7, h: 752, alt: '섬광 속에 개가 튕겨 나가는 효과음 컷' },
+  { n: 8, h: 752, alt: '쓰러진 조사관과 "그러나 그의 혼은 죽지 않았다" 나레이션' },
+  { n: 9, h: 626, alt: '붉은 눈의 사내가 "아직 끝나지 않았다"며 웃는 마지막 컷' },
 ];
 
 const FEATS = [
@@ -216,10 +216,9 @@ export default async function Home() {
           <div className="phone" data-r style={{ ['--d' as string]: 1 }} aria-label="세로 스크롤 웹툰 예시">
             <div className="scr">
               <div className="roll">
-                {[...EP, ...EP.slice(0, 3)].map((c, i) => (
+                {[...EP, ...EP].map((c, i) => (
                   <div className="ep" key={i} aria-hidden={i >= EP.length}>
-                    <img src={`/lp/ep${c.n}.webp`} alt={i < EP.length ? `예시 웹툰 ${c.n}번째 컷` : ''} loading="lazy" decoding="async" width={420} height={752} />
-                    {c.t?.map((t, j) => <span key={j} className={`${t.k}${t.r ? ' r' : ''}`} style={{ left: `${t.x}%`, top: `${t.y}%` }}>{t.s}</span>)}
+                    <img src={`/lp/ep${c.n}.webp`} alt={i < EP.length ? c.alt : ''} loading="lazy" decoding="async" width={420} height={c.h} />
                   </div>
                 ))}
               </div>
