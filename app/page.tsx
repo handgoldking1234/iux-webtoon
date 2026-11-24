@@ -128,7 +128,8 @@ const IDEAS = [
 
 export default async function Home() {
   const [me, notices] = await Promise.all([getMe(), activeNotices()]);
-  const start = me ? '/studio' : '/login?mode=signup';
+  // 로그인 없이도 바로 편집기로 — 편집기 안에서 '저장하려면 로그인' 안내를 보여 줘요
+  const start = '/studio';
   const startLbl = me ? '작업실 열기' : '무료로 시작하기';
   return (
     <div className="lp">
