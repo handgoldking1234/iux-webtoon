@@ -44,13 +44,13 @@ export function repairJson(t: string): unknown {
 export const claudeModelFor = (prompt: string) => (/^\s*You write image-(generation|editing) prompts/i.test(prompt) ? env.claudeModelPrompt : env.claudeModel);
 
 /** 글 AI — Claude Messages API, 편집기가 보내는 프롬프트는 "JSON만 답해" 형식이에요 */
-export async function claudeJson(prompt: string) {
+export async function claudeJson(prompt: string, model?: string) {
   if (!env.anthropicKey) throw new AiError('not_configured', '글 AI 키가 없어요', 503);
   const r = await fetch(`${process.env.ANTHROPIC_BASE_URL || 'https://api.anthropic.com'}/v1/messages`, {
     method: 'POST',
     headers: { 'x-api-key': env.anthropicKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
     body: JSON.stringify({
-      model: claudeModelFor(prompt),
+      model: model || claudeModelFor(prompt),
       max_tokens: 24000,
       system: 'You are the writing assistant inside 바로웹툰, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.',
       messages: [{ role: 'user', content: prompt }],
@@ -145,13 +145,13 @@ export async function geminiImage(prompt: string, w: number, h: number, refs: { 
 }
 
 /* ───────── OpenAI (관리자 › 설정에서 엔진을 바꾸면) */
-export async function openaiJson(prompt: string) {
+export async function openaiJson(prompt: string, model?: string) {
   if (!env.openaiKey) throw new AiError('not_configured', 'OpenAI 키가 없어요', 503);
   const r = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
     headers: { authorization: `Bearer ${env.openaiKey}`, 'content-type': 'application/json' },
     body: JSON.stringify({
-      model: env.openaiTextModel,
+      model: model || env.openaiTextModel,
       messages: [
         { role: 'system', content: 'You are the writing assistant inside 바로웹툰, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.' },
         { role: 'user', content: prompt },
