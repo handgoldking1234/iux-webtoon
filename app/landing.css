@@ -191,7 +191,17 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-feat p{font-size:var(--fs-sm);line-height:1.75;color:var(--mute)}
 
 /* 6. 가치 */
-.lp-val{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap)}
+.lp-slide{position:relative}
+.lp-val{display:flex;gap:var(--gap);overflow-x:auto;scroll-snap-type:x mandatory;scroll-behavior:smooth;scrollbar-width:none;padding:8px 4px 32px;margin:-8px -4px -32px;overscroll-behavior-x:contain}
+.lp-val::-webkit-scrollbar{display:none}
+.lp-val article{flex:0 0 calc((100% - var(--gap)) / 2);scroll-snap-align:start}
+.lp-sctl{display:flex;align-items:center;justify-content:center;gap:16px;margin-top:28px}
+.lp-sctl button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--panel);color:var(--ink);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:border-color .15s,color .15s,opacity .15s}
+.lp-sctl button:hover{border-color:var(--acc);color:var(--accText)}
+.lp-sctl button:disabled{opacity:.35;cursor:default}
+.lp-sctl .dots{display:flex;gap:8px}
+.lp-sctl .dots i{width:8px;height:8px;border-radius:8px;background:var(--ctl);cursor:pointer;transition:width .25s,background .25s}
+.lp-sctl .dots i.on{width:24px;background:var(--acc)}
 .lp-val article{padding:24px 24px 32px}
 .lp-val .art{height:220px;margin-bottom:24px}
 .lp-val .art .big{width:96px;height:96px;border-radius:28px;z-index:1}
@@ -256,7 +266,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-howtop p{margin-top:16px;color:var(--mute);font-size:var(--fs-body);line-height:1.8}
 .lp-ghost{display:inline-flex;align-items:center;gap:6px;height:42px;padding:0 20px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:var(--fs-sm);font-weight:700;transition:background .15s,border-color .15s}
 .lp-ghost:hover{border-color:var(--acc);color:var(--accText)}
-.lp-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap)}
+.lp-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap)}
 .lp-steps div{background:var(--panel);border:1px solid var(--line);border-radius:var(--rad);padding:24px;display:flex;flex-direction:column;gap:8px;transition:border-color .2s}
 .lp-steps div:hover{border-color:var(--acc)}
 .lp-steps b{font-family:Figtree,sans-serif;color:var(--accText);font-size:20px;font-weight:800}
@@ -294,6 +304,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 
 /* 화면 크기별 */
 @media (max-width:960px){
+  .lp-steps{grid-template-columns:1fr 1fr}
   .lp-feat{grid-template-columns:1fr 1fr}
   .lp-stats{grid-template-columns:1fr 1fr}
   .lp-stats div:nth-child(3){border-left:0}
@@ -304,6 +315,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 @media (max-width:760px){
   .lp-nav nav{display:none}
   .lp-steps,.lp-hl,.lp-who,.lp-val,.lp-price,.lp-ideas{grid-template-columns:1fr}
+  .lp-val article{flex-basis:86%}
   .lp-ideas article:last-child{grid-column:auto}
   .lp-split{grid-template-columns:1fr;gap:40px}
   .lp-showin{grid-template-columns:1fr;gap:40px;justify-items:center}

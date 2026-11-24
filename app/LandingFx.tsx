@@ -39,6 +39,34 @@ export default function LandingFx() {
       items.forEach((el) => io.observe(el));
     }
 
+    // 옆으로 넘기는 카드: 화살표 · 점 · 저절로 넘기기(마우스를 올리거나 만지면 멈춤)
+    const stops: (() => void)[] = [];
+    root.querySelectorAll<HTMLElement>('[data-slide]').forEach((box) => {
+      const track = box.querySelector<HTMLElement>('.lp-val');
+      if (!track) return;
+      const cards = Array.from(track.children) as HTMLElement[];
+      const dots = Array.from(box.querySelectorAll<HTMLElement>('.dots i'));
+      const prev = box.querySelector<HTMLButtonElement>('[data-prev]'), next = box.querySelector<HTMLButtonElement>('[data-next]');
+      const at = () => { const x = track.scrollLeft; let k = 0, best = 1e9; cards.forEach((c, i) => { const d = Math.abs(c.offsetLeft - cards[0].offsetLeft - x); if (d < best) { best = d; k = i; } }); return k; };
+      const maxX = () => track.scrollWidth - track.clientWidth - 2;
+      const go = (i: number) => { const c = cards[Math.max(0, Math.min(cards.length - 1, i))]; track.scrollTo({ left: c.offsetLeft - cards[0].offsetLeft, behavior: calm ? 'auto' : 'smooth' }); setTimeout(sync, 600); };
+      const sync = () => { const k = at(); dots.forEach((d, i) => d.classList.toggle('on', i === k)); if (prev) prev.disabled = track.scrollLeft < 2; if (next) next.disabled = track.scrollLeft >= maxX(); };
+      prev?.addEventListener('click', () => go(at() - 1));
+      next?.addEventListener('click', () => go(at() + 1));
+      dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
+      track.addEventListener('scroll', sync, { passive: true });
+      sync();
+      if (calm) return;
+      let hold = false, seen = false;
+      const pause = () => { hold = true; }, resume = () => { hold = false; };
+      box.addEventListener('mouseenter', pause); box.addEventListener('mouseleave', resume);
+      box.addEventListener('touchstart', pause, { passive: true }); box.addEventListener('focusin', pause);
+      const vo = 'IntersectionObserver' in window ? new IntersectionObserver(([en]) => { seen = en.isIntersecting; }, { threshold: 0.4 }) : null;
+      vo?.observe(box);
+      const timer = setInterval(() => { if (hold || !seen || document.hidden) return; track.scrollLeft >= maxX() ? go(0) : go(at() + 1); }, 4500);
+      stops.push(() => { clearInterval(timer); vo?.disconnect(); });
+    });
+
     // 메뉴 링크: 부드럽게 이동 + 지금 보는 구역 표시
     const nav = document.querySelector('.lp-nav');
     const onClick = (e: Event) => {
@@ -82,7 +110,7 @@ export default function LandingFx() {
     };
     onScroll();
     addEventListener('scroll', onScroll, { passive: true });
-    return () => { root.removeEventListener('click', onClick); removeEventListener('scroll', onScroll); removeEventListener('resize', onResize); };
+    return () => { root.removeEventListener('click', onClick); removeEventListener('scroll', onScroll); removeEventListener('resize', onResize); stops.forEach((f) => f()); };
   }, []);
   return null;
 }
