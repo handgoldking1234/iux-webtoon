@@ -11,7 +11,7 @@ const ERR: Record<string, string> = {
 
 export default function LoginForm({ next, initialMode, error, providers = ['google', 'kakao', 'email'] }: { next: string; initialMode: Mode; error?: string; providers?: string[] }) {
   const has = (p: string) => providers.includes(p), useEmail = has('email'), social = has('google') || has('kakao') || has('naver');
-  const [mode, setMode] = useState<Mode>(providers.includes('email') ? initialMode : 'login');
+  const [mode, setMode] = useState<Mode>(providers.includes('email') && initialMode !== 'signup' ? (initialMode === 'login' ? 'magic' : initialMode) : 'magic');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [name, setName] = useState('');
@@ -48,7 +48,7 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
       if (mode === 'magic') {
         const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: cb(), data: { signup_source: src() } } });
         if (error) throw error;
-        setMsg({ t: 'ok', s: '로그인 링크를 메일로 보냈어요' });
+        setMsg({ t: 'ok', s: `${email}로 로그인 링크를 보냈어요 · 메일함에서 링크를 눌러 주세요 (안 보이면 스팸함도 확인해 주세요)` });
       }
       if (mode === 'reset') {
         const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/callback?next=/account?reset=1` });
@@ -62,7 +62,7 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
     setBusy(false);
   }
 
-  const title = useEmail ? { login: '로그인', signup: '무료로 시작하기', magic: '메일 링크로 로그인', reset: '비밀번호 찾기' }[mode] : '로그인 · 가입';
+  const title = useEmail ? { login: '비밀번호로 로그인', signup: '비밀번호로 가입하기', magic: '이메일로 시작하기', reset: '비밀번호 찾기' }[mode] : '로그인 · 가입';
   const ok = (p: string) => has(p) && !busy;
   return (
     <>
@@ -70,7 +70,7 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
       {!(useEmail && open) && <p className="authsub">{social ? '처음이면 누르는 것만으로 가입돼요' : '이메일로 로그인하거나 가입하세요'}</p>}
       {useEmail && !open && (
         <button className="authwide email" type="button" onClick={() => { setOpen(true); setMsg(null); }}>
-          <MailIc /><span>이메일로 로그인</span>
+          <MailIc /><span>이메일로 시작하기</span>
         </button>
       )}
       {useEmail && open && (<>
@@ -81,13 +81,15 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
           <label className="fld">비밀번호<input type="password" required minLength={mode === 'signup' ? 8 : 1} value={pw} onChange={(e) => setPw(e.target.value)} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} placeholder={mode === 'signup' ? '8자 이상' : ''} /></label>
         )}
         {msg && <div className={`msg ${msg.t}`} role={msg.t === 'bad' ? 'alert' : 'status'}>{msg.s}</div>}
-        <button className="authwide pri" type="submit" disabled={busy}>{busy ? '잠시만요…' : mode === 'signup' ? '가입하기' : mode === 'login' ? '로그인' : '메일 보내기'}</button>
+        <button className="authwide pri" type="submit" disabled={busy}>{busy ? '잠시만요…' : mode === 'signup' ? '가입하기' : mode === 'login' ? '로그인' : mode === 'magic' ? '로그인 링크 받기' : '메일 보내기'}</button>
+        {mode === 'magic' && !msg && <p className="authnote">메일로 받은 링크를 누르면 바로 로그인돼요. 처음이면 그대로 가입돼요.<br />링크는 이 브라우저에서 열어 주세요.</p>}
       </form>
       <div className="authlinks">
-        {mode !== 'signup' ? <button className="lnk" type="button" onClick={() => { setMode('signup'); setMsg(null); }}>이메일로 가입하기</button> : <button className="lnk" type="button" onClick={() => { setMode('login'); setMsg(null); }}>이미 계정이 있어요</button>}
-        {mode === 'login' && <button className="lnk" type="button" onClick={() => { setMode('magic'); setMsg(null); }}>비밀번호 없이 메일 링크로</button>}
+        {mode === 'magic' && <button className="lnk" type="button" onClick={() => { setMode('login'); setMsg(null); }}>비밀번호로 로그인</button>}
+        {mode === 'login' && <button className="lnk" type="button" onClick={() => { setMode('magic'); setMsg(null); }}>이메일 링크로 로그인</button>}
         {mode === 'login' && <button className="lnk" type="button" onClick={() => { setMode('reset'); setMsg(null); }}>비밀번호 찾기</button>}
-        {(mode === 'magic' || mode === 'reset') && <button className="lnk" type="button" onClick={() => { setMode('login'); setMsg(null); }}>비밀번호로 로그인</button>}
+        {mode === 'login' && <button className="lnk" type="button" onClick={() => { setMode('signup'); setMsg(null); }}>비밀번호로 가입하기</button>}
+        {(mode === 'signup' || mode === 'reset') && <button className="lnk" type="button" onClick={() => { setMode('magic'); setMsg(null); }}>이메일 링크로 시작하기</button>}
       </div>
       </>)}
       {social && (
