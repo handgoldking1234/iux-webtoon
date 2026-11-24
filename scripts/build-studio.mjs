@@ -16,7 +16,7 @@ const P = (name, from, to, count = 1) => {
 
 // 0) 부트 데이터 + 브리지를 편집기 스크립트보다 먼저
 P('bridge 주입', '\n<script>\n', '\n<script>window.__WB_BOOT=__WB_BOOT_JSON__;</script>\n<script src="/studio-assets/bridge.js"></script>\n<script>\n');
-P('제목', /<title>[^<]*<\/title>/, '<title>바로웹툰</title>');
+P('제목', /<title>[^<]*<\/title>/, '<title>웹툰 만들기 · 바로웹툰</title><meta name="description" content="AI로 바로 만드는 나만의 웹툰 편집기 · 기획 · 콘티 · 그림 · 말풍선을 한곳에서. 로그인 없이 바로 시작해요."><meta property="og:image" content="https://webtoon.iux.kr/og.jpg"><link rel="canonical" href="https://webtoon.iux.kr/studio">');
 
 // 1) 저장소: 회원마다 브라우저 DB를 따로 + 시작할 때 클라우드와 맞추기
 P('IDB 이름', "indexedDB.open('webtoon-cut-studio',1)", "indexedDB.open('webtoon-cut-studio'+(window.__WB?__WB.dbSuffix:''),1)");
