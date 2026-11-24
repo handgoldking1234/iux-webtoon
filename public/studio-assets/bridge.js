@@ -52,9 +52,18 @@
         if (w && (w.updated || 0) >= cu) return Promise.resolve();
         return api('/api/projects/' + encodeURIComponent(p.id)).then(function (j) {
           if (!j.url) return;
+          var info = {};
           return fetch(j.url).then(function (x) { return x.text(); }).then(function (txt) {
+            // 작품 파일 안의 제목 · 회차 · 컷 수를 목록에 써요 (목록 정보가 빠진 작품도 제목이 제대로 보이게)
+            try {
+              var P = JSON.parse(txt), eps = (P.episodes || []);
+              var t = P.settings && typeof P.settings.workTitle === 'string' ? P.settings.workTitle.trim() : '';
+              if (t) info.title = t;
+              info.eps = eps.filter(function (e) { return e.kind !== 'cover'; }).length;
+              info.cuts = eps.reduce(function (a, e) { return a + (e.cuts || []).length; }, 0);
+            } catch (_) {}
             return idbReq(db, 'kv', 'readwrite', function (s) { return s.put(txt, 'project:' + p.id); });
-          }).then(function () { byId[p.id] = Object.assign({ id: p.id, title: p.title, created: Date.parse(p.created_at) || cu }, p.meta || {}, { updated: cu }); markSynced(p.id, cu); });
+          }).then(function () { byId[p.id] = Object.assign({ id: p.id, title: p.title, created: Date.parse(p.created_at) || cu }, p.meta || {}, info, { updated: cu }); markSynced(p.id, cu); });
         }).catch(function () {});
       });
       return Promise.all(jobs).then(function () {
