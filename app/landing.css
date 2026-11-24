@@ -245,6 +245,19 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-who li svg,.lp-price li svg{color:var(--accText);flex:none}
 .lp-who .pro{border:2px solid var(--acc);background:linear-gradient(180deg,var(--accRow),var(--panel) 55%)}
 .lp-who .pro .tag{background:var(--ink);color:var(--panel)}
+.lp-whoai{display:flex;gap:20px;align-items:flex-start;margin-top:var(--gap);padding:28px;border-radius:var(--rad);border:1px dashed color-mix(in srgb,var(--acc) 55%,var(--line));background:var(--soft2)}
+.lp-whoai>i{flex:none;width:48px;height:48px;border-radius:14px;background:var(--accSoft);color:var(--accText);display:flex;align-items:center;justify-content:center}
+.lp-whoai small{display:block;color:var(--mute);font-size:var(--fs-sm)}
+.lp-whoai b{display:block;margin-top:4px;font-size:20px;font-weight:800;letter-spacing:var(--ls-tight);line-height:1.4}
+.lp-whoai p{margin-top:10px;font-size:var(--fs-desc);line-height:1.8;color:var(--mute)}
+.lp-pillars{margin-top:40px;text-align:center}
+.lp-pillars>p{font-size:var(--fs-body);color:var(--mute);line-height:1.7}
+.lp-pillars>p b{color:var(--ink);font-weight:800}
+.lp-pillars ul{list-style:none;padding:0;margin:20px 0 0;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.lp-pillars li{display:flex;flex-direction:column;align-items:center;gap:4px;padding:20px 12px;border-radius:14px;background:var(--panel);border:1px solid var(--line)}
+.lp-pillars li i{width:40px;height:40px;border-radius:12px;background:var(--accSoft);color:var(--accText);display:flex;align-items:center;justify-content:center;margin-bottom:6px}
+.lp-pillars li b{font-size:16px;font-weight:800}
+.lp-pillars li span{font-size:var(--fs-sm);color:var(--mute)}
 
 /* 8. 요금 */
 .lp-price{display:grid;grid-template-columns:1fr 1fr;gap:var(--gap);max-width:840px;margin:0 auto}
@@ -324,7 +337,8 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 @media (max-width:960px){
   .lp-steps{grid-template-columns:1fr 1fr}
   .lp-feat{grid-template-columns:1fr 1fr}
-  .lp-more{grid-template-columns:1fr}
+  .lp-more{grid-template-columns:1fr 1fr}
+  .lp-pillars ul{grid-template-columns:1fr 1fr}
   .lp-stats{grid-template-columns:1fr 1fr}
   .lp-stats div:nth-child(3){border-left:0}
   .lp-stats div:nth-child(n+3){border-top:1px solid var(--line2)}
@@ -375,6 +389,8 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
   .lp-cmp{grid-template-columns:1fr;margin-top:32px}
   .lp-head p br{display:none}
   .lp-feat{grid-template-columns:1fr}
+  .lp-more{grid-template-columns:1fr}
+  .lp-whoai{flex-direction:column;padding:22px}
   .lp-feat .art{height:112px}
   .lp-val .art,.lp-who .art{height:160px}
   .lp-price article{padding:24px}

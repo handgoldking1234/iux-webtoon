@@ -32,6 +32,9 @@ const P: Record<string, string> = {
   phone: 'M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z|M12 18h.01',
   book: 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z|M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z',
   plus: 'M12 5v14|M5 12h14',
+  imgin: 'M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h7|M16 5h6|M19 2v6|M21 15l-5-5L5 21',
+  layout: 'M3 3h18v18H3z|M3 9h18|M9 21V9',
+  sliders: 'M4 21v-7|M4 10V3|M12 21v-9|M12 8V3|M20 21v-5|M20 12V3|M1 14h6|M9 8h6|M17 16h6',
   download: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4|M7 10l5 5 5-5|M12 15V3',
 };
 function I({ n, s = 20 }: { n: string; s?: number }) {
@@ -69,7 +72,10 @@ const VALS = [
 ];
 
 // 기능 아래 '그리고 이것도' 카드
-const MORE = [
+const MORE: { ic: string; t: string; d: string; href?: string }[] = [
+  { ic: 'imgin', t: '어떤 AI 이미지든 가져오기', d: '나노바나나 · GPT 이미지 · 미드저니 등 다른 도구에서 만든 그림이나 직접 그린 그림을 불러와 컷에 바로 넣어요.' },
+  { ic: 'layout', t: '레이아웃 · 말풍선 · 글꼴', d: '칸을 나눈 레이아웃 컷, 여러 모양의 말풍선과 글꼴로 대사와 효과음까지 작품 분위기에 맞게 꾸며요.' },
+  { ic: 'sliders', t: '보정부터 AI 수정까지', d: '가져온 그림은 밝기 · 색을 보정하고, 바꾸고 싶은 점을 적으면 AI가 그 컷만 고쳐 그려요.' },
   { ic: 'phone', t: '휴대폰에서도 작업', d: '휴대폰 브라우저로 그대로 열려요. 이동 중에 대사를 고치고, 집에서 PC로 이어서 다듬으세요.' },
   { ic: 'download', t: '완성본 바로 내보내기', d: '세로로 긴 그림 한 장이나 컷별 묶음(ZIP)으로 내려받아 원하는 곳에 바로 올려요.' },
   { ic: 'book', t: '연재관에 올리기', d: '완성한 회차를 「연재하기」 한 번으로 연재관에 올려 다른 사람과 함께 볼 수 있어요.', href: '/read' },
@@ -289,6 +295,15 @@ export default async function Home() {
               <div className="row"><i><I n="spark" s={16} /></i>막히는 칸은 AI가 먼저 채워 줘요</div>
             </div>
           </div>
+          <div className="lp-pillars" data-r>
+            <p><b>AI는 자유롭게, 웹툰 제작은 한곳에서.</b> 다른 AI 도구에서 만든 그림도 가져와 웹툰으로 완성해요.</p>
+            <ul>
+              <li><i><I n="spark" s={18} /></i><b>AI 제작</b><span>기획 · 콘티 · 그림</span></li>
+              <li><i><I n="layout" s={18} /></i><b>전문 편집</b><span>컷 · 레이아웃 · 대사</span></li>
+              <li><i><I n="imgin" s={18} /></i><b>자유로운 활용</b><span>다른 도구 그림 가져오기</span></li>
+              <li><i><I n="sliders" s={18} /></i><b>AI 후편집</b><span>보정 · 그림 고치기</span></li>
+            </ul>
+          </div>
           <div className="lp-center" data-r><a className="lp-btn pri sm" href="#how">만드는 순서 자세히 보기</a></div>
         </div>
       </section>
@@ -373,8 +388,13 @@ export default async function Home() {
               <small>나만의 작업 방식이 있다면</small>
               <b>자유롭게 직접</b>
               <p>기획 · 콘티 · 그림 만드는 시간을 줄이고 창작에 집중하세요. AI는 필요한 순간에만 쓰고, 나머지는 원하는 대로 편집해요.</p>
-              <ul><li><I n="check" s={14} />내 그림 올려서 컷에 넣기</li><li><I n="check" s={14} />말풍선 · 컷 배치 직접 편집</li></ul>
+              <ul><li><I n="check" s={14} />캐릭터 시트 · 내 그림 올려서 컷에 넣기</li><li><I n="check" s={14} />말풍선 · 컷 배치 직접 편집</li></ul>
             </article>
+          </div>
+          <div className="lp-whoai" data-r>
+            <i><I n="imgin" s={22} /></i>
+            <div><small>다른 AI 도구를 쓰고 있다면</small><b>그림은 익숙한 도구에서, 편집과 완성은 바로웹툰에서</b>
+              <p>지금 쓰는 작업 방식은 그대로 두세요. 컷마다 나노바나나 · GPT 이미지 · 미드저니용 프롬프트를 만들어 주고, 만든 그림을 가져오면 컷 · 말풍선 · 레이아웃까지 여기서 마무리해요.</p></div>
           </div>
         </div>
       </section>
