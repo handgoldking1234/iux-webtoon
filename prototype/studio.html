@@ -1,6 +1,10 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
 /* 고르기 칸 글자가 아래로 잘리지 않게: 부모의 줄 높이를 물려받지 않아요 */
 select{line-height:1.25}
+
+/* 빈 회차 시작 안내: PC는 화면 위아래 가운데, 휴대폰은 위쪽에 붙여서 */
+@media (min-width:761px){#emptyWrap:not([hidden]){min-height:calc(100vh - 60px);display:flex;flex-direction:column;justify-content:center;padding-top:24px;padding-bottom:120px}}
+@media (max-width:760px){#emptyWrap:not([hidden]){padding-top:12px;padding-bottom:110px}#emptyWrap .empty.start{padding:24px 14px 20px}}
 </style></head><body>
 <title>바로웹툰 v2</title>
 <meta name="claude:viewport-fit-sides" content="cover">
