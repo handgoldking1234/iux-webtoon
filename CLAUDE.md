@@ -37,6 +37,17 @@ docs/style-prompts.md      그림체 예시 이미지용 나노바나나 프롬�
 ```
 - localStorage 키: `wca-theme`, `wcs-*` / 주요 함수: `plan*`(기획 패널), `balloonGeo`·`fitBalloon`(말풍선), `drawSb`(콘티), `paywall`·`aiTestReset`
 
+## 남은 작업 (다음 작업을 시작할 때 사용자에게 먼저 알려 주기)
+1. **[급함] 작품 목록이 서버에 저장 안 됨 → 되살리기 + 고치기** (2026-11-24 발견, 사용자가 "나중에"로 미룸)
+   - 증상: 캐시를 지우면 작품이 사라져 보임.
+   - 원인: Vercel에 `SUPABASE_SERVICE_ROLE_KEY`가 없어서 `webtoon.profiles` 행이 안 생김 → `projects` 저장이 막힘(owner_id가 profiles를 가리킴). 파일(Storage `webtoon` 버킷: `<사용자id>/projects/*.json`, `assets/*`)은 잘 올라가 있음.
+   - 할 일: ① Storage에 남은 작품 파일로 `profiles`·`projects` 행을 다시 채워 되살리기 ② 키 없이도 본인 프로필을 만들 수 있게 DB 규칙 추가(또는 서비스 키 넣기). 둘 다 Supabase 쓰기라 사용자 확인 후 진행.
+2. **그림 저장소를 Cloudflare R2로 옮기기 (출시 전)**
+   - 이유: Supabase 무료 한도(파일 1GB · 전송 월 5GB)가 그림 약 1,200장이면 참. R2는 10GB 무료, 전송 요금 없음.
+   - 사용자 할 일: Cloudflare 가입 · R2 보관함 만들기 · 접근 키를 Vercel에 넣기. 그다음 저장 위치 변경과 기존 그림 옮기기는 Claude가.
+3. **Vercel `SUPABASE_SERVICE_ROLE_KEY` 넣기** (사용자) — 넣으면 다시 배포하고 프로필 · 사용 기록 저장 확인.
+4. **화면 눈으로 확인** — 첫 화면 "따로 고치기" 구역, 컷 목록 제목 · 줄 나눔, 휴대폰 스크롤 고침을 PC · 390px로 확인 (크롬 연결 필요).
+
 ## 확인
 `npm install && npm run dev`(http://localhost:3000), `npm test`. `prototype/studio.html`만 브라우저로 열면 AI는 예시 결과로 채워진다.
 
