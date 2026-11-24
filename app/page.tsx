@@ -137,7 +137,7 @@ export default async function Home() {
         <div className="lp-w">
           <header className="lp-head" data-r>
             <em>WHY WEBTOONBOARD</em>
-            <h3>웹툰 한 화, 아직도 프로그램 여러 개를 오가나요?</h3>
+            <h3>웹툰 제작, 아직도 프로그램 여러 개를 오가나요?</h3>
           </header>
           <div className="lp-vs" data-r>
             <div className="col">
