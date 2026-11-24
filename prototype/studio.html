@@ -92,6 +92,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .cut.active .num{color:var(--accent-ink)}
 .meta{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.3}
 .fname{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fname.ttl{white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.4;word-break:keep-all}
 .orig{color:var(--muted);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .acts{display:flex;gap:0;flex:none}
 .acts .btn{color:var(--muted)}
@@ -3874,6 +3875,7 @@ async function renderCut(c,targetW,cv,useCache){
 
 /* ---------------- 파일 이름 ---------------- */
 function extOf(c){return c.kind==='gif'?'gif':S.settings.fmt;}
+function cutTitle(c){/* 컷 목록 제목: 첫 대사 → 콘티 장면 → 없으면 빈칸(파일 이름 사용) */const t=(c.items||[]).map(it=>String(it.text||'').replace(/\s+/g,' ').trim()).filter(Boolean);if(t.length)return '“'+t[0]+'”'+(t.length>1?` 외 ${t.length-1}개`:'');const sc=c.sb&&String(c.sb.scene||'').replace(/\s+/g,' ').trim();return sc||'';}
 function fname(e,i,c){if(specOf(c)&&specOf(c).grp!=='ms')return specFile(c);
  const s=S.settings,d=Math.max(1,s.digits|0);
  let n=(s.pattern||'{prefix}_ep{ep}_c{n}').replace(/\{prefix\}/g,filePre()).replace(/\{ep\}/g,pad(e.num,2)).replace(/\{n\}/g,pad(i+1,d)).replace(/\{title\}/g,e.title||'');
@@ -3917,7 +3919,7 @@ function renderStrip(){
   keep.add(c.id);
   const{W0,H0}=dims(c);
   el.querySelector('.num').textContent=pad(i+1,2);
-  el.querySelector('.fname').textContent=fname(e,i,c);
+  {const fn=fname(e,i,c),tt=cutTitle(c),fe=el.querySelector('.fname');fe.textContent=tt||fn;fe.classList.toggle('ttl',!!tt);fe.title=tt?tt+'\n파일 이름: '+fn:fn;}
   el.querySelector('.orig').textContent=c.sb?`콘티 S#${c.sb.no} · ${SBL[sbStat(c.sb)]} · ${W0}×${H0}`+(c.items&&c.items.length?` · 글자 ${c.items.length}`:''):(specOf(c)?specOf(c).label+(specOf(c).grp==='ms'?'':' · 규격'):c.kind==='blank'?'빈 컷':'원본 '+(c.name||'-'))+` · ${W0}×${H0}`+(c.items&&c.items.length?` · 글자 ${c.items.length}`:'')+(c.kind==='gif'?' · 움직이는 GIF':'');
   el.querySelector('.chk').checked=selected.has(c.id);el.classList.toggle('isimg',c.kind!=='blank');
   el.classList.toggle('active',activeCut===c.id&&view==='edit');
