@@ -189,14 +189,6 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-feat .art{margin:16px 0 20px;height:128px}
 .lp-feat b{font-size:var(--fs-card);font-weight:800;letter-spacing:var(--ls-head);margin:8px 0}
 .lp-feat p{font-size:var(--fs-sm);line-height:1.75;color:var(--mute)}
-.lp-more{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);margin-top:var(--gap)}
-.lp-more>*{position:relative;display:flex;gap:16px;align-items:flex-start;padding:22px 24px;border-radius:var(--rad);background:var(--soft2);border:1px solid var(--line2);color:inherit;transition:border-color .2s,transform .25s}
-.lp-more>*:hover{border-color:color-mix(in srgb,var(--acc) 35%,var(--line))}
-.lp-more a:hover{transform:translateY(-3px)}
-.lp-more i{flex:none;width:40px;height:40px;border-radius:12px;background:var(--accSoft);color:var(--accText);display:flex;align-items:center;justify-content:center}
-.lp-more b{display:block;font-size:16px;font-weight:800;letter-spacing:var(--ls-head)}
-.lp-more p{margin-top:6px;font-size:var(--fs-sm);line-height:1.7;color:var(--mute)}
-.lp-more .go{position:absolute;right:18px;top:22px;color:var(--accText)}
 .lp-faqw{max-width:800px}
 .lp-faq{display:flex;flex-direction:column;gap:12px}
 .lp-faq details{background:var(--panel);border:1px solid var(--line);border-radius:14px;transition:border-color .2s}
@@ -229,6 +221,9 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-val .v2 .ln:nth-child(1){top:28%;width:34%}.lp-val .v2 .ln:nth-child(2){top:46%;width:24%;left:16%}.lp-val .v2 .ln:nth-child(3){top:64%;width:30%}
 .lp-val b{font-size:22px;font-weight:800;letter-spacing:var(--ls-tight)}
 .lp-val em{margin-top:6px}
+.lp-val .art.ico{aspect-ratio:1376/768;height:auto!important;background:linear-gradient(135deg,var(--accSoft),color-mix(in srgb,var(--accSoft) 40%,var(--panel)))}
+.lp-val .art.ico span{width:88px;height:88px;border-radius:26px;background:var(--panel);color:var(--accText);display:flex;align-items:center;justify-content:center;box-shadow:0 14px 30px -16px rgba(0,0,0,.3)}
+.lp-val .go{display:inline-flex;align-items:center;gap:6px;margin-top:14px;font-size:var(--fs-sm);font-weight:800;color:var(--accText)}
 .lp-val p{margin-top:12px;font-size:var(--fs-desc);line-height:1.8;color:var(--mute)}
 
 /* 7. 초보 · 전문 */
@@ -332,8 +327,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 @media (max-width:960px){
   .lp-steps{grid-template-columns:1fr 1fr}
   .lp-feat{grid-template-columns:1fr 1fr}
-  .lp-more{grid-template-columns:1fr 1fr}
-  .lp-price{grid-template-columns:1fr 1fr}
+    .lp-price{grid-template-columns:1fr 1fr}
   .lp-price .prem{grid-column:1/-1}
       .lp-stats{grid-template-columns:1fr 1fr}
   .lp-stats div:nth-child(3){border-left:0}
@@ -384,8 +378,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
   .lp-cmp{grid-template-columns:1fr;margin-top:32px}
   .lp-head p br{display:none}
   .lp-feat{grid-template-columns:1fr}
-  .lp-more{grid-template-columns:1fr}
-    .lp-feat .art{height:112px}
+      .lp-feat .art{height:112px}
   .lp-val .art,.lp-who .art{height:160px}
   .lp-price article{padding:24px}
     .lp-last{padding:80px 0}

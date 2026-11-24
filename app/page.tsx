@@ -64,21 +64,19 @@ function OvalBubble() {
 }
 
 // 바로웹툰을 쓰는 이유 (옆으로 넘기는 카드)
-const VALS = [
+const VALS: { img?: string; ic?: string; t: string; en: string; alt?: string; p: string; href?: string; go?: string }[] = [
   { img: 'val-mine', t: '나만의 웹툰', en: 'MY OWN WEBTOON', alt: '등불 아래에서 자기 이야기를 읽는 인물', p: 'AI에 전부 맡기지 않아요. AI는 초안을 돕고, 이야기 · 연출 · 대사의 마지막 결정은 내가 해요. 그래서 끝까지 내 웹툰이에요.' },
+  { ic: 'imgin', t: '어떤 AI 이미지든 가져오기', en: 'BRING ANY IMAGE', p: '나노바나나 · GPT 이미지 · 미드저니 등 다른 도구에서 만든 그림이나 직접 그린 그림을 불러와 컷에 바로 넣어요.' },
   { img: 'val-consist', t: '일관성', en: 'CONSISTENCY', alt: '여러 컷에서 같은 얼굴로 이어지는 주인공', p: '캐릭터 시트와 그림체 설정을 모든 컷에 함께 넘겨요. 1화의 주인공이 10화에서도 같은 얼굴로 나와요.' },
+  { ic: 'layout', t: '레이아웃 · 말풍선 · 글꼴', en: 'LAYOUT & LETTERING', p: '칸을 나눈 레이아웃 컷, 여러 모양의 말풍선과 글꼴로 대사와 효과음까지 작품 분위기에 맞게 꾸며요.' },
   { img: 'val-speed', t: '속도', en: 'SPEED', alt: '태블릿 주위로 컷들이 빠르게 떠오르는 작업 모습', p: '버튼 한 번이면 콘티 초안이 나오고, 바로 다음 컷으로 넘어가요. 남는 시간은 이야기 다듬기에 쓰세요.' },
+  { ic: 'sliders', t: '보정부터 AI 수정까지', en: 'ADJUST & RETOUCH', p: '가져온 그림은 밝기 · 색을 보정하고, 바꾸고 싶은 점을 적으면 AI가 그 컷만 고쳐 그려요.' },
+  { ic: 'phone', t: '휴대폰에서도 작업', en: 'ANYWHERE', p: '휴대폰 브라우저로 그대로 열려요. 이동 중에 대사를 고치고, 집에서 PC로 이어서 다듬으세요.' },
+  { ic: 'download', t: '완성본 바로 내보내기', en: 'EXPORT', p: '세로로 긴 그림 한 장이나 컷별 묶음(ZIP)으로 내려받아 원하는 곳에 바로 올려요.' },
+  { ic: 'book', t: '연재관에 올리기', en: 'PUBLISH', p: '완성한 회차를 「연재하기」 한 번으로 연재관에 올려 다른 사람과 함께 볼 수 있어요.', href: '/read', go: '연재관 둘러보기' },
 ];
 
 // 기능 아래 '그리고 이것도' 카드
-const MORE: { ic: string; t: string; d: string; href?: string }[] = [
-  { ic: 'imgin', t: '어떤 AI 이미지든 가져오기', d: '나노바나나 · GPT 이미지 · 미드저니 등 다른 도구에서 만든 그림이나 직접 그린 그림을 불러와 컷에 바로 넣어요.' },
-  { ic: 'layout', t: '레이아웃 · 말풍선 · 글꼴', d: '칸을 나눈 레이아웃 컷, 여러 모양의 말풍선과 글꼴로 대사와 효과음까지 작품 분위기에 맞게 꾸며요.' },
-  { ic: 'sliders', t: '보정부터 AI 수정까지', d: '가져온 그림은 밝기 · 색을 보정하고, 바꾸고 싶은 점을 적으면 AI가 그 컷만 고쳐 그려요.' },
-  { ic: 'phone', t: '휴대폰에서도 작업', d: '휴대폰 브라우저로 그대로 열려요. 이동 중에 대사를 고치고, 집에서 PC로 이어서 다듬으세요.' },
-  { ic: 'download', t: '완성본 바로 내보내기', d: '세로로 긴 그림 한 장이나 컷별 묶음(ZIP)으로 내려받아 원하는 곳에 바로 올려요.' },
-  { ic: 'book', t: '연재관에 올리기', d: '완성한 회차를 「연재하기」 한 번으로 연재관에 올려 다른 사람과 함께 볼 수 있어요.', href: '/read' },
-];
 
 // 자주 묻는 질문
 const FAQ = [
@@ -316,14 +314,6 @@ export default async function Home() {
               </article>
             ))}
           </div>
-          <div className="lp-more">
-            {MORE.map((m, i) => {
-              const body = <><i><I n={m.ic} s={20} /></i><div><b>{m.t}</b><p>{m.d}</p></div>{m.href && <span className="go"><I n="arrow" s={16} /></span>}</>;
-              return m.href
-                ? <a key={m.t} href={m.href} data-r style={{ ['--d' as string]: i }}>{body}</a>
-                : <div key={m.t} data-r style={{ ['--d' as string]: i }}>{body}</div>;
-            })}
-          </div>
         </div>
       </section>
 
@@ -338,16 +328,19 @@ export default async function Home() {
           <div className="lp-slide" data-slide data-r>
             <div className="lp-val">
               {VALS.map((v, i) => (
-                <article key={v.img} aria-roledescription="slide" aria-label={`${i + 1} / ${VALS.length}`}>
-                  <div className="art pic"><img src={`/lp/${v.img}.webp`} alt={v.alt} loading="lazy" decoding="async" width={760} height={424} /></div>
+                <article key={v.t} aria-roledescription="slide" aria-label={`${i + 1} / ${VALS.length}`}>
+                  {v.img
+                    ? <div className="art pic"><img src={`/lp/${v.img}.webp`} alt={v.alt} loading="lazy" decoding="async" width={760} height={424} /></div>
+                    : <div className="art ico"><span><I n={v.ic!} s={40} /></span></div>}
                   <b>{v.t}</b><em>{v.en}</em>
                   <p>{v.p}</p>
+                  {v.href && <a className="go" href={v.href}>{v.go} <I n="arrow" s={14} /></a>}
                 </article>
               ))}
             </div>
             <div className="lp-sctl">
               <button type="button" data-prev aria-label="이전"><I n="left" s={18} /></button>
-              <span className="dots">{VALS.map((v, i) => <i key={v.img} data-i={i} />)}</span>
+              <span className="dots">{VALS.map((v, i) => <i key={v.t} data-i={i} />)}</span>
               <button type="button" data-next aria-label="다음"><I n="arrow2" s={18} /></button>
             </div>
           </div>
