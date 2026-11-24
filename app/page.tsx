@@ -57,8 +57,8 @@ function I({ n, s = 20 }: { n: string; s?: number }) {
 
 // 컷 미리보기 띠 (그림 대신 색면 + 말풍선)
 // 첫 화면 그림 위에 차례로 떠오르는 말풍선 (x · y는 % 위치, m = 휴대폰에서도 보임, tr = 꼬리가 오른쪽)
-const HERO_TALK: { k: 'say' | 'nar' | 'oval'; s: string; x: number; y: number; mx?: number; tr?: boolean; m?: boolean }[] = [
-  { k: 'oval', s: '어떻게 시작하지…', x: 68, y: -12, mx: 50, m: true },
+const HERO_TALK: { k: 'say' | 'nar' | 'oval'; s: string; x: number; y: number; mx?: number; my?: number; tr?: boolean; m?: boolean }[] = [
+  { k: 'oval', s: '어떻게 시작하지…', x: 68, y: -12, mx: 61, my: -24, m: true },
   { k: 'say', s: '그림과 말풍선은 따로예요!', x: 35, y: 8, mx: 13, m: true },
   { k: 'say', s: '대사만 고치면 AI 비용 0원', x: 3, y: 9, tr: true },
   { k: 'say', s: '마음에 안 드는 컷만 다시 그려요', x: 58, y: 62, mx: 52, m: true },
@@ -196,7 +196,7 @@ export default async function Home() {
         <div className="lp-heroimg" data-r style={{ ['--d' as string]: 4 }}>
           <img src="/lp/hero.webp" alt="상상한 인물들이 화면 밖으로 뛰어나오는 웹툰 작가의 책상" width={1376} height={768} fetchPriority="high" decoding="async" />
           {HERO_TALK.map((b, i) => (
-            <span key={i} className={`hb t${i} ${b.k}${b.tr ? ' tr' : ''}${b.m ? '' : ' pc'}`} style={{ ['--x' as string]: `${b.x}%`, ['--y' as string]: `${b.y}%`, ['--mx' as string]: `${b.mx ?? b.x}%`, ['--i' as string]: i }} aria-hidden="true">{b.k === 'oval' ? <><OvalBubble /><b className="q"><span>{b.s}</span></b><b className="a"><span>그래! <em>바로웹툰</em>!</span></b></> : b.s}</span>
+            <span key={i} className={`hb t${i} ${b.k}${b.tr ? ' tr' : ''}${b.m ? '' : ' pc'}`} style={{ ['--x' as string]: `${b.x}%`, ['--y' as string]: `${b.y}%`, ['--mx' as string]: `${b.mx ?? b.x}%`, ['--my' as string]: `${b.my ?? b.y}%`, ['--i' as string]: i }} aria-hidden="true">{b.k === 'oval' ? <><OvalBubble /><b className="q"><span>{b.s}</span></b><b className="a"><span>그래! <em>바로웹툰</em>!</span></b></> : b.s}</span>
           ))}
         </div>
         <dl className="lp-stats" data-r style={{ ['--d' as string]: 5 }}>

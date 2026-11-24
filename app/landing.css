@@ -361,7 +361,8 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
   .lp-tags{gap:4px 16px;padding-top:56px;padding-bottom:80px}
   .cut{width:260px}
   .lp-heroimg{margin-top:40px;border-radius:16px}
-  .lp-heroimg .hb{left:var(--mx)}
+  .lp-heroimg .hb{left:var(--mx);top:var(--my)}
+  .lp-heroimg .oval{font-size:11px}
   .lp-heroimg .hb.pc{display:none}
   .lp-heroimg .say{border-width:1.5px}
   .lp-show{padding:72px 0}
