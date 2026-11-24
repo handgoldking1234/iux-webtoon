@@ -403,7 +403,7 @@ export default async function Home() {
       </section>
 
       {/* 10. 만드는 순서 (어두운 구역) */}
-      <section className="lp-sec dark" id="how">
+      <section className="lp-sec gray" id="how">
         <div className="lp-w">
           <div className="lp-howtop" data-r>
             <div>
