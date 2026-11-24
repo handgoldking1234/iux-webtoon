@@ -62,19 +62,26 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
   }
 
   const title = useEmail ? { login: '로그인', signup: '무료로 시작하기', magic: '메일 링크로 로그인', reset: '비밀번호 찾기' }[mode] : '로그인 · 가입';
+  const ok = (p: string) => has(p) && !busy;
   return (
     <>
-      <h1>{title}</h1>
+      <h1 className="authtitle">{useEmail ? title : '로그인'}</h1>
       {social && (mode === 'login' || mode === 'signup') && (
         <>
-          <div className="oauth">
-            {has('kakao') && <button className="btn kakao" type="button" disabled={busy} onClick={() => oauth('kakao')}>카카오로 계속하기</button>}
-            {has('naver') && <button className="btn naver" type="button" disabled={busy} onClick={() => oauth('custom:naver')}>네이버로 계속하기</button>}
-            {has('google') && <button className="btn" type="button" disabled={busy} onClick={() => oauth('google')}>Google로 계속하기</button>}
+          <p className="authsub">처음이면 누르는 것만으로 가입돼요</p>
+          {has('kakao') && (
+            <button className="authwide kakao" type="button" disabled={!ok('kakao')} onClick={() => oauth('kakao')}>
+              <KakaoIc /><span>카카오로 시작하기</span>
+            </button>
+          )}
+          {(has('naver') || has('google')) && <div className="author">또는</div>}
+          <div className="authround">
+            {has('naver') && <button className="naver" type="button" disabled={!ok('naver')} onClick={() => oauth('custom:naver')} aria-label="네이버로 시작하기"><NaverIc /><small>네이버</small></button>}
+            {has('google') && <button className="google" type="button" disabled={!ok('google')} onClick={() => oauth('google')} aria-label="Google로 시작하기"><GoogleIc /><small>Google</small></button>}
           </div>
-          {useEmail && <div className="or">또는 이메일</div>}
+          {busy && <p className="authsub" role="status">로그인 화면으로 이동하는 중…</p>}
           {!useEmail && msg && <div className={`msg ${msg.t}`} role="alert">{msg.s}</div>}
-          {!useEmail && <p className="note" style={{ margin: 0 }}>처음이면 누르는 것만으로 가입돼요.</p>}
+          {useEmail && <div className="author">또는 이메일</div>}
         </>
       )}
       {useEmail && (<>
@@ -94,8 +101,22 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
         {(mode === 'magic' || mode === 'reset') && <button className="lnk" onClick={() => { setMode('login'); setMsg(null); }}>비밀번호로 로그인</button>}
       </div>
       </>)}
-      <p className="note">가입하면 AI 이미지 20장 · 글 AI 매달 30회를 무료로 쓸 수 있어요.</p>
+      <div className="authbox">
+        <div><span>처음이신가요?</span><b>AI 이미지 20장 무료</b></div>
+        <div><span>로그인 없이 먼저 써 볼래요?</span><a href="/studio">편집기 둘러보기</a></div>
+      </div>
+      <p className="authhelp">로그인에 어려움이 있나요? <a href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%EB%A1%9C%EA%B7%B8%EC%9D%B8%20%EB%AC%B8%EC%9D%98">문의하기</a></p>
       <p className="authlegal">계속하면 <a href="/terms" target="_blank">이용약관</a>과 <a href="/privacy" target="_blank">개인정보처리방침</a>에 동의하는 것으로 봐요.</p>
     </>
   );
+}
+
+function KakaoIc() {
+  return <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#191919" d="M12 3.5C6.8 3.5 2.6 6.8 2.6 10.9c0 2.6 1.7 4.9 4.3 6.2l-1 3.7c-.1.3.3.6.6.4l4.3-2.9c.4 0 .8.1 1.2.1 5.2 0 9.4-3.3 9.4-7.4S17.2 3.5 12 3.5z" /></svg>;
+}
+function NaverIc() {
+  return <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path fill="#03C75A" d="M15.6 12.8 8.1 2H2v20h6.4V11.2L15.9 22H22V2h-6.4z" /></svg>;
+}
+function GoogleIc() {
+  return <svg width="24" height="24" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" /><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" /><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z" /><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" /></svg>;
 }

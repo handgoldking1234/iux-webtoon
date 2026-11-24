@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import '../legal.css';
 import { redirect } from 'next/navigation';
 import { dbReady, env } from '@/lib/env';
 import { getMe } from '@/lib/auth';
@@ -13,9 +14,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const next = sp.next && sp.next.startsWith('/') ? sp.next : '/studio';
   if ((dbReady() || testReady()) && (await getMe())) redirect(next);
   return (
-    <div className="center">
+    <div className="authpage">
+      <Link href="/" className="authbrand" aria-label="바로웹툰 첫 화면"><i><Logo size={20} /></i><b>바로웹툰</b></Link>
       <div className="authcard">
-        <span className="logo"><Logo size={22} /></span>
         {dbReady() ? (
           <LoginForm next={next} initialMode={sp.mode === 'signup' ? 'signup' : 'login'} error={sp.error} providers={env.authProviders} />
         ) : testReady() ? (
@@ -40,6 +41,11 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
           </>
         )}
       </div>
+      <footer className="authfoot">
+        <nav><Link href="/">서비스 소개</Link><Link href="/terms">이용약관</Link><Link href="/privacy"><b>개인정보처리방침</b></Link></nav>
+        <p>문의 handgoldking@gmail.com</p>
+        <p>© 2026 바로웹툰 · webtoon.iux.kr</p>
+      </footer>
     </div>
   );
 }

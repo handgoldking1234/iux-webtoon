@@ -17,3 +17,39 @@
 .sitefoot{display:flex;gap:14px;justify-content:center;padding:28px 16px 36px;font-size:12.5px;color:var(--mute)}
 .sitefoot a{color:inherit;text-decoration:none}.sitefoot a:hover{text-decoration:underline}
 .authlegal{margin:0;font-size:11.5px;color:var(--mute);text-align:center}.authlegal a{color:inherit}
+
+/* 로그인 화면 */
+.authpage{min-height:100vh;display:flex;flex-direction:column;align-items:center;background:var(--panel);padding:28px 20px 24px}
+.authbrand{display:inline-flex;align-items:center;gap:8px;color:var(--ink);text-decoration:none}
+.authbrand i{width:32px;height:32px;border-radius:9px;background:var(--acc);color:#fff;display:inline-flex;align-items:center;justify-content:center}
+.authbrand b{font-size:19px;font-weight:800;letter-spacing:-.03em}
+.authpage .authcard{border:0;box-shadow:none;background:transparent;padding:0;margin:56px 0 0;width:min(440px,100%);gap:16px}
+.authtitle{font-size:30px!important;font-weight:800;letter-spacing:-.04em;text-align:center;margin:0 0 2px!important}
+.authsub{margin:0;text-align:center;font-size:14px;color:var(--mute)}
+.authwide{display:flex;align-items:center;justify-content:center;gap:10px;position:relative;width:100%;height:56px;margin-top:12px;border:0;border-radius:12px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:filter .15s,transform .15s}
+.authwide svg{position:absolute;left:22px}
+.authwide.kakao{background:#FEE500;color:#191919}
+.authwide:hover{filter:brightness(.97)}.authwide:active{transform:scale(.99)}
+.authwide:disabled,.authround button:disabled{opacity:.6;cursor:default}
+.author{display:flex;align-items:center;gap:14px;color:var(--faint);font-size:13px;margin:6px 0}
+.author::before,.author::after{content:'';flex:1;height:1px;background:var(--line)}
+.authround{display:flex;justify-content:center;gap:28px}
+.authround button{display:flex;flex-direction:column;align-items:center;gap:8px;border:0;background:none;padding:0;font:inherit;cursor:pointer;color:var(--mute)}
+.authround button::before{content:'';display:none}
+.authround button svg{width:24px;height:24px;box-sizing:content-box;padding:17px;border-radius:50%;border:1px solid var(--line);background:#fff;transition:border-color .15s,transform .15s}
+.authround button:hover svg{border-color:var(--ctl);transform:translateY(-2px)}
+.authround small{font-size:12px;font-weight:600}
+.authbox{display:grid;grid-template-columns:1fr 1fr;margin-top:12px;border-radius:12px;background:var(--soft2);padding:16px 0}
+.authbox div{display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;padding:0 10px;font-size:13px;color:var(--mute)}
+.authbox div+div{border-left:1px solid var(--line)}
+.authbox b{color:var(--ink);font-size:13.5px;font-weight:700}
+.authbox a{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.authhelp{margin:16px 0 0;text-align:center;font-size:14px;color:var(--ink2)}
+.authhelp a{color:var(--ink);font-weight:700;text-decoration:underline;text-underline-offset:3px}
+.authpage .authlegal{margin-top:4px}
+.authfoot{margin-top:auto;padding-top:56px;text-align:center;font-size:12.5px;color:var(--faint);line-height:1.8}
+.authfoot nav{display:flex;justify-content:center;flex-wrap:wrap;gap:0;margin-bottom:10px}
+.authfoot nav a{color:var(--mute);text-decoration:none;padding:0 12px}.authfoot nav a+a{border-left:1px solid var(--line)}
+.authfoot nav b{color:var(--ink2)}
+.authfoot p{margin:0}
+@media (max-width:420px){.authpage .authcard{margin-top:40px}.authtitle{font-size:26px!important}.authbox div{font-size:12.5px}}
