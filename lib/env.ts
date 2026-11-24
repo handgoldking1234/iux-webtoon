@@ -48,7 +48,7 @@ export const env = {
   },
   budgetKrw: n(process.env.AI_MONTHLY_BUDGET_KRW, 500000),
   cost: {
-    text: n(process.env.COST_TEXT_KRW, 160), // 글 AI 1회 어림값: Opus 5.5 · 입력 5천 + 출력 5천 토큰 ≈ $0.12 (실제 기록은 토큰으로 계산)
+    text: n(process.env.COST_TEXT_KRW, 80), // 글 AI 1회 어림값: Opus 5.5 · 입력 3~4천 + 출력 2~3천 토큰 ≈ $0.06 (실제 기록은 토큰으로 계산)
     image: n(process.env.COST_IMAGE_KRW, 135), // 나노바나나 2 · 2K 한 장 ($0.101)
     imagePro: n(process.env.COST_IMAGE_PRO_KRW, 180), // 나노바나나 Pro · 1K~2K 한 장 ($0.134)
   },
