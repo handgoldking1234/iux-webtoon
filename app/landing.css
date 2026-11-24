@@ -71,15 +71,15 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-hero h2{font-size:clamp(22px,3vw,32px);font-weight:800;line-height:1.4;letter-spacing:var(--ls-tight);margin:36px 0 0}
 .lp-hero>p{font-size:clamp(14.5px,1.4vw,16px);line-height:2;color:var(--mute);margin:24px auto 0;max-width:620px}
 .lp-cta{display:flex;flex-wrap:wrap;justify-content:center;gap:16px;margin-top:48px}
-.lp-heroimg{margin:64px auto 0;border-radius:24px;overflow:hidden;box-shadow:0 40px 80px -40px rgba(0,0,0,.45),0 0 0 1px var(--line2)}
-.lp-heroimg img{width:100%;height:auto;display:block}
+.lp-heroimg{margin:64px auto 0;border-radius:24px;box-shadow:0 40px 80px -40px rgba(0,0,0,.45),0 0 0 1px var(--line2)}
+.lp-heroimg img{width:100%;height:auto;display:block;border-radius:inherit}
 .lp-heroimg{position:relative}
 .lp-heroimg .hb{position:absolute;left:var(--x);top:var(--y);font-size:clamp(10px,1.3vw,16px);line-height:1.35;letter-spacing:-.02em;white-space:nowrap;opacity:0;transform-origin:20% 100%;animation:16s cubic-bezier(.2,.9,.3,1.3) infinite}
 .lp-heroimg .say{background:#fff;color:#111;border:2px solid #111;border-radius:999px;padding:.55em 1.05em;font-weight:800;box-shadow:0 6px 18px rgba(0,0,0,.35)}
 .lp-heroimg .say::after{content:'';position:absolute;left:1.6em;bottom:-.48em;width:.8em;height:.8em;background:#fff;border-right:2px solid #111;border-bottom:2px solid #111;transform:rotate(45deg)}
 .lp-heroimg .say.tr{transform-origin:80% 100%}
 .lp-heroimg .say.tr::after{left:auto;right:1.6em}
-.lp-heroimg .oval{width:12.5em;height:6.8em;transform-origin:10% 95%;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}
+.lp-heroimg .oval{font-size:clamp(15px,2.2vw,28px);width:12.5em;height:6.8em;z-index:2;transform-origin:10% 95%;filter:drop-shadow(0 6px 14px rgba(0,0,0,.35))}
 .lp-heroimg .oval svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .lp-heroimg .oval b{position:absolute;left:12%;right:2%;top:0;height:86%;display:flex;align-items:center;justify-content:center;color:#111;font-weight:800;font-size:1.12em}
 .lp-heroimg .t0{animation-name:lp-t0}@keyframes lp-t0{0%,2.5%{opacity:0;transform:scale(.55) translateY(8px)}6.25%{opacity:1;transform:scale(1.04)}8.75%{transform:scale(1)}55.62%{transform:scale(1)}57.5%{transform:scale(1.08)}60.0%{transform:scale(1)}90.0%{opacity:1;transform:scale(1)}93.75%,100%{opacity:0;transform:scale(.96) translateY(-4px)}}
