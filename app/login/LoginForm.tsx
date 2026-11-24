@@ -16,6 +16,7 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
   const [pw, setPw] = useState('');
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
+  const [open, setOpen] = useState(initialMode === 'signup' && !social);
   const [msg, setMsg] = useState<{ t: 'ok' | 'bad'; s: string } | null>(error ? { t: 'bad', s: '로그인하지 못했어요 · 다시 시도해 주세요' } : null);
   const sb = supabaseBrowser();
   const cb = () => `${location.origin}/auth/callback?next=${encodeURIComponent(next)}`;
@@ -65,42 +66,42 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
   const ok = (p: string) => has(p) && !busy;
   return (
     <>
-      <h1 className="authtitle">{useEmail ? title : '로그인'}</h1>
-      {social && (mode === 'login' || mode === 'signup') && (
-        <>
-          <p className="authsub">처음이면 누르는 것만으로 가입돼요</p>
-          {has('kakao') && (
-            <button className="authwide kakao" type="button" disabled={!ok('kakao')} onClick={() => oauth('kakao')}>
-              <KakaoIc /><span>카카오로 시작하기</span>
-            </button>
-          )}
-          {(has('naver') || has('google')) && <div className="author">또는</div>}
-          <div className="authround">
-            {has('naver') && <button className="naver" type="button" disabled={!ok('naver')} onClick={() => oauth('custom:naver')} aria-label="네이버로 시작하기"><NaverIc /><small>네이버</small></button>}
-            {has('google') && <button className="google" type="button" disabled={!ok('google')} onClick={() => oauth('google')} aria-label="Google로 시작하기"><GoogleIc /><small>Google</small></button>}
-          </div>
-          {busy && <p className="authsub" role="status">로그인 화면으로 이동하는 중…</p>}
-          {!useEmail && msg && <div className={`msg ${msg.t}`} role="alert">{msg.s}</div>}
-          {useEmail && <div className="author">또는 이메일</div>}
-        </>
+      <h1 className="authtitle">{useEmail && open ? title : '로그인'}</h1>
+      {!(useEmail && open) && <p className="authsub">{social ? '처음이면 누르는 것만으로 가입돼요' : '이메일로 로그인하거나 가입하세요'}</p>}
+      {useEmail && !open && (
+        <button className="authwide email" type="button" onClick={() => { setOpen(true); setMsg(null); }}>
+          <MailIc /><span>이메일로 로그인</span>
+        </button>
       )}
-      {useEmail && (<>
-      <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+      {useEmail && open && (<>
+      <form onSubmit={submit} className="authform">
         {mode === 'signup' && <label className="fld">이름(필명)<input value={name} onChange={(e) => setName(e.target.value)} placeholder="작가 이름" autoComplete="nickname" /></label>}
-        <label className="fld">이메일<input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" /></label>
+        <label className="fld">이메일<input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" autoFocus /></label>
         {(mode === 'login' || mode === 'signup') && (
           <label className="fld">비밀번호<input type="password" required minLength={mode === 'signup' ? 8 : 1} value={pw} onChange={(e) => setPw(e.target.value)} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} placeholder={mode === 'signup' ? '8자 이상' : ''} /></label>
         )}
         {msg && <div className={`msg ${msg.t}`} role={msg.t === 'bad' ? 'alert' : 'status'}>{msg.s}</div>}
-        <button className="btn pri lg" type="submit" disabled={busy}>{busy ? '잠시만요…' : mode === 'signup' ? '가입하기' : mode === 'login' ? '로그인' : '메일 보내기'}</button>
+        <button className="authwide pri" type="submit" disabled={busy}>{busy ? '잠시만요…' : mode === 'signup' ? '가입하기' : mode === 'login' ? '로그인' : '메일 보내기'}</button>
       </form>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12, justifyContent: 'space-between' }}>
-        {mode !== 'signup' ? <button className="lnk" onClick={() => { setMode('signup'); setMsg(null); }}>처음이에요 · 가입하기</button> : <button className="lnk" onClick={() => { setMode('login'); setMsg(null); }}>이미 계정이 있어요</button>}
-        {mode === 'login' && <button className="lnk" onClick={() => { setMode('magic'); setMsg(null); }}>비밀번호 없이 메일 링크로</button>}
-        {mode === 'login' && <button className="lnk" onClick={() => { setMode('reset'); setMsg(null); }}>비밀번호 찾기</button>}
-        {(mode === 'magic' || mode === 'reset') && <button className="lnk" onClick={() => { setMode('login'); setMsg(null); }}>비밀번호로 로그인</button>}
+      <div className="authlinks">
+        {mode !== 'signup' ? <button className="lnk" type="button" onClick={() => { setMode('signup'); setMsg(null); }}>이메일로 가입하기</button> : <button className="lnk" type="button" onClick={() => { setMode('login'); setMsg(null); }}>이미 계정이 있어요</button>}
+        {mode === 'login' && <button className="lnk" type="button" onClick={() => { setMode('magic'); setMsg(null); }}>비밀번호 없이 메일 링크로</button>}
+        {mode === 'login' && <button className="lnk" type="button" onClick={() => { setMode('reset'); setMsg(null); }}>비밀번호 찾기</button>}
+        {(mode === 'magic' || mode === 'reset') && <button className="lnk" type="button" onClick={() => { setMode('login'); setMsg(null); }}>비밀번호로 로그인</button>}
       </div>
       </>)}
+      {social && (
+        <>
+          {useEmail && <div className="author">{open ? '또는 간편 로그인' : '또는'}</div>}
+          <div className="authround">
+            {has('kakao') && <button className="kakao" type="button" disabled={!ok('kakao')} onClick={() => oauth('kakao')} aria-label="카카오로 시작하기"><KakaoIc /><small>카카오</small></button>}
+            {has('naver') && <button className="naver" type="button" disabled={!ok('naver')} onClick={() => oauth('custom:naver')} aria-label="네이버로 시작하기"><NaverIc /><small>네이버</small></button>}
+            {has('google') && <button className="google" type="button" disabled={!ok('google')} onClick={() => oauth('google')} aria-label="Google로 시작하기"><GoogleIc /><small>Google</small></button>}
+          </div>
+          {busy && !open && <p className="authsub" role="status">로그인 화면으로 이동하는 중…</p>}
+          {!open && msg && <div className={`msg ${msg.t}`} role="alert">{msg.s}</div>}
+        </>
+      )}
       <div className="authbox">
         <div><span>처음이신가요?</span><b>AI 이미지 20장 무료</b></div>
         <div><span>로그인 없이 먼저 써 볼래요?</span><a href="/studio">편집기 둘러보기</a></div>
@@ -119,4 +120,7 @@ function NaverIc() {
 }
 function GoogleIc() {
   return <svg width="24" height="24" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" /><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" /><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z" /><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" /></svg>;
+}
+function MailIc() {
+  return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>;
 }

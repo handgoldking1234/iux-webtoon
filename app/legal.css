@@ -29,6 +29,14 @@
 .authwide{display:flex;align-items:center;justify-content:center;gap:10px;position:relative;width:100%;height:56px;margin-top:12px;border:0;border-radius:12px;font:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:filter .15s,transform .15s}
 .authwide svg{position:absolute;left:22px}
 .authwide.kakao{background:#FEE500;color:#191919}
+.authwide.email{background:var(--panel);color:var(--ink);border:1px solid var(--ctl);font-weight:600}
+.authwide.email:hover{border-color:var(--ink2);filter:none}
+.authwide.pri{background:var(--acc);color:#fff;margin-top:6px}
+.authform{display:flex;flex-direction:column;gap:12px;margin-top:4px}
+.authform input{height:48px!important;border-radius:10px;font-size:15px}
+.authlinks{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center}
+.authlinks .lnk{font-size:13px}
+.authround button.kakao svg{background:#FEE500;border-color:#FEE500}
 .authwide:hover{filter:brightness(.97)}.authwide:active{transform:scale(.99)}
 .authwide:disabled,.authround button:disabled{opacity:.6;cursor:default}
 .author{display:flex;align-items:center;gap:14px;color:var(--faint);font-size:13px;margin:6px 0}
