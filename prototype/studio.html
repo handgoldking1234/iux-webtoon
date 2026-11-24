@@ -766,6 +766,15 @@ body:has(.modal:not([hidden]),#ed:not([hidden])) .coach{display:none}
 .ezrec:hover{border-color:var(--accent)}.ezrec b{font-size:14px}.ezrec small{font-size:11.5px;color:var(--accent);font-weight:600}.ezrec span{font-size:12.5px;line-height:1.5;color:var(--muted);white-space:pre-line}
 .ezlab{margin:16px 0 8px;font-size:12.5px;font-weight:700}
 .ezstyles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.ezlab small{font-weight:500;color:var(--muted);margin-left:6px}
+.ezsizes{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.ezsize{display:flex;flex-direction:column;gap:2px;padding:10px 10px 9px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;color:var(--ink);cursor:pointer;text-align:left;min-width:0}
+.ezsize b{font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ezsize span{font-size:15px;font-weight:800;color:var(--accent-ink);display:flex;align-items:center;gap:2px}
+.ezsize small{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ezsize[aria-pressed=true],.ezsize.on{border:2px solid var(--accent);padding:9px 9px 8px;background:var(--accent-soft)}
+.ezsize input{width:46px;padding:2px 4px;border:1px solid var(--line);border-radius:6px;font:inherit;font-size:14px;font-weight:800;color:var(--ink);background:var(--panel)}
+.ezuse{margin:8px 0 0;font-size:12.5px;color:var(--muted)}.ezuse b{color:var(--ink)}.ezwarn{color:var(--danger);font-weight:600}
 .ezsty{display:flex;flex-direction:column;gap:4px;padding:4px 4px 6px;border:1px solid var(--line);border-radius:10px;background:var(--panel);font:inherit;font-size:11.5px;font-weight:600;color:var(--ink);cursor:pointer;text-align:left}
 .ezsty img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:7px;display:block}.ezsty span{padding:0 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ezsty[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
@@ -781,7 +790,7 @@ body:has(.modal:not([hidden]),#ed:not([hidden])) .coach{display:none}
 .ezcta{display:flex;align-items:center;gap:12px;width:100%;max-width:640px;margin:0 auto 12px;padding:16px;border:1px solid var(--accent);border-radius:12px;background:color-mix(in srgb,var(--accent) 8%,var(--panel));font:inherit;color:var(--ink);text-align:left;cursor:pointer}
 .ezcta:hover{background:color-mix(in srgb,var(--accent) 14%,var(--panel))}.ezcta:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .ezcta .sti{flex:none;color:var(--accent)}.ezcta b{display:block;font-size:15px}.ezcta small{display:block;margin-top:2px;font-size:12.5px;color:var(--muted)}
-@media (max-width:560px){.ezrecs{grid-template-columns:1fr}.ezstyles{grid-template-columns:repeat(3,minmax(0,1fr))}.ezsheet{height:calc(100dvh - 32px)}.ezfoot .btn{flex:1 1 auto}.ezsp{display:none}.ezar{display:none}.ezsteps{flex-wrap:nowrap;gap:2px;padding:0 12px 10px}.ezst{padding:0 8px 0 4px;font-size:12px;white-space:nowrap}.ezhd{padding:12px 14px 8px}.ezbody{padding:14px}.ezfoot{padding:10px 14px}}
+@media (max-width:560px){.ezrecs{grid-template-columns:1fr}.ezstyles{grid-template-columns:repeat(3,minmax(0,1fr))}.ezsizes{grid-template-columns:repeat(2,minmax(0,1fr))}.ezown{grid-column:1/-1}.ezsheet{height:calc(100dvh - 32px)}.ezfoot .btn{flex:1 1 auto}.ezsp{display:none}.ezar{display:none}.ezsteps{flex-wrap:nowrap;gap:2px;padding:0 12px 10px}.ezst{padding:0 8px 0 4px;font-size:12px;white-space:nowrap}.ezhd{padding:12px 14px 8px}.ezbody{padding:14px}.ezfoot{padding:10px 14px}}
 /* 진행 창: 기다리는 동안 바뀌는 한 줄 소개 */
 .ptip{margin:12px 0 0;padding:10px 12px;border-radius:10px;background:color-mix(in srgb,var(--accent) 8%,transparent);font-size:13px;font-weight:600;line-height:1.5;color:var(--ink);min-height:1.5em}
 .ptip:empty{display:none}.ptip.on{animation:ptipIn 3.6s ease both}
@@ -3285,6 +3294,15 @@ function ezOpen(o){o=o||{};EZ.ep=o.ep||null;const e=ezEp();EZ.step=o.step||(ezHa
 function ezClose(){const m=$('#mEasy');if(m)m.remove();}
 /* 빈 새 작품을 열면 먼저 띄워요 — 「직접 만들래요」를 누른 작품은 다시 띄우지 않아요 */
 function ezAuto(){try{const P=plan();if(S.settings.ezSkip||(P.idea||'').trim()||(P.logline||'').trim())return;if(S.episodes.some(e=>e.cuts.length||(e.syn||'').trim()||e.pack))return;if((S.settings.sbCharList||[]).some(c=>c.name))return;ezOpen();}catch(_){}}
+/* 분량: 컷 하나 = AI 이미지 1장. 기본은 인스타툰 8컷(무료 맛보기 20장으로 2편 완성) */
+const EZ_SIZES=[[4,'4컷 만화','기승전결 한 편'],[8,'인스타툰','SNS용 짧은 한 편'],[16,'짧은 웹툰','도전만화 · 홍보툰'],[40,'연재 1화','정식 연재 분량']];
+function ezN(){const n=Math.round(+S.settings.ezCuts);return n>=2&&n<=80?n:8;}
+function ezScenes(n){return n<=4?n:n<=10?Math.max(4,Math.round(n*.7)):Math.min(18,Math.round(n/2.2));}
+function ezUseLine(n){const W=window.__WB,left=Math.max(0,AI_FREE-(S.settings.aiUsed||0));
+ if(W&&W.boot&&(W.boot.aiNeed==='login'||W.boot.aiNeed==='setup'))return `그림 <b>${n}</b>장이 필요해요 · 로그인하면 맛보기 ${AI_FREE}장`;
+ if(left>9000)return `그림 <b>${n}</b>장을 만들어요`;
+ if(n<=left)return `AI 이미지 <b>${n}</b>장 사용 · 남은 맛보기 ${left}장`;
+ return `<span class="ezwarn">남은 맛보기는 ${left}장이라 그림은 ${left}컷까지만 AI로 만들 수 있어요 · 나머지는 직접 그림을 넣거나 분량을 줄여 주세요</span>`;}
 function ezRender(){const m=$('#mEasy');if(!m)return;const e=ezEp(),P=plan(),st=S.settings,hasStory=!!(e.syn||'').trim()||!!EZ.live,hasCuts=ezHasCuts(e),z=e.ez=e.ez||{hist:[],rev:0};
  if(EZ.step===3&&!hasCuts)EZ.step=hasStory?2:1;if(EZ.step===2&&!hasStory)EZ.step=1;
  const steps=[[1,'이야기'],[2,`${e.num}화 스토리`],[3,'그림 · 말풍선']].map(([n,l])=>`<button type="button" class="ezst" data-ez="step" data-v="${n}" aria-current="${EZ.step===n?'step':'false'}"${(n===2&&!hasStory)||(n===3&&!hasCuts)?' disabled':''}><i>${n}</i>${esc(l)}</button>`).join('<span class="ezar" aria-hidden="true">›</span>');
@@ -3294,6 +3312,7 @@ function ezRender(){const m=$('#mEasy');if(!m)return;const e=ezEp(),P=plan(),st=
   <textarea id="ezIdea" rows="4" placeholder="예) 퇴사한 날 길고양이를 따라갔다가, 고양이들만 아는 골목 식당의 주방장이 된다">${esc(P.idea||'')}</textarea>
   <div class="ezrow"><button type="button" class="btn sm" data-ez="rec">${ic('wand',13)}${EZ.recs.length?'다른 추천 받기':'스토리 추천받기'}</button><span class="note">글 AI 1회</span></div>
   ${EZ.recs.length?`<div class="ezrecs">${EZ.recs.map((r,i)=>`<button type="button" class="ezrec" data-ez="pick" data-v="${i}"><b>${esc(r.title)}</b><small>${esc(r.genre)}</small><span>${esc(r.story)}</span></button>`).join('')}</div>`:''}
+  ${(()=>{const N=ezN(),pre=EZ_SIZES.some(x=>x[0]===N);return `<p class="ezlab">분량 <small>컷 하나에 AI 이미지 1장</small></p><div class="ezsizes">${EZ_SIZES.map(([n,l,d])=>`<button type="button" class="ezsize" data-ez="size" data-v="${n}" aria-pressed="${N===n}"><b>${l}</b><span>${n}컷</span><small>${d}</small></button>`).join('')}<label class="ezsize ezown${pre?'':' on'}"><b>직접 정하기</b><span><input type="number" id="ezN" min="2" max="80" step="1" inputmode="numeric" value="${N}" aria-label="컷 수">컷</span><small>2~80컷</small></label></div><p class="ezuse">${ezUseLine(N)}</p>`;})()}
   <p class="ezlab">그림체</p><div class="ezstyles">${SB_PRESETS.map(([n,v],i)=>{const x=SB_PRESET_EX[i]||{};return `<button type="button" class="ezsty" data-ez="style" data-v="${i}" aria-pressed="${cur===v}">${x.img?`<img src="${x.img}" alt="">`:''}<span>${esc(n)}</span></button>`;}).join('')}</div>`;
   foot=`<button type="button" class="btn ghost" data-ez="skip">직접 만들래요</button><span class="ezsp"></span>${hasStory?`<button type="button" class="btn" data-ez="step" data-v="2">스토리 보기</button>`:''}<button type="button" class="btn pri" data-ez="write">${ic('wand',14)}${hasStory?'이 이야기로 다시 쓰기':'이 이야기로 시작'}</button>`;}
  else if(EZ.step===2){const free=Math.max(0,EZ_FREE-(z.rev||0));
@@ -3311,7 +3330,7 @@ function ezRender(){const m=$('#mEasy');if(!m)return;const e=ezEp(),P=plan(),st=
   <ol class="ezcuts">${rows.map(r=>`<li><div class="ezc1"><b>S#${esc(String(r.no))}</b><span>${esc(r.scene||'')}</span></div>${r.lines.length?`<ul>${r.lines.map(l=>`<li>${esc(l)}</li>`).join('')}</ul>`:''}${r.prompt?`<details><summary>이미지 프롬프트</summary><p>${esc(r.prompt)}</p><button type="button" class="btn sm ghost" data-ez="cp1" data-v="${esc(String(r.no))}">${ic('copy',12)}복사</button></details>`:''}</li>`).join('')}</ol>`;
   foot=`<button type="button" class="btn ghost" data-ez="step" data-v="2">← 스토리</button><span class="ezsp"></span><button type="button" class="btn" data-ez="next">${(+e.num||0)+1}화 만들기</button><button type="button" class="btn pri" data-ez="close">원고 보기</button>`;}
  m.innerHTML=`<div class="sheet ezsheet" role="dialog" aria-modal="true" aria-labelledby="ezT"><div class="ezhd"><h3 id="ezT">${ic('wand',16)} AI로 한 화 만들기</h3><button type="button" class="btn icon ghost" data-ez="close" aria-label="닫기">${ic('x',16)}</button></div><div class="ezsteps">${steps}</div><div class="ezbody">${body}</div><div class="ezfoot">${foot}</div></div>`;}
-function ezInput(ev){const t=ev.target;if(t.id==='ezIdea')plan().idea=t.value;else if(t.id==='ezStory'){if(EZ.live)return;ezEp().syn=t.value;}else return;clearTimeout(EZ.t);EZ.t=setTimeout(save,500);}
+function ezInput(ev){const t=ev.target;if(t.id==='ezN'){const n=Math.round(+t.value);if(n>=2&&n<=80){S.settings.ezCuts=n;save();const u=$('#mEasy .ezuse');if(u)u.innerHTML=ezUseLine(n);document.querySelectorAll('#mEasy .ezsize').forEach(b=>{if(b.dataset.v)b.setAttribute('aria-pressed','false');else b.classList.add('on');});}return;}if(t.id==='ezIdea')plan().idea=t.value;else if(t.id==='ezStory'){if(EZ.live)return;ezEp().syn=t.value;}else return;clearTimeout(EZ.t);EZ.t=setTimeout(save,500);}
 function ezOk(){if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return false;}if(!txtAi().left){paywall('txt');return false;}return true;}
 function ezErr(x){ezProgEnd();EZ.live=false;toast((SM_ERR[x&&x.code]||'AI가 답하지 못했어요')+' · 사용 횟수는 줄지 않았어요');}
 function ezCtx(e){const old=e.syn;e.syn='';let c='';try{c=planCtx(e);}finally{e.syn=old;}return c;}
@@ -3320,6 +3339,7 @@ async function ezClick(ev){const b=ev.target.closest('[data-ez]');if(!b||EZ.busy
  else if(a==='skip'){S.settings.ezSkip=1;save();ezClose();}
  else if(a==='step'){EZ.step=+v;ezRender();}
  else if(a==='style'){const p=SB_PRESETS[+v];if(p){S.settings.sbStyle=p[1];save();ezRender();}}
+ else if(a==='size'){S.settings.ezCuts=+v;save();ezRender();}
  else if(a==='pick'){const r=EZ.recs[+v];if(r){plan().idea=`${r.title}\n${r.story}`;save();ezRender();const t=$('#ezIdea');if(t)t.focus();}}
  else if(a==='rec')await ezRecommend();
  else if(a==='write')await ezWrite();
@@ -3349,9 +3369,10 @@ async function ezAsk(prompt,live){if(live&&SM.stream){let got='';
  return SM.json(prompt,{cache:false});}
 /* 컷 만들기: 장면을 2~3묶음으로 나눠 동시에 만들어 빨리 끝내요 */
 async function ezPack(e){const story=e.syn||'',nums=[...story.matchAll(/^\s*(\d+)\.\s/gm)].map(m=>+m[1]),K=nums.length,G=SM.jsonAll?(K>=9?3:K>=5?2:1):1;
- if(G<2)return pkMake(e,null,story);
- const per=Math.ceil(K/G),parts=[];for(let g=0;g<G;g++){const a=nums[g*per],b=nums[Math.min(K,(g+1)*per)-1];if(a==null)break;parts.push([a,b]);}
- const prompts=await Promise.all(parts.map(([a,b],g)=>pkMake(e,'as many as these scenes need (usually 1-3 per scene; never skip a scene)',story,`Work ONLY on scenes ${a} to ${b} of the script — the other scenes are context for continuity and are handled separately.${g?' Return "title" as an empty string.':''}`,true)));
+ const N=ezN();if(G<2)return pkMake(e,`exactly ${N}`,story);
+ const per=Math.ceil(K/G),parts=[];for(let g=0;g<G;g++){const a=nums[g*per],b=nums[Math.min(K,(g+1)*per)-1];if(a==null)break;parts.push([a,b,Math.min(K,(g+1)*per)-g*per]);}
+ let giv=0;parts.forEach((p,g)=>{p[3]=g===parts.length-1?Math.max(p[2],N-giv):Math.max(p[2],Math.round(N*p[2]/K));giv+=p[3];});
+ const prompts=await Promise.all(parts.map(([a,b,k,n],g)=>pkMake(e,`exactly ${n} (at least one per scene; never skip a scene)`,story,`Work ONLY on scenes ${a} to ${b} of the script — the other scenes are context for continuity and are handled separately.${g?' Return "title" as an empty string.':''}`,true)));
  const rs=await SM.jsonAll(prompts),cuts=[];let title='';
  (rs||[]).forEach(r=>{const o=pkNorm(r);if(!title&&o.title)title=o.title;cuts.push(...o.cuts);});cuts.forEach((c,i)=>c.no=i+1);
  if(!cuts.length)throw{code:'invalid_json'};return{syn:'',title,cuts};}
@@ -3366,7 +3387,7 @@ async function ezWrite(){const e=ezEp(),P=plan(),st=S.settings;if(!(P.idea||'').
  EZ.busy=true;EZ.live=false;ezProg(`${e.num}화 스토리를 쓰는 중`,need?'인물과 배경을 정하는 중':'앞 이야기를 읽는 중',need?20:8);
  try{const r=await ezAsk(`You are a veteran Korean webtoon writer. ${need?`From the creator's idea below, first decide the series basics (title, one-sentence logline, genre, 2-4 main characters each with a concrete visual look an image AI can draw, 1-3 key locations). Then write`:'Write'} the complete story of episode ${e.num} of this vertical-scroll webtoon in Korean, ready to be split into panels.
 ${ezCtx(e)}
-Story format — plain text, no markdown: 10-16 numbered scenes. Each scene starts with "N. " followed by one or two sentences of what we see (where, who, action, emotion). Under it put that scene's dialogue, one per line, as "- 이름: 대사"; narration as "- (나레이션) …". Some scenes have no dialogue. Keep dialogue short like real webtoon balloons. ${+e.num>1?'Continue naturally from the previous episodes.':'Open with a hook that makes the reader curious.'} End on a cliffhanger.
+The whole episode will be drawn in exactly ${ezN()} panels, so keep the story small enough to fit them${ezN()<=4?' (a 4-panel comic: 기-승-전-결, setup → development → twist → punchline)':''}. Story format — plain text, no markdown: ${ezScenes(ezN())} numbered scenes. Each scene starts with "N. " followed by one or two sentences of what we see (where, who, action, emotion). Under it put that scene's dialogue, one per line, as "- 이름: 대사"; narration as "- (나레이션) …". Some scenes have no dialogue. Keep dialogue short like real webtoon balloons. ${+e.num>1?'Continue naturally from the previous episodes.':'Open with a hook that makes the reader curious.'} ${ezN()<=4?'End with a punchline or a small twist.':'End on a cliffhanger.'}
 Answer JSON only: {${need?'"title":"(작품 제목 2-14자)","logline":"(한 문장)","genre":"(장르 1-2개, · 로 구분)","chars":[{"name":"","role":"(역할 · 나이)","pers":"(성격)","voice":"(말투)","look":"(외모: 머리 · 얼굴 · 체형을 그림 AI용으로 구체적으로)","outfit":"(고정 의상)"}],"locs":[{"name":"","desc":"(그림 AI용 장소 묘사)"}],':''}"ep_title":"(이번 화 제목 2-10자)","story":"1. …\\n- 이름: 대사\\n\\n2. …"}`,true);
   const story=String((r&&r.story)||'').trim();if(!story)throw{code:'invalid_json'};
   mutate(()=>{if(need){const t=String(r.title||'').trim();if(t&&(!(st.workTitle||'').trim()||/^새 작품 \d+$/.test(st.workTitle.trim()))){st.workTitle=t.slice(0,40);const w=$('#wTitle');if(w)w.value=st.workTitle;if(typeof lpmSync==='function')lpmSync();}
