@@ -2260,6 +2260,8 @@ const SB_STYLE='Korean vertical-scroll webtoon, clean confident line art, soft c
 const SBR={'3:4':[3,4],'1:1':[1,1],'9:16':[9,16],'16:9':[16,9]};
 let SBo={ratio:'3:4',where:'new',ly:'one',all:4,per:{},rnd:{}},sbTarget=null,SM=null;
 (async()=>{try{if(window.claude&&typeof window.claude.use==='function')SM=await window.claude.use('sample');}catch(_){SM=null;}})();
+/* 콘티 컷 바탕색: 그림이 들어가면 기본 베이지 대신 흰색 (직접 고른 색은 그대로) */
+function sbBg(c){const col=c.color||'#ffffff';return c.sb&&c.sb.img&&col.toLowerCase()==='#f2f0ec'?'#ffffff':col;}
 function sbStat(s){return s.img?'img':s.prompt?'prompt':s.ok?'ok':'draft';}
 function ratioStr(w,h){const L=[[1,1],[3,4],[4,3],[2,3],[3,2],[4,5],[5,4],[9,16],[16,9],[1,2],[2,1],[9,21]];const r=Math.log(w/h);let best=L[0],d=9;for(const p of L){const x=Math.abs(Math.log(p[0]/p[1])-r);if(x<d){d=x;best=p;}}return best.join(':');}
 async function drawSb(ctx,c,W,H,out){
@@ -3878,7 +3880,7 @@ async function baseLayer(c,W,H,useCache){
  const sig=JSON.stringify([rd,c.kind,c.blob,a,c.color,c.h,W,H,!!c.bgHide,c.padT||0,c.padB||0,c.padColor||'',c.sb?[c.sb.img,JSON.stringify(c.sb.adj||0),c.sb.fit,c.sb.scene,c.sb.no,c.sb.notes,c.sb.ok,c.sb.scale,c.sb.ix,c.sb.iy]:0]);
  if(useCache){const hit=baseCache.get(c.id);if(hit&&hit.sig===sig)return hit.cv;}
  const cv=document.createElement('canvas');cv.width=W;cv.height=H;const ctx=cv.getContext('2d');
- if(c.kind==='blank'){ctx.fillStyle=c.color||'#ffffff';ctx.fillRect(0,0,W,H);if(c.sb)await drawSb(ctx,c,W,H,!useCache||rd);}
+ if(c.kind==='blank'){ctx.fillStyle=c.sb?sbBg(c):(c.color||'#ffffff');ctx.fillRect(0,0,W,H);if(c.sb)await drawSb(ctx,c,W,H,!useCache||rd);}
  else{
   try{
    const im=await loadImg(c.blob);const nw=im.naturalWidth,nh=im.naturalHeight;
@@ -4394,7 +4396,7 @@ function cutPanel(e,c){
  if(it)return h+nameRow(it)+figGeo(it,'','data-mgeo')+`<div class="sec" data-sk="m-props"><h2>${esc(ttl(it))}</h2>${itemFields(it,'')}</div>`+figActs('')+mob;
  h+=`<p class="note" style="margin:2px 0 12px">아래 도구 막대로 말풍선·레이어를 넣고, 왼쪽 레이어 목록이나 이미지 위 상자를 눌러 고르세요.</p>`;
  if(c.kind==='blank'&&specOf(c)&&specOf(c).grp!=='ms'){const P=specOf(c);return h+`<div class="sec" data-sk="m-spec"><h2>${esc(P.label)}</h2><div class="fld"><span>플랫폼</span><label class="nsel"><i>${ic('layout',13)}</i><select data-set="platform" aria-label="플랫폼">${Object.entries(PLATFORMS).map(([k,v])=>`<option value="${k}"${(S.settings.platform||'naver')===k?' selected':''}>${k==='custom'?'직접 정하기':v}</option>`).join('')}</select></label></div><p class="note">규격 크기 ${P.w}×${P.h}px로 고정된 컷이에요. 그림 칸에 이미지를 넣고 글자를 다듬은 뒤 내려받으세요.</p><div class="fld"><span>바탕색</span><div class="clr"><input type="color" data-cut="color" value="${c.color}"></div></div><button class="btn sm pri" data-act="dl" data-id="${c.id}">${ic('dl',13)}규격대로 내려받기 (${P.w}×${P.h})</button></div>`+mob;}
- if(c.kind==='blank'&&c.sb)return h+sbPanel(c)+`<div class="sec" data-sk="m-sbbox"><h2>박스 크기</h2>${blankSize(c)}<p class="note">컷을 선택한 뒤 가장자리 손잡이를 끌어도 크기를 바꿀 수 있어요.</p></div>`+mob;
+ if(c.kind==='blank'&&c.sb)return h+sbPanel(c)+`<div class="sec" data-sk="m-sbbox"><h2>박스 크기</h2>${blankSize(c)}<div class="fld"><span>배경색</span><div class="clr"><input type="color" data-cut="color" value="${sbBg(c)}"></div></div><p class="note">그림이 덮지 않는 빈 곳의 색이에요. 컷을 선택한 뒤 가장자리 손잡이를 끌어도 크기를 바꿀 수 있어요.</p></div>`+mob;
  if(c.kind==='blank')return h+padRows(c)+`<div class="sec" data-sk="m-blank"><h2>빈 컷</h2>${blankSize(c)}<div class="fld"><span>색</span><div class="clr"><input type="color" data-cut="color" value="${c.color}"></div></div><p class="note">빈 컷에도 나레이션·텍스트를 올릴 수 있어요.</p></div>`+mob;
  return h+padRows(c)+`<div class="sec" data-sk="m-img"><h2>이미지</h2><div class="row"><button class="btn sm" data-act="rep" data-id="${c.id}">${ic('imgplus',13)}이미지 교체</button><button class="btn sm" data-act="img-remove" data-id="${c.id}" title="이미지만 빼고 빈 컷으로 — 말풍선 · 칸은 그대로">이미지 빼기</button></div><button class="btn sm ghost" data-act="rtab" data-t="adjust" style="margin-top:6px;width:100%">${ic('sliders',13)}밝기 · 대비 · 자르기는 「보정」 탭에서</button></div>`+mob;
 }
@@ -4646,7 +4648,7 @@ async function edOpen(c){
  const{W0:W,H0:H}=dims(c);const a={...zeroAdj(),...c.adj};
  ED={on:true,cut:c,W,H,items:JSON.parse(JSON.stringify(c.items)),adj:a,bgHide:!!c.bgHide,tool:'move',sel:null,selPath:null,active:'bg',zoom:1,px:0,py:0,color:'#111111',color2:'#ffffff',brush:{size:24,hard:80,op:100},tol:32,contig:true,allL:true,hist:[],fut:[],rasters:new Map(),dirty:new Set(),bgDirty:false,bgAdj:null,stroke:null,drag:null,space:false,gradType:'linear',gradTo:'bg',gradOp:100,anchor:[.5,.5],cvFill:'none',crop:null};
  const bg=mkCv(W,H),x=bg.getContext('2d');
- if(c.kind==='blank'){x.fillStyle=c.color||'#fff';x.fillRect(0,0,W,H);}
+ if(c.kind==='blank'){x.fillStyle=c.sb?sbBg(c):(c.color||'#fff');x.fillRect(0,0,W,H);}
  else{try{const im=await loadImg(c.blob);const nh=im.naturalHeight,pt=c.padT||0,pb=c.padB||0;if(pt||pb){x.fillStyle=c.padColor||'#ffffff';x.fillRect(0,0,W,H);}if(a.flip){x.translate(W,0);x.scale(-1,1);}x.drawImage(im,0,a.cropT*nh,im.naturalWidth,Math.max(1,nh*(1-a.cropT-a.cropB)),0,pt,W,Math.max(1,H-pt-pb));x.setTransform(1,0,0,1,0,0);}catch(_){x.fillStyle='#333';x.fillRect(0,0,W,H);}}
  ED.rasters.set('bg',bg);ED.flipBaked=!!a.flip;
  await preloadItems(ED.items);
