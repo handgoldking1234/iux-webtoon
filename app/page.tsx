@@ -106,7 +106,7 @@ export default async function Home() {
       <section className="lp-hero lp-w" id="top">
         <h1 data-r>Story +<br />Webtoon</h1>
         <h2 data-r style={{ ['--d' as string]: 1 }}>상상한 이야기를,<br />나만의 웹툰으로</h2>
-        <p data-r style={{ ['--d' as string]: 2 }}>웹툰 제작이 처음이라도 괜찮아요.<br />기획부터 콘티, 캐릭터, 그림, 말풍선까지 AI가 도와드려요.<br />AI가 그려도 그림과 말풍선은 따로라서, 대사는 바로 고치고 마음에 안 드는 컷만 다시 그려요.</p>
+        <p data-r style={{ ['--d' as string]: 2 }}>웹툰 제작이 처음이라도 괜찮아요. <br />기획부터 콘티, 캐릭터, 그림, 말풍선까지 AI가 도와드려요. <br />AI가 그려도 그림과 말풍선은 따로라서, 대사는 바로 고치고 마음에 안 드는 컷만 다시 그려요.</p>
         <div className="lp-cta" data-r style={{ ['--d' as string]: 3 }}>
           <a className="lp-btn pri" href={start}>{startLbl}</a>
           <a className="lp-btn out" href="#feat">기능 둘러보기</a>
