@@ -252,7 +252,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-price ul{flex:1;margin:24px 0 32px;padding-top:24px;border-top:1px solid var(--line2)}
 .lp-price .lp-btn{align-self:stretch}
 .lp-price .pro{border:2px solid var(--acc);background:linear-gradient(180deg,var(--accRow),var(--panel) 50%)}
-.lp-extra{max-width:1080px;margin:28px auto 0;text-align:center;font-size:var(--fs-sm);color:var(--mute);line-height:1.7}
+.lp .lp-extra{max-width:1080px;margin:40px auto 0;text-align:center;font-size:var(--fs-sm);color:var(--mute);line-height:1.7}
 .lp-extra a{color:var(--accText);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .lp-price .prem{background:#141a16;border-color:#141a16;color:#eef1ef}
 .lp-price .prem em{color:#4fdc85}
