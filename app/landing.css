@@ -189,6 +189,23 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-feat .art{margin:16px 0 20px;height:128px}
 .lp-feat b{font-size:var(--fs-card);font-weight:800;letter-spacing:var(--ls-head);margin:8px 0}
 .lp-feat p{font-size:var(--fs-sm);line-height:1.75;color:var(--mute)}
+.lp-more{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--gap);margin-top:var(--gap)}
+.lp-more>*{position:relative;display:flex;gap:16px;align-items:flex-start;padding:22px 24px;border-radius:var(--rad);background:var(--soft2);border:1px solid var(--line2);color:inherit;transition:border-color .2s,transform .25s}
+.lp-more>*:hover{border-color:color-mix(in srgb,var(--acc) 35%,var(--line))}
+.lp-more a:hover{transform:translateY(-3px)}
+.lp-more i{flex:none;width:40px;height:40px;border-radius:12px;background:var(--accSoft);color:var(--accText);display:flex;align-items:center;justify-content:center}
+.lp-more b{display:block;font-size:16px;font-weight:800;letter-spacing:var(--ls-head)}
+.lp-more p{margin-top:6px;font-size:var(--fs-sm);line-height:1.7;color:var(--mute)}
+.lp-more .go{position:absolute;right:18px;top:22px;color:var(--accText)}
+.lp-faqw{max-width:800px}
+.lp-faq{display:flex;flex-direction:column;gap:12px}
+.lp-faq details{background:var(--panel);border:1px solid var(--line);border-radius:14px;transition:border-color .2s}
+.lp-faq details[open]{border-color:color-mix(in srgb,var(--acc) 45%,var(--line))}
+.lp-faq summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 24px;font-size:16px;font-weight:800;letter-spacing:var(--ls-head)}
+.lp-faq summary::-webkit-details-marker{display:none}
+.lp-faq summary i{flex:none;color:var(--accText);transition:transform .25s}
+.lp-faq details[open] summary i{transform:rotate(45deg)}
+.lp-faq p{padding:0 24px 22px;font-size:var(--fs-desc);line-height:1.8;color:var(--mute)}
 
 /* 6. 가치 */
 .lp-slide{position:relative}
@@ -306,6 +323,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 @media (max-width:960px){
   .lp-steps{grid-template-columns:1fr 1fr}
   .lp-feat{grid-template-columns:1fr 1fr}
+  .lp-more{grid-template-columns:1fr}
   .lp-stats{grid-template-columns:1fr 1fr}
   .lp-stats div:nth-child(3){border-left:0}
   .lp-stats div:nth-child(n+3){border-top:1px solid var(--line2)}

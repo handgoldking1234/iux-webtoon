@@ -29,6 +29,9 @@ const P: Record<string, string> = {
   heart: 'M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z',
   wand: 'M15 4V2|M15 16v-2|M8 9h2|M20 9h2|M17.8 11.8 19 13|M15 9h.01|M17.8 6.2 19 5|M3 21l9-9|M12.2 6.2 11 5',
   coffee: 'M10 2v2|M14 2v2|M16 8a1 1 0 0 1 1 1v8a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V9a1 1 0 0 1 1-1h14a4 4 0 1 1 0 8h-1|M6 2v2',
+  phone: 'M7 2h10a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2z|M12 18h.01',
+  book: 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z|M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z',
+  plus: 'M12 5v14|M5 12h14',
   download: 'M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4|M7 10l5 5 5-5|M12 15V3',
 };
 function I({ n, s = 20 }: { n: string; s?: number }) {
@@ -63,6 +66,22 @@ const VALS = [
   { img: 'val-edit', t: '따로 고치는 편집', en: 'EDIT SEPARATELY', alt: '체스 말을 정확한 자리에 옮기는 손', p: '편집 모드에서 그림과 말풍선을 따로 고쳐요. 대사는 직접 또는 AI로, 그림은 마음에 안 드는 컷만 다시 — AI 비용과 시간이 그만큼 줄어요.' },
   { img: 'val-consist', t: '일관성', en: 'CONSISTENCY', alt: '여러 컷에서 같은 얼굴로 이어지는 주인공', p: '캐릭터 시트와 그림체 설정을 모든 컷에 함께 넘겨요. 1화의 주인공이 10화에서도 같은 얼굴로 나와요.' },
   { img: 'val-speed', t: '속도', en: 'SPEED', alt: '태블릿 주위로 컷들이 빠르게 떠오르는 작업 모습', p: '버튼 한 번이면 콘티 초안이 나오고, 바로 다음 컷으로 넘어가요. 남는 시간은 이야기 다듬기에 쓰세요.' },
+];
+
+// 기능 아래 '그리고 이것도' 카드
+const MORE = [
+  { ic: 'phone', t: '휴대폰에서도 작업', d: '휴대폰 브라우저로 그대로 열려요. 이동 중에 대사를 고치고, 집에서 PC로 이어서 다듬으세요.' },
+  { ic: 'download', t: '완성본 바로 내보내기', d: '세로로 긴 그림 한 장이나 컷별 묶음(ZIP)으로 내려받아 원하는 곳에 바로 올려요.' },
+  { ic: 'book', t: '연재관에 올리기', d: '완성한 회차를 「연재하기」 한 번으로 연재관에 올려 다른 사람과 함께 볼 수 있어요.', href: '/read' },
+];
+
+// 자주 묻는 질문
+const FAQ = [
+  ['그림을 못 그려도 만들 수 있나요?', '네. 이야기만 적으면 AI가 콘티와 그림을 함께 만들어요. 직접 그린 그림이나 사진을 불러와 컷에 넣고 말풍선만 얹을 수도 있어요.'],
+  ['무료로 어디까지 쓸 수 있나요?', '가입하면 AI 이미지 20장을 무료로 만들 수 있고, 글 AI(기획 · 콘티)는 매달 30회가 새로 채워져요. 대사 고치기 · 말풍선 편집 · 직접 올린 그림 쓰기는 AI를 쓰지 않아서 횟수와 상관없어요.'],
+  ['내가 만든 웹툰은 누구 것인가요?', '만든 작품의 권리는 만든 사람에게 있어요. 다만 AI로 만든 그림의 권리와 쓸 수 있는 범위는 법과 각 AI 업체의 정책에 따라 달라질 수 있어요. 자세한 내용은 이용약관을 봐 주세요.'],
+  ['작품은 어디에 저장되나요?', '쓰는 기기의 브라우저에 먼저 저장돼요. 로그인하면 바뀐 작품이 내 계정 저장소에도 올라가서 다른 기기에서 이어서 작업할 수 있어요. 로그인하지 않으면 브라우저에만 있어서 방문 기록을 지우면 사라질 수 있어요.'],
+  ['휴대폰에서도 되나요?', '네. 휴대폰 브라우저에서 기획 · 콘티 · 대사 고치기까지 할 수 있어요. 컷을 세밀하게 다듬는 작업은 화면이 넓은 PC가 더 편해요.'],
 ];
 
 const CUTS = [
@@ -187,7 +206,7 @@ export default async function Home() {
         <div className="lp-w lp-showin">
           <div className="txt" data-r>
             <em>SHOWCASE</em>
-            <h3>휴대폰으로 보는 한 화,<br />이렇게 완성돼요</h3>
+            <h3>휴대폰으로 보는 웹툰,<br />이렇게 완성돼요</h3>
             <p>세로로 내려 보는 웹툰 그대로 만들어요. 컷마다 그림을 넣고 대사와 나레이션을 얹으면 한 화가 완성돼요.</p>
             <ul>
               <li><I n="check" s={15} />세로 스크롤 웹툰 비율 그대로</li>
@@ -294,6 +313,14 @@ export default async function Home() {
                 <p>{f.d}</p>
               </article>
             ))}
+          </div>
+          <div className="lp-more">
+            {MORE.map((m, i) => {
+              const body = <><i><I n={m.ic} s={20} /></i><div><b>{m.t}</b><p>{m.d}</p></div>{m.href && <span className="go"><I n="arrow" s={16} /></span>}</>;
+              return m.href
+                ? <a key={m.t} href={m.href} data-r style={{ ['--d' as string]: i }}>{body}</a>
+                : <div key={m.t} data-r style={{ ['--d' as string]: i }}>{body}</div>;
+            })}
           </div>
         </div>
       </section>
@@ -441,6 +468,24 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* 자주 묻는 질문 */}
+      <section className="lp-sec" id="faq">
+        <div className="lp-w lp-faqw">
+          <header className="lp-head" data-r>
+            <em>FAQ</em>
+            <h3>자주 묻는 질문</h3>
+          </header>
+          <div className="lp-faq" data-r>
+            {FAQ.map(([q, a]) => (
+              <details key={q}>
+                <summary>{q}<i><I n="plus" s={18} /></i></summary>
+                <p>{a}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 11. 마지막 권유 */}
       <section className="lp-last">
         <div className="lp-w" data-r>
@@ -455,7 +500,7 @@ export default async function Home() {
         <div className="lp-w">
           <div className="top">
             <a href="#top" className="lp-logo"><i><Logo /></i><b>바로웹툰</b></a>
-            <nav><a href="#edit">따로 고치기</a><a href="#why">왜 바로웹툰</a><a href="#feat">기능</a><a href="#who">창작자</a><a href="#price">요금</a><a href="#how">만드는 순서</a></nav>
+            <nav><a href="#edit">따로 고치기</a><a href="#why">왜 바로웹툰</a><a href="#feat">기능</a><a href="#who">창작자</a><a href="#price">요금</a><a href="#how">만드는 순서</a><a href="#faq">자주 묻는 질문</a></nav>
           </div>
           <div className="info">
             <b>바로웹툰 · AI로 바로 만드는 나만의 웹툰</b>
