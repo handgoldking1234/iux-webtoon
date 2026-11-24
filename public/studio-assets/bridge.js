@@ -216,6 +216,28 @@
   /* AI를 쓸 수 없을 때: 왜 안 되는지 알려 주고(가입 · 유료 · 준비 중) 갈 곳을 안내해요 */
   var blockedAt = 0;
   function loginUrl() { return '/login?next=' + encodeURIComponent('/studio'); }
+
+  /* 손님(로그인 안 됨)이면 작품 목록 위에 알려 줘요 — 캐시를 지우면 로그인도 풀려서 작품이 없어진 것처럼 보이기 때문 */
+  function guestBanner() {
+    if (!guest || document.getElementById('wbGuest')) return;
+    var list = document.getElementById('hList'); if (!list) return;
+    var d = document.createElement('div');
+    d.id = 'wbGuest';
+    d.setAttribute('role', 'status');
+    d.style.cssText = 'display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:0 0 14px;padding:14px 16px;border-radius:12px;border:1px solid #f0c36d;background:#fff7e0;color:#5a4300;font-size:13.5px;line-height:1.5';
+    d.innerHTML = '<span style="flex:1 1 220px"><b style="display:block;font-size:14.5px;margin-bottom:2px">로그인하지 않은 상태예요</b>저장해 둔 작품은 서버에 그대로 있어요. 로그인하면 바로 불러와요. 로그인하지 않고 만든 작품은 이 브라우저에만 저장돼요.</span><a href="' + loginUrl() + '" style="flex:none;display:inline-flex;align-items:center;height:38px;padding:0 18px;border-radius:999px;background:#1db954;color:#fff;font-weight:800;text-decoration:none">로그인하고 내 작품 불러오기</a>';
+    list.parentNode.insertBefore(d, list);
+  }
+  /* 손님으로 열면 한 번(탭을 닫을 때까지) 알려 줘요 — 이미 가입한 사람이 캐시를 지운 뒤 작품이 사라졌다고 놀라지 않게 */
+  function guestAsk() {
+    if (!guest) return;
+    try { if (sessionStorage.getItem('wb-guest-asked')) return; sessionStorage.setItem('wb-guest-asked', '1'); } catch (_) {}
+    if (typeof confirmBox !== 'function') return;
+    confirmBox({ title: '로그인하지 않은 상태예요', body: '이미 가입했다면 로그인만 하면 <b>저장해 둔 작품을 바로 불러와요.</b><br>로그인하지 않고 만든 작품은 이 브라우저에만 남아서, 캐시를 지우면 사라질 수 있어요.', ok: '로그인하고 내 작품 불러오기', danger: false, cancel: '손님으로 계속' })
+      .then(function (y) { if (y) location.href = loginUrl(); });
+  }
+  function guestStart() { guestBanner(); setTimeout(guestAsk, 900); }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', guestStart); else guestStart();
   function aiBlocked() {
     if (Date.now() - blockedAt < 2500 || document.getElementById('mConfirm')) return;
     blockedAt = Date.now();
