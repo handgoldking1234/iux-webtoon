@@ -138,12 +138,10 @@ export default async function Home() {
         <div className="lp-w">
           <a href="#top" className="lp-logo"><i><Logo /></i><b>바로웹툰</b></a>
           <nav>
-            <a href="#edit">따로 고치기</a>
-            <a href="#why">왜 바로웹툰</a>
-            <a href="#feat">기능</a>
-            <a href="#who">창작자</a>
-            <a href="#price">요금</a>
-            <a href="#how">만드는 순서</a>
+            <a href="/studio" title="작품 제작 시작">웹툰 만들기</a>
+            <a href={me ? '/studio' : '/login?next=%2Fstudio'} title="작품 및 작업 관리">내 작품</a>
+            <a href="#how" title="사용 방법 안내">제작 가이드</a>
+            <a href="#price" title="무료 및 유료 플랜">요금제</a>
           </nav>
           <span className="sp" />
           {me ? (
@@ -155,7 +153,7 @@ export default async function Home() {
           ) : (
             <>
               <Link className="lp-txt" href="/login">로그인</Link>
-              <Link className="lp-pill" href="/login?mode=signup">무료로 시작</Link>
+              <a className="lp-pill" href="/studio">무료로 시작하기</a>
             </>
           )}
         </div>
