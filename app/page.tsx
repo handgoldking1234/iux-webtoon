@@ -262,10 +262,6 @@ export default async function Home() {
               </article>
             </div>
           </div>
-          <div className="lp-cmp" data-r>
-            <div><span>일반 AI 웹툰</span><b>대사 1줄 수정</b><em>그림 전체 다시 생성 · AI 비용 또 발생</em></div>
-            <div className="on"><span>바로웹툰</span><b>대사 1줄 수정</b><em>말풍선만 바로 고침 · AI 비용 0원</em></div>
-          </div>
         </div>
       </section>
 
@@ -290,6 +286,10 @@ export default async function Home() {
               <div className="row"><i><I n="users" s={16} /></i>캐릭터 시트로 얼굴과 분위기 그대로</div>
               <div className="row"><i><I n="spark" s={16} /></i>막히는 칸은 AI가 먼저 채워 줘요</div>
             </div>
+          </div>
+          <div className="lp-cmp" data-r>
+            <div><span>일반 AI 웹툰</span><b>대사 1줄 수정</b><em>그림 전체 다시 생성 · AI 비용 또 발생</em></div>
+            <div className="on"><span>바로웹툰</span><b>대사 1줄 수정</b><em>말풍선만 바로 고침 · AI 비용 0원</em></div>
           </div>
           <div className="lp-center" data-r><a className="lp-btn pri sm" href="#how">만드는 순서 자세히 보기</a></div>
         </div>
