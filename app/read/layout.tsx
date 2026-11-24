@@ -5,8 +5,8 @@ import { k } from './_ui/k';
 import './read.css';
 
 export const metadata: Metadata = {
-  title: { default: '웹툰보드 연재', template: '%s · 웹툰보드 연재' },
-  description: '웹툰보드에서 만든 웹툰을 요일연재 · 자유연재로 읽는 곳',
+  title: { default: '바로웹툰 연재', template: '%s · 바로웹툰 연재' },
+  description: '바로웹툰에서 만든 웹툰을 요일연재 · 자유연재로 읽는 곳',
 };
 export const viewport: Viewport = { width: 'device-width', initialScale: 1, viewportFit: 'cover', themeColor: '#0b0d0c' };
 
@@ -18,7 +18,7 @@ export default async function ReadLayout({ children }: { children: React.ReactNo
       <main>{children}</main>
       <footer className={k('foot')}>
         <div className={k('wrap')}>
-          <span>웹툰보드 연재 · webtoon.iux.kr</span>
+          <span>바로웹툰 연재 · webtoon.iux.kr</span>
           <a href="/read/policy">운영정책</a>
           <a href="/">웹툰 만들기</a>
         </div>

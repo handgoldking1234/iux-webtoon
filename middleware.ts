@@ -8,7 +8,7 @@ export async function middleware(req: NextRequest) {
     return await run(req);
   } catch (e) {
     // 여기서 멈추면 사이트 전체가 500이 돼요 — 무슨 일이 있어도 페이지는 열리게
-    console.error('[웹툰보드] middleware', e);
+    console.error('[바로웹툰] middleware', e);
     return NextResponse.next();
   }
 }
@@ -54,7 +54,7 @@ async function run(req: NextRequest) {
   if (src && !req.cookies.get('wb_src')) res.cookies.set('wb_src', src.slice(0, 40), { maxAge: 60 * 60 * 24 * 30, path: '/' });
   return res;
   } catch (e) {
-    console.error('[웹툰보드] middleware', e);
+    console.error('[바로웹툰] middleware', e);
     return NextResponse.next();
   }
 }

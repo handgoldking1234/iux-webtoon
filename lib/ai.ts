@@ -49,7 +49,7 @@ export async function claudeJson(prompt: string) {
     body: JSON.stringify({
       model: env.claudeModel,
       max_tokens: 24000,
-      system: 'You are the writing assistant inside 웹툰보드, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.',
+      system: 'You are the writing assistant inside 바로웹툰, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.',
       messages: [{ role: 'user', content: prompt }],
     }),
   });
@@ -73,7 +73,7 @@ export async function claudeTextStream(prompt: string, onDone: (u: { inTokens: n
       model: env.claudeModel,
       max_tokens: 24000,
       stream: true,
-      system: 'You are the writing assistant inside 웹툰보드, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.',
+      system: 'You are the writing assistant inside 바로웹툰, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.',
       messages: [{ role: 'user', content: prompt }],
     }),
   });
@@ -150,7 +150,7 @@ export async function openaiJson(prompt: string) {
     body: JSON.stringify({
       model: env.openaiTextModel,
       messages: [
-        { role: 'system', content: 'You are the writing assistant inside 웹툰보드, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.' },
+        { role: 'system', content: 'You are the writing assistant inside 바로웹툰, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.' },
         { role: 'user', content: prompt },
       ],
     }),

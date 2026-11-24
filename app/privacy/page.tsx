@@ -9,11 +9,11 @@ const CONTACT = 'handgoldking@gmail.com';
 export default function PrivacyPage() {
   return (
     <main className="legal">
-      <header><Link href="/"><Logo size={20} /> 웹툰보드</Link></header>
+      <header><Link href="/"><Logo size={20} /> 바로웹툰</Link></header>
       <h1>개인정보처리방침</h1>
       <p className="meta">시행일: 2026년 11월 24일</p>
 
-      <p>웹툰보드(webtoon.iux.kr, 이하 ‘서비스’)는 이용자의 개인정보를 소중히 다루며 「개인정보 보호법」 등 관련 법령을 지킵니다. 이 방침은 서비스가 어떤 정보를, 왜, 얼마 동안 다루는지 알려 드립니다.</p>
+      <p>바로웹툰(webtoon.iux.kr, 이하 ‘서비스’)는 이용자의 개인정보를 소중히 다루며 「개인정보 보호법」 등 관련 법령을 지킵니다. 이 방침은 서비스가 어떤 정보를, 왜, 얼마 동안 다루는지 알려 드립니다.</p>
 
       <h2>1. 처리하는 개인정보와 목적</h2>
       <div className="tbl"><table>

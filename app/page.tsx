@@ -66,9 +66,9 @@ export default async function Home() {
       <LandingFx />
       <header className="lp-nav">
         <div className="lp-w">
-          <a href="#top" className="lp-logo"><i><Logo /></i><b>웹툰보드</b></a>
+          <a href="#top" className="lp-logo"><i><Logo /></i><b>바로웹툰</b></a>
           <nav>
-            <a href="#why">왜 웹툰보드</a>
+            <a href="#why">왜 바로웹툰</a>
             <a href="#feat">기능</a>
             <a href="#who">창작자</a>
             <a href="#price">요금</a>
@@ -128,7 +128,7 @@ export default async function Home() {
       </section>
 
       {/* 3. 해시태그 */}
-      <section className="lp-tags lp-w" aria-label="웹툰보드 키워드" data-r>
+      <section className="lp-tags lp-w" aria-label="바로웹툰 키워드" data-r>
         {['#작품기획', '#AI콘티', '#캐릭터시트', '#AI이미지', '#말풍선', '#클라우드저장', '#초보환영', '#직접편집'].map((t) => <span key={t}>{t}</span>)}
       </section>
 
@@ -136,7 +136,7 @@ export default async function Home() {
       <section className="lp-sec gray" id="why">
         <div className="lp-w">
           <header className="lp-head" data-r>
-            <em>WHY WEBTOONBOARD</em>
+            <em>WHY BAROWEBTOON</em>
             <h3>웹툰 제작, 아직도 프로그램 여러 개를 오가나요?</h3>
           </header>
           <div className="lp-vs" data-r>
@@ -147,7 +147,7 @@ export default async function Home() {
               <div className="row"><i><I n="clock" s={16} /></i>빈 화면 앞에서 길어지는 고민</div>
             </div>
             <div className="col on">
-              <div className="head">웹툰보드</div>
+              <div className="head">바로웹툰</div>
               <div className="row"><i><I n="layers" s={16} /></i>기획부터 말풍선까지 한곳에서</div>
               <div className="row"><i><I n="users" s={16} /></i>캐릭터 시트로 얼굴과 분위기 그대로</div>
               <div className="row"><i><I n="spark" s={16} /></i>막히는 칸은 AI가 먼저 채워 줘요</div>
@@ -184,8 +184,8 @@ export default async function Home() {
         <div className="lp-w">
           <header className="lp-head" data-r>
             <em>OUR VALUE</em>
-            <h3>웹툰보드를 쓰는 이유</h3>
-            <p>그림 실력보다 이야기가 먼저예요. 나머지는 웹툰보드가 받쳐 줄게요.</p>
+            <h3>바로웹툰을 쓰는 이유</h3>
+            <p>그림 실력보다 이야기가 먼저예요. 나머지는 바로웹툰이 받쳐 줄게요.</p>
           </header>
           <div className="lp-val">
             <article data-r>
@@ -330,16 +330,16 @@ export default async function Home() {
       <footer className="lp-foot">
         <div className="lp-w">
           <div className="top">
-            <a href="#top" className="lp-logo"><i><Logo /></i><b>웹툰보드</b></a>
-            <nav><a href="#why">왜 웹툰보드</a><a href="#feat">기능</a><a href="#who">창작자</a><a href="#price">요금</a><a href="#how">만드는 순서</a></nav>
+            <a href="#top" className="lp-logo"><i><Logo /></i><b>바로웹툰</b></a>
+            <nav><a href="#why">왜 바로웹툰</a><a href="#feat">기능</a><a href="#who">창작자</a><a href="#price">요금</a><a href="#how">만드는 순서</a></nav>
           </div>
           <div className="info">
-            <b>웹툰보드 · AI 웹툰 제작 편집기</b>
+            <b>바로웹툰 · AI로 바로 만드는 나만의 웹툰</b>
             <span>문의 <a href="mailto:handgoldking@gmail.com">handgoldking@gmail.com</a></span>
           </div>
           <div className="bottom">
             <span><Link href="/terms">이용약관</Link><Link href="/privacy"><b>개인정보처리방침</b></Link></span>
-            <span>© 2026 웹툰보드 · webtoon.iux.kr</span>
+            <span>© 2026 바로웹툰 · webtoon.iux.kr</span>
           </div>
         </div>
       </footer>

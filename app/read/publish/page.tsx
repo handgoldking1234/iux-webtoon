@@ -18,7 +18,7 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
         <h1>연재하기</h1>
         <div className={k('panel')} style={{ marginTop: 18 }}>
           {draft?.used ? <p className={k('msg')}>이 회차는 이미 올렸어요.</p> : q.draft ? <p className={k('msg bad')}>연재할 회차를 찾을 수 없어요. 편집기에서 「연재하기」를 다시 눌러 주세요.</p> : null}
-          <h2>웹툰보드 편집기에서 시작해요</h2>
+          <h2>바로웹툰 편집기에서 시작해요</h2>
           <ol style={{ margin: 0, paddingLeft: 20, display: 'grid', gap: 6 }}>
             <li>편집기에서 올릴 회차를 열어요.</li>
             <li>아래 막대의 「연재하기」를 누르면 컷을 연재 규격(가로 690px)으로 만들어 올려요.</li>

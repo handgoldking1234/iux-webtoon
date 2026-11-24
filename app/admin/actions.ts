@@ -32,7 +32,7 @@ export async function answerInquiry(fd: FormData) {
   const patch = close ? { status: 'closed' } : { answer, status: 'answered', answered_at: new Date().toISOString() };
   if (!close && !answer) return;
   const { data: q } = await supabaseAdmin().from('inquiries').update(patch).eq('id', id).select('email,subject').maybeSingle();
-  if (!close && q?.email) await sendMail(q.email, `[웹툰보드] 문의에 답변드려요 · ${q.subject}`, `${answer}\n\n내 계정에서도 볼 수 있어요: ${env.siteUrl}/account`);
+  if (!close && q?.email) await sendMail(q.email, `[바로웹툰] 문의에 답변드려요 · ${q.subject}`, `${answer}\n\n내 계정에서도 볼 수 있어요: ${env.siteUrl}/account`);
   revalidatePath('/admin/inquiries');
 }
 

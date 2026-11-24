@@ -6,7 +6,7 @@ export const env = {
   supabaseAnon: (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim(),
   serviceRole: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-  /** 웹툰보드 테이블이 사는 DB 구역 — 공용 Supabase(iux-cloud)에 얹어도 다른 서비스와 안 섞이게 */
+  /** 바로웹툰 테이블이 사는 DB 구역 — 공용 Supabase(iux-cloud)에 얹어도 다른 서비스와 안 섞이게 */
   dbSchema: process.env.NEXT_PUBLIC_SUPABASE_DB_SCHEMA || 'webtoon',
   /** Supabase Storage 버킷: 작품 원본(비공개) · 연재 그림(공개) */
   bucket: process.env.SUPABASE_BUCKET || 'webtoon',

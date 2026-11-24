@@ -16,7 +16,7 @@ export default function Gnb({ signedIn }: { signedIn: boolean }) {
   return (
     <header className={k('gnb')}>
       <div className={k('wrap')}>
-        <Link className={k('logo')} href={readHref()}><i><Ic n="book" /></i>웹툰보드<small>연재</small></Link>
+        <Link className={k('logo')} href={readHref()}><i><Ic n="book" /></i>바로웹툰<small>연재</small></Link>
         <nav className={k('menu')} aria-label="연재관 메뉴">
           {MENU.map(([h, l]) => <Link key={h} href={readHref(h)} className={cur === h ? k('on') : undefined} aria-current={cur === h ? 'page' : undefined}>{l}</Link>)}
         </nav>

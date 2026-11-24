@@ -53,8 +53,8 @@ export async function getMe(): Promise<Me | null> {
   if (!data.user) return null;
   let { data: p } = await sb.from('profiles').select('*').eq('id', data.user.id).maybeSingle();
   if (!p) {
-    // 웹툰보드에 처음 들어온 회원 — 여기서 프로필을 만들어요.
-    // (auth 트리거를 쓰지 않아요: 공용 Supabase에서 다른 서비스 가입자까지 웹툰보드 회원이 되지 않게)
+    // 바로웹툰에 처음 들어온 회원 — 여기서 프로필을 만들어요.
+    // (auth 트리거를 쓰지 않아요: 공용 Supabase에서 다른 서비스 가입자까지 바로웹툰 회원이 되지 않게)
     const u = data.user, md = (u.user_metadata || {}) as Record<string, string | undefined>;
     let src: string | null = md.signup_source || null;
     try { src = src || (await cookies()).get('wb_src')?.value || null; } catch { /* 쿠키 없음 */ }

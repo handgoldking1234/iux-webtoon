@@ -9,12 +9,12 @@ const CONTACT = 'handgoldking@gmail.com';
 export default function TermsPage() {
   return (
     <main className="legal">
-      <header><Link href="/"><Logo size={20} /> 웹툰보드</Link></header>
+      <header><Link href="/"><Logo size={20} /> 바로웹툰</Link></header>
       <h1>이용약관</h1>
       <p className="meta">시행일: 2026년 11월 24일</p>
 
       <h2>1. 목적</h2>
-      <p>이 약관은 IUX가 운영하는 웹툰보드(webtoon.iux.kr, 이하 ‘서비스’)를 이용하는 조건과 절차, 서비스와 이용자의 권리와 책임을 정합니다.</p>
+      <p>이 약관은 IUX가 운영하는 바로웹툰(webtoon.iux.kr, 이하 ‘서비스’)를 이용하는 조건과 절차, 서비스와 이용자의 권리와 책임을 정합니다.</p>
 
       <h2>2. 서비스 내용</h2>
       <p>서비스는 웹툰 기획, 스토리, 콘티, 그림, 말풍선 작업을 돕는 편집기와 AI 기능, 작품을 공개하는 연재관을 제공합니다. 편집기는 로그인 없이 쓸 수 있고, AI 기능과 클라우드 저장, 연재관 활동은 회원만 쓸 수 있습니다.</p>

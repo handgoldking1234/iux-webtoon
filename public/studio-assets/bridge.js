@@ -1,4 +1,4 @@
-/* 웹툰보드 브리지 — 편집기(editor/studio.html)와 서버(회원 · 클라우드 저장 · AI)를 잇는 얇은 층
+/* 바로웹툰 브리지 — 편집기(editor/studio.html)와 서버(회원 · 클라우드 저장 · AI)를 잇는 얇은 층
  * 편집기 코드는 그대로 두고, 저장 · AI · 계정이 닿는 곳만 window.__WB로 불러요.
  * - local 모드(DB 연동 전): 브라우저 저장만, 글 AI · 이미지 AI는 서버 키가 있으면 사용
  * - cloud 모드: 작품 JSON · 그림을 Supabase Storage로 올리고, 다른 기기에서 열면 받아와요
@@ -67,7 +67,7 @@
           setTimeout(function () { pushWorks(merged, db); }, 1500);
         });
       });
-    }); }).catch(function (e) { status('클라우드 연결 안 됨 · 이 브라우저에 저장 중', false); console.warn('[웹툰보드] sync', e); });
+    }); }).catch(function (e) { status('클라우드 연결 안 됨 · 이 브라우저에 저장 중', false); console.warn('[바로웹툰] sync', e); });
   }
 
   /* 가입 전에(손님으로) 이 브라우저에서 만든 작품을 내 계정으로 옮겨요 — 한 작품은 한 번만 */
@@ -112,7 +112,7 @@
     clearTimeout(worksT);
     worksT = setTimeout(function () {
       var todo = lastWorks.filter(function (w) { return (synced[w.id] || 0) < (w.updated || w.created || 1); });
-      todo.forEach(function (w) { upQueue = upQueue.then(function () { return uploadProject(w); }).catch(function (e) { console.warn('[웹툰보드] upload', e); status('클라우드 저장 실패 · 잠시 뒤 다시 해요', false); }); });
+      todo.forEach(function (w) { upQueue = upQueue.then(function () { return uploadProject(w); }).catch(function (e) { console.warn('[바로웹툰] upload', e); status('클라우드 저장 실패 · 잠시 뒤 다시 해요', false); }); });
     }, 1200);
   }
 
@@ -360,7 +360,7 @@
       if (err && err.code === 'cancel') { say('취소했어요'); return; }
       if (err && err.status === 401) { say('로그인하면 연재할 수 있어요'); return; }
       say((err && err.message) || '연재관에 올리지 못했어요 · 잠시 뒤 다시 해 주세요');
-      console.warn('[웹툰보드] publish', err);
+      console.warn('[바로웹툰] publish', err);
     });
   }
 

@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <style>:root{color-scheme:dark;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>웹툰보드 연재</title>
-<meta name="description" content="웹툰보드에서 만든 웹툰을 요일연재 · 자유연재로 읽는 곳">
+<title>바로웹툰 연재</title>
+<meta name="description" content="바로웹툰에서 만든 웹툰을 요일연재 · 자유연재로 읽는 곳">
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
@@ -346,7 +346,7 @@ body::before{background:#000}
 
 <header class="gnb" id="gnb">
   <div class="wrap">
-    <a class="logo" href="/read" data-l=""><i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg></i>웹툰보드<small>연재</small></a>
+    <a class="logo" href="/read" data-l=""><i><svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4h11a3 3 0 0 1 3 3v13H8a3 3 0 0 1-3-3z"/><path d="M5 17a3 3 0 0 1 3-3h11"/></svg></i>바로웹툰<small>연재</small></a>
     <nav class="menu" aria-label="연재관 메뉴">
       <a href="/read" data-l="" data-m="home">홈</a>
       <a href="/read/daily" data-l="daily" data-m="daily">요일연재</a>
@@ -362,7 +362,7 @@ body::before{background:#000}
 
 <main id="app" aria-live="polite"></main>
 
-<footer><div class="wrap"><span>웹툰보드 연재 · webtoon.iux.kr</span><span>시안 · 작품과 작가는 모두 예시예요</span><span>운영정책 · 신고하기 · 문의</span></div></footer>
+<footer><div class="wrap"><span>바로웹툰 연재 · webtoon.iux.kr</span><span>시안 · 작품과 작가는 모두 예시예요</span><span>운영정책 · 신고하기 · 문의</span></div></footer>
 
 <script>
 /* ---------- 예시 데이터 (실제 서비스에서는 서버에서 받아요) ---------- */
@@ -499,7 +499,7 @@ function home(){const G=(...g)=>byRate(ALL().filter(w=>g.includes(w.genre)));
   ${row('가볍게 웃고 싶을 때','개그 · 일상',G('개그','일상').map(card))}
   ${row('다른 세계로','판타지 · 로맨스 · 드라마',G('판타지','로맨스','드라마','스포츠').map(card))}
   ${row('완결까지 한 번에','기다릴 필요 없는 완결작',W.filter(w=>w.days[0]==='end').concat(byRate(W).filter(w=>w.eps>=48&&w.days[0]!=='end')).map(card))}
-  <section class="band"><div><h3>내 웹툰도 여기에</h3><p>웹툰보드에서 만든 회차는 「연재하기」 한 번으로 바로 올라가요. 자유연재로 시작해서 관심과 별점이 모이면 요일연재 후보가 돼요.</p></div><div class="acts"><a class="btn big go" href="${U('publish')}">연재하기</a><a class="btn big glass" href="${PATH?'/':'https://webtoon.iux.kr'}">웹툰 만들기</a></div></section>
+  <section class="band"><div><h3>내 웹툰도 여기에</h3><p>바로웹툰에서 만든 회차는 「연재하기」 한 번으로 바로 올라가요. 자유연재로 시작해서 관심과 별점이 모이면 요일연재 후보가 돼요.</p></div><div class="acts"><a class="btn big go" href="${U('publish')}">연재하기</a><a class="btn big glass" href="${PATH?'/':'https://webtoon.iux.kr'}">웹툰 만들기</a></div></section>
  </div>`;}
 function daily(){return `<div class="wrap"><div class="page-h"><h1>요일연재</h1><p>오늘은 ${DAYS.find(d=>d[0]===TODAY)[1]}요일이에요</p></div><section class="tt" id="tt" style="margin-top:14px">${timetable()}</section></div>`;}
 function free(){const L=FREE.slice().sort(S.freeSort==='new'?(a,b)=>(b.isNew||0)-(a.isNew||0):(a,b)=>b.rate-a.rate);
@@ -508,7 +508,7 @@ function rank(){return `<div class="wrap" style="max-width:860px"><div class="pa
 function title(id){const w=byId(id);if(!w)return home();const fav=S.fav.has(w.id);const dl=w.days?w.days.map(d=>DAYS.find(x=>x[0]===d)[1]).join(' · '):'';
  const eps=[];for(let n=w.eps;n>=1;n--)eps.push(n);
  return `<div class="wrap"><section class="thead"><div class="th">${img(thumb(w),w.title+' 썸네일')}</div><div><h1>${esc(w.title)}</h1><p class="who"><span>글/그림 ${esc(w.author)}</span><span>${w.free?'자유연재':(w.days[0]==='end'?'완결':dl+'요일 연재')}</span><span>${esc(w.age)} 이용가</span></p><p class="desc">${esc(w.desc)}</p>
-  <div class="chips"><span class="chip">#${esc(w.genre)}</span><span class="chip">총 ${w.eps}화</span>${w.ai?'<span class="chip ai">AI 활용 작품</span>':''}<span class="chip">웹툰보드로 제작</span></div>
+  <div class="chips"><span class="chip">#${esc(w.genre)}</span><span class="chip">총 ${w.eps}화</span>${w.ai?'<span class="chip ai">AI 활용 작품</span>':''}<span class="chip">바로웹툰으로 제작</span></div>
   <div class="acts"><a class="btn go big" href="${U(w.id+'/1')}">첫 화 보기</a><button class="btn big fav ${fav?'on':''}" data-fav="${w.id}" aria-pressed="${fav}">${fav?'관심 등록됨':'+ 관심'}</button><button class="btn big" data-share>공유</button></div></div></section>
   <section class="eplist" aria-label="회차 목록"><div class="hd"><b>총 ${w.eps}화</b><span class="muted">최신화부터</span></div>${eps.map(n=>`<a class="ep" href="${U(w.id+'/'+n)}"><span class="eth">${img(cutCanvasThumb(w,n),'')}</span><span style="min-width:0"><b>${n}화 · ${esc(epTitle(w,n))}</b><small><span class="star tnum">★ ${epRate(w,n)}</span></small></span><span class="d tnum">${epDate(w,n)}</span></a>`).join('')}</section></div>`;}
 const ETH={};function cutCanvasThumb(w,n){const k=w.id+n;if(ETH[k])return ETH[k];const cv=document.createElement('canvas');cv.width=320;cv.height=200;const g=cv.getContext('2d'),r=rnd(k);const gr=g.createLinearGradient(0,0,320,200);gr.addColorStop(0,w.pal[0]);gr.addColorStop(1,w.pal[1]);g.fillStyle=gr;g.fillRect(0,0,320,200);motif(g,w,320,200,r);figure(g,90+r()*140,190,34,'rgba(10,12,11,.8)');return ETH[k]=cv.toDataURL('image/jpeg',.8);}
@@ -532,7 +532,7 @@ const MY=[{id:'hyeonsang',title:'현상',eps:[[1,'붉은 등 아래',7,4.8],[2,'
  {id:'mynew',title:'새 작품 1',eps:[[1,'1화',6,3.9]],pal:['#e9edc9','#a3b18a','#344e41'],motif:'lines',updated:'3일 전'}];
 function pubSteps(){const L=['작품 고르기','작품 정보','공개 설정','확인'];return `<div class="steps" aria-label="진행 단계">${L.map((l,i)=>`<span class="${S.pub.step===i+1?'on':S.pub.step>i+1?'done':''}"><i>${S.pub.step>i+1?'✓':i+1}</i>${l}</span>`).join('')}</div>`;}
 function publish(){const P=S.pub;const src=MY.find(m=>m.id===P.src);let body='';
- if(P.step===1){body=`<div class="panel"><h2>웹툰보드에서 만든 작품</h2><p class="muted" style="margin-top:-10px">이 브라우저의 웹툰보드 작품을 불러왔어요. 로그인하면 다른 기기에서 만든 작품도 보여요.</p>
+ if(P.step===1){body=`<div class="panel"><h2>바로웹툰에서 만든 작품</h2><p class="muted" style="margin-top:-10px">이 브라우저의 바로웹툰 작품을 불러왔어요. 로그인하면 다른 기기에서 만든 작품도 보여요.</p>
   <div class="src">${MY.map(m=>`<label class="srcw"><span class="mini">${img(thumb(Object.assign({},m,{id:m.id})),'')}</span><span style="min-width:0"><b>${esc(m.title)}</b><br><small>회차 ${m.eps.length}개 · ${m.updated} 수정</small></span><input type="radio" name="src" value="${m.id}" ${P.src===m.id?'checked':''} style="accent-color:var(--green);width:18px;height:18px"></label>`).join('')}</div>
   <div class="field"><span class="lb">올릴 회차</span><div class="eps">${src.eps.map(([n,t,c,mb])=>`<label class="eprow"><input type="checkbox" data-ep="${n}" ${P.eps.includes(n)&&c?'checked':''} ${c?'':'disabled'}><span style="min-width:0"><b>${n}화 · ${esc(t)}</b><br><small>${c?`컷 ${c}개 · ${mb}MB`:'컷이 없어서 올릴 수 없어요'}</small></span><small class="tnum">${c?'가로 690px':''}</small></label>`).join('')}</div><small>회차는 한 번에 여러 개 올릴 수 있고, 예약 공개도 돼요.</small></div>
   <div class="pfoot"><a class="btn" href="${U('')}">취소</a><button class="btn go big" data-next ${P.eps.length?'':'disabled'}>다음</button></div></div>`;}
@@ -541,12 +541,12 @@ function publish(){const P=S.pub;const src=MY.find(m=>m.id===P.src);let body='';
   <div class="field"><label for="pGenre">장르</label><select id="pGenre">${['스릴러','드라마','판타지','로맨스','일상','개그','액션','스포츠','미스터리'].map(g=>`<option ${P.genre===g?'selected':''}>${g}</option>`).join('')}</select></div></div>
   <div class="field"><label for="pDesc">작품 소개</label><textarea id="pDesc" maxlength="200">${esc(P.desc)}</textarea><small>기획의 로그라인을 가져왔어요. 200자까지 써요.</small></div>
   <div class="field"><span class="lb">이용 연령</span><div class="seg">${['전체','12세','15세','19세'].map(a=>`<label><input type="radio" name="age" value="${a}" ${P.age===a?'checked':''}>${a}${a==='전체'?'':' 이상'}</label>`).join('')}</div><small>19세 작품은 성인 인증한 독자에게만 보여요.</small></div>
-  <div class="field"><span class="lb">썸네일</span><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div class="preview-card">${card({id:'pv-'+P.src,title:P.title||'제목',author:'손금왕',rate:0,pal:src.pal,motif:src.motif,isNew:1,ai:P.ai==='yes'})}</div><small style="max-width:280px">웹툰보드의 「표지 · 썸네일」에서 만든 그림을 써요. 없으면 1화 첫 컷으로 만들어요.</small></div></div>
+  <div class="field"><span class="lb">썸네일</span><div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap"><div class="preview-card">${card({id:'pv-'+P.src,title:P.title||'제목',author:'손금왕',rate:0,pal:src.pal,motif:src.motif,isNew:1,ai:P.ai==='yes'})}</div><small style="max-width:280px">바로웹툰의 「표지 · 썸네일」에서 만든 그림을 써요. 없으면 1화 첫 컷으로 만들어요.</small></div></div>
   <div class="pfoot"><button class="btn big" data-prev>이전</button><button class="btn go big" data-next>다음</button></div></div>`;}
  else if(P.step===3){body=`<div class="panel"><h2>공개 설정</h2>
   <div class="field"><span class="lb">연재 방식</span><div class="seg"><label><input type="radio" name="mode" value="free" ${P.mode==='free'?'checked':''}>자유연재 — 바로 공개</label><label><input type="radio" name="mode" value="apply" ${P.mode==='apply'?'checked':''}>요일연재 신청 — 검토 후 공개</label></div><small>${P.mode==='free'?'올리면 자유연재 목록에 바로 보여요.':'운영팀이 1~3일 안에 검토해요. 그동안은 자유연재로 공개돼요.'}</small></div>
   <div class="field"><span class="lb">연재 요일</span><div class="seg">${DAYS.slice(0,7).map(([k,l])=>`<label><input type="checkbox" name="day" value="${k}" ${P.days.includes(k)?'checked':''}>${l}</label>`).join('')}</div><small>요일을 정해 두면 그날 「UP」 표시가 붙고 관심 독자에게 알림이 가요.</small></div>
-  <div class="field"><span class="lb">AI 활용 표시</span><div class="seg"><label><input type="radio" name="ai" value="yes" ${P.ai==='yes'?'checked':''}>AI 그림 · 글을 썼어요</label><label><input type="radio" name="ai" value="no" ${P.ai==='no'?'checked':''}>직접 그렸어요</label></div><small>웹툰보드에서 AI 이미지를 쓴 회차는 자동으로 「AI 활용」 표시가 붙어요.</small></div>
+  <div class="field"><span class="lb">AI 활용 표시</span><div class="seg"><label><input type="radio" name="ai" value="yes" ${P.ai==='yes'?'checked':''}>AI 그림 · 글을 썼어요</label><label><input type="radio" name="ai" value="no" ${P.ai==='no'?'checked':''}>직접 그렸어요</label></div><small>바로웹툰에서 AI 이미지를 쓴 회차는 자동으로 「AI 활용」 표시가 붙어요.</small></div>
   <div class="pfoot"><button class="btn big" data-prev>이전</button><button class="btn go big" data-next>다음</button></div></div>`;}
  else if(P.step===4){const ok=P.agree.every(Boolean);const sel=src.eps.filter(e=>P.eps.includes(e[0]));const tot=sel.reduce((a,e)=>a+e[3],0).toFixed(1);
   body=`<div class="panel"><h2>올리기 전에 확인해요</h2>
@@ -556,7 +556,7 @@ function publish(){const P=S.pub;const src=MY.find(m=>m.id===P.src);let body='';
    ${P.eps.includes(2)?'<li><i class="w">!</i><span>2화 4번째 컷에 말풍선이 그림 밖으로 조금 나가 있어요 · 올릴 수는 있어요</span><span class="warn">확인</span></li>':''}</ul>
   <div class="agree"><label><input type="checkbox" data-ag="0" ${P.agree[0]?'checked':''}><span>제가 만들었거나 쓸 권리가 있는 그림과 글만 올려요.</span></label><label><input type="checkbox" data-ag="1" ${P.agree[1]?'checked':''}><span>실존 인물을 해치거나 선정적 · 폭력적인 내용은 연령 등급에 맞게 표시했어요.</span></label><label><input type="checkbox" data-ag="2" ${P.agree[2]?'checked':''}><span>운영정책을 어기면 신고를 받아 숨김 처리될 수 있다는 걸 알아요.</span></label></div>
   <div class="pfoot"><button class="btn big" data-prev>이전</button><button class="btn go big" data-go ${ok?'':'disabled'}>${P.mode==='free'?'지금 연재하기':'신청하고 자유연재로 공개'}</button></div></div>`;}
- else{const id=P.newId;body=`<div class="panel done"><span class="bigck"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><h2 style="font-size:22px">「${esc(P.title)}」이 올라갔어요</h2><p class="muted">${P.mode==='free'?'자유연재에 바로 공개됐어요.':'요일연재 검토를 신청했어요. 결과는 알림으로 알려 드려요.'} 다음 회차는 웹툰보드 편집기에서 「연재하기」를 누르면 이어서 올라가요.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><a class="btn go big" href="${U(id)}">작품 페이지 보기</a><a class="btn big" href="${U('free')}">자유연재 목록</a></div></div>`;}
+ else{const id=P.newId;body=`<div class="panel done"><span class="bigck"><svg viewBox="0 0 24 24" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 5 5 9-10"/></svg></span><h2 style="font-size:22px">「${esc(P.title)}」이 올라갔어요</h2><p class="muted">${P.mode==='free'?'자유연재에 바로 공개됐어요.':'요일연재 검토를 신청했어요. 결과는 알림으로 알려 드려요.'} 다음 회차는 바로웹툰 편집기에서 「연재하기」를 누르면 이어서 올라가요.</p><div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center"><a class="btn go big" href="${U(id)}">작품 페이지 보기</a><a class="btn big" href="${U('free')}">자유연재 목록</a></div></div>`;}
  return `<div class="pub wrap"><h1>연재하기</h1>${P.step<5?pubSteps():''}${body}</div>`;}
 
 /* ---------- 주소 ---------- */
@@ -573,7 +573,7 @@ function render(){const g=segs();let html,m='';CUR={};
  else{html=home();m='home';}
  $('#app').innerHTML=html;document.querySelectorAll('.menu a').forEach(a=>a.classList.toggle('on',a.dataset.m===m));
  $('#gnb').hidden=g.length>=2&&!['daily','free','rank','publish'].includes(g[0]);
- const w=g[0]&&byId(g[0]);document.title=w?(g[1]?`${w.title} ${g[1]}화 · 웹툰보드 연재`:`${w.title} · 웹툰보드 연재`):'웹툰보드 연재';
+ const w=g[0]&&byId(g[0]);document.title=w?(g[1]?`${w.title} ${g[1]}화 · 바로웹툰 연재`:`${w.title} · 바로웹툰 연재`):'바로웹툰 연재';
  window.scrollTo(0,0);}
 function go(p){if(PATH){history.pushState(null,'',p);render();}else location.hash=p;}
 window.addEventListener(PATH?'popstate':'hashchange',render);

@@ -1,4 +1,4 @@
-# 웹툰보드 (IUX Webtoon)
+# 바로웹툰 (IUX Webtoon)
 
 기획부터 콘티 · AI 이미지 · 말풍선까지, 웹툰 한 화를 한 곳에서 만드는 편집기.
 
@@ -80,7 +80,7 @@ npm test                     # 한도 · AI 엔진 · 편집기 패치 테스트
 ## DB 연동 (Supabase)
 
 1. Supabase 프로젝트를 정해요 (리전: Seoul 권장). 새 프로젝트도, 여러 서비스가 함께 쓰는 프로젝트(iux-cloud)도 돼요.
-   웹툰보드 테이블은 모두 `webtoon` 구역(스키마)에, 버킷은 `webtoon` · `webtoon-read`로 만들어져서 다른 서비스와 섞이지 않아요.
+   바로웹툰 테이블은 모두 `webtoon` 구역(스키마)에, 버킷은 `webtoon` · `webtoon-read`로 만들어져서 다른 서비스와 섞이지 않아요.
 2. SQL Editor에 `supabase/migrations/0001_init.sql` → `0002_settings_notices.sql` → `0003_read.sql` 순서로 붙여 넣고 실행해요.
 3. **Project Settings → API → Exposed schemas**에 `webtoon`을 추가해요. (빠뜨리면 "schema must be one of …" 오류가 나요)
 4. Authentication → Providers

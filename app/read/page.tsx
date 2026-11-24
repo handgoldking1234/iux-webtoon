@@ -32,7 +32,7 @@ export default async function ReadHome() {
       {themed.map(([t, sub, L]) => <Rail key={t} title={t} sub={sub}>{L.slice(0, 14).map((s) => <Card key={s.id} s={s} />)}</Rail>)}
       {done.length ? <Rail title="완결까지 한 번에" sub="기다릴 필요 없는 완결작">{byRate(done).slice(0, 14).map((s) => <Card key={s.id} s={s} />)}</Rail> : null}
       <section className={k('band')}>
-        <div><h3>내 웹툰도 여기에</h3><p>웹툰보드에서 만든 회차는 「연재하기」 한 번으로 바로 올라가요. 자유연재로 시작해서 관심과 별점이 모이면 요일연재 후보가 돼요.</p></div>
+        <div><h3>내 웹툰도 여기에</h3><p>바로웹툰에서 만든 회차는 「연재하기」 한 번으로 바로 올라가요. 자유연재로 시작해서 관심과 별점이 모이면 요일연재 후보가 돼요.</p></div>
         <div className={k('acts')}><Link className={k('btn big go')} href={readHref('publish')}>연재하기</Link><a className={k('btn big glass')} href="/studio">웹툰 만들기</a></div>
       </section>
     </div>

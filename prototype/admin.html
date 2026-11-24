@@ -1,4 +1,4 @@
-<title>웹툰보드 관리자</title>
+<title>바로웹툰 관리자</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700;800&display=swap">
@@ -262,7 +262,7 @@ dl.kv dt{color:var(--mute)}dl.kv dd{margin:0}
 
 <div class="app">
 <nav class="nav" aria-label="관리자 메뉴">
- <div class="brand"><i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></i><div><b>웹툰보드</b><small>관리자</small></div></div>
+ <div class="brand"><i><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></i><div><b>바로웹툰</b><small>관리자</small></div></div>
  <a href="#dash" data-go="dash"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg>대시보드</a>
  <a href="#acq" data-go="acq"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 4h18l-7 8v6l-4 2v-8z"/></svg>유입경로</a>
  <a href="#members" data-go="members"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.5a3.5 3.5 0 0 1 0 7"/><path d="M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></svg>회원관리</a>
@@ -277,7 +277,7 @@ dl.kv dt{color:var(--mute)}dl.kv dd{margin:0}
 <main>
  <header class="topbar"><span class="tbt" id="tbTitle">대시보드</span>
   <div class="tbr">
-   <a class="svc" href="https://claude.ai/artifact/WrCsd8mpMgjPSNqM2JjVmn" target="_blank" rel="noopener" title="웹툰보드 서비스를 새 탭에서 열어요"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg><span>서비스 바로가기</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
+   <a class="svc" href="https://claude.ai/artifact/WrCsd8mpMgjPSNqM2JjVmn" target="_blank" rel="noopener" title="바로웹툰 서비스를 새 탭에서 열어요"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5"/></svg><span>서비스 바로가기</span><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a>
    <span class="tbsep" aria-hidden="true"></span>
    <div class="popwrap"><button class="ibtn" type="button" id="bellBtn" aria-label="알림" aria-haspopup="true" aria-expanded="false"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="bdg" id="bellCnt">4</span></button>
     <div class="pop" id="bellPop" hidden role="menu" aria-label="알림 목록"><div class="pophd"><b>알림</b><button class="lnk" type="button" id="readAll">모두 읽음</button></div>
@@ -386,7 +386,7 @@ dl.kv dt{color:var(--mute)}dl.kv dd{margin:0}
    <tr data-ch="광고"><th scope="row">광고<span class="sub2">검색광고 · SNS 광고 (집행 전)</span></th><td class="r">980</td><td class="r">20</td><td class="r">2.0%</td><td class="r">4</td><td class="r down"><b>20%</b></td><td class="r">3명</td><td class="r"><b>1명</b></td></tr>
   </tbody></table></div></div>
  <div class="grid g-2">
-  <div class="card"><h2>AI 서비스 유입</h2><p class="note">AI 답변에서 웹툰보드 링크를 눌러 들어온 방문이에요. 오른쪽은 첫 내보내기까지 간 비율이에요.</p>
+  <div class="card"><h2>AI 서비스 유입</h2><p class="note">AI 답변에서 바로웹툰 링크를 눌러 들어온 방문이에요. 오른쪽은 첫 내보내기까지 간 비율이에요.</p>
    <div class="brow"><span>챗GPT</span><div class="bar b-blue"><i style="width:100%"></i></div><span class="v">1,120 · 49%</span></div>
    <div class="brow"><span>제미나이</span><div class="bar b-blue"><i style="width:38%"></i></div><span class="v">420 · 44%</span></div>
    <div class="brow"><span>퍼플렉시티</span><div class="bar b-blue"><i style="width:23%"></i></div><span class="v">260 · 52%</span></div>
@@ -399,7 +399,7 @@ dl.kv dt{color:var(--mute)}dl.kv dd{margin:0}
     <label class="fld" for="utmC" style="grid-column:span 2">캠페인 (campaign)<input id="utmC" value="char_sheet_2026_11"></label>
    </div>
    <div class="mono" id="utmOut"></div>
-   <div style="display:flex;gap:8px"><button class="btn pri lg" type="submit">링크 복사</button><span class="note" style="align-self:center">[웹툰보드 주소]는 도메인이 정해지면 바뀌어요</span></div>
+   <div style="display:flex;gap:8px"><button class="btn pri lg" type="submit">링크 복사</button><span class="note" style="align-self:center">[바로웹툰 주소]는 도메인이 정해지면 바뀌어요</span></div>
   </form>
  </div>
 </section>
@@ -624,7 +624,7 @@ dl.kv dt{color:var(--mute)}dl.kv dd{margin:0}
   <div class="card"><div class="hd"><h2>공지 · 배너</h2><button class="btn sm pri r" type="button" id="newNotice">새 공지</button></div>
    <div id="notices">
     <div class="row"><span class="pill p-dark">띠</span><span style="flex:1;min-width:0"><b>캐릭터 시트 · 배경 만들기 열렸어요</b><span class="sub2">10.24 – 11.07 · 대상 전체</span></span><span class="pill p-ok">게시 중</span></div>
-    <div class="row"><span class="pill p-dark">띠</span><span style="flex:1;min-width:0"><b>웹툰보드 무료 오픈 안내</b><span class="sub2">11.01 – 11.30 · 대상 전체</span></span><span class="pill p-blue">예약</span></div>
+    <div class="row"><span class="pill p-dark">띠</span><span style="flex:1;min-width:0"><b>바로웹툰 무료 오픈 안내</b><span class="sub2">11.01 – 11.30 · 대상 전체</span></span><span class="pill p-blue">예약</span></div>
     <div class="row"><span class="pill p-gray">팝업</span><span style="flex:1;min-width:0"><b>첫 캐릭터 시트 1장 무료</b><span class="sub2">11.01 – 11.07 · 대상 콘티를 만든 회원</span></span><span class="pill p-blue">예약</span></div>
     <div class="row"><span class="pill p-gray">팝업</span><span style="flex:1;min-width:0"><b>서버 점검 안내</b><span class="sub2">09.14 · 대상 전체</span></span><span class="pill p-gray">종료</span></div>
    </div></div>
@@ -737,7 +737,7 @@ bindTabs('#statTabs','#v-stats');bindTabs('#opsTabs','#v-ops');
 
 /* ---- 유입경로 ---- */
 $('#chSel').addEventListener('change',e=>{const v=e.target.value;$$('#chTable tbody tr').forEach(r=>r.hidden=!!v&&r.dataset.ch!==v);});
-function utm(){$('#utmOut').textContent=`[웹툰보드 주소]/?utm_source=${encodeURIComponent($('#utmS').value)}&utm_medium=${encodeURIComponent($('#utmM').value)}&utm_campaign=${encodeURIComponent($('#utmC').value)}`;}
+function utm(){$('#utmOut').textContent=`[바로웹툰 주소]/?utm_source=${encodeURIComponent($('#utmS').value)}&utm_medium=${encodeURIComponent($('#utmM').value)}&utm_campaign=${encodeURIComponent($('#utmC').value)}`;}
 ['#utmS','#utmM','#utmC'].forEach(s=>$(s).addEventListener('input',utm));utm();
 $('#utmForm').addEventListener('submit',e=>{e.preventDefault();const t=$('#utmOut').textContent;try{navigator.clipboard.writeText(t).then(()=>toast('링크를 복사했어요'),()=>{selectOut();toast('링크를 선택해 두었어요 · Ctrl+C로 복사하세요');});}catch(_){selectOut();toast('링크를 선택해 두었어요 · Ctrl+C로 복사하세요');}});
 function selectOut(){const r=document.createRange();r.selectNodeContents($('#utmOut'));const s=getSelection();s.removeAllRanges();s.addRange(r);}
@@ -833,7 +833,7 @@ function renderQ(){const open=Q.filter(q=>q.st==='대기').length,rOpen=$$('.rep
   <div class="chips"><span class="pill p-gray">${q.k}</span><span class="pill p-gray">${q.env}</span><span class="pill p-gray">맛보기 남음 ${q.cr}</span></div>
   <div class="qbody">${q.b}</div>${q.a?`<div class="qans"><b style="display:block;margin-bottom:4px">보낸 답변 · GOLDKING</b>${q.a}</div>`:''}
   ${q.st==='대기'?`<div style="display:flex;flex-direction:column;gap:8px"><div class="chips"><span class="note" style="align-self:center">자주 쓰는 답변</span>${Object.keys(TPL).map(k=>`<button class="chip" type="button" data-tpl="${k}" aria-pressed="false">${k}</button>`).join('')}</div>
-  <label class="fld" for="ans">답변<textarea id="ans" rows="4" placeholder="답변을 적으면 회원 이메일과 웹툰보드 알림으로 가요"></textarea></label>
+  <label class="fld" for="ans">답변<textarea id="ans" rows="4" placeholder="답변을 적으면 회원 이메일과 바로웹툰 알림으로 가요"></textarea></label>
   <div style="display:flex;gap:8px;justify-content:flex-end"><button class="btn lg" type="button" id="qGive">이미지 보상 지급</button><button class="btn pri lg" type="button" id="qSend">답변 보내기</button></div></div>`:''}`;}
 $('#qList').addEventListener('click',e=>{const b=e.target.closest('[data-q]');if(!b)return;QS=+b.dataset.q;renderQ();});
 $('#qView').addEventListener('click',e=>{const t=e.target.closest('[data-tpl]');if(t){$('#ans').value=TPL[t.dataset.tpl];$('#ans').focus();return;}

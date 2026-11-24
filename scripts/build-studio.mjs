@@ -16,7 +16,7 @@ const P = (name, from, to, count = 1) => {
 
 // 0) 부트 데이터 + 브리지를 편집기 스크립트보다 먼저
 P('bridge 주입', '\n<script>\n', '\n<script>window.__WB_BOOT=__WB_BOOT_JSON__;</script>\n<script src="/studio-assets/bridge.js"></script>\n<script>\n');
-P('제목', /<title>[^<]*<\/title>/, '<title>웹툰보드</title>');
+P('제목', /<title>[^<]*<\/title>/, '<title>바로웹툰</title>');
 
 // 1) 저장소: 회원마다 브라우저 DB를 따로 + 시작할 때 클라우드와 맞추기
 P('IDB 이름', "indexedDB.open('webtoon-cut-studio',1)", "indexedDB.open('webtoon-cut-studio'+(window.__WB?__WB.dbSuffix:''),1)");
