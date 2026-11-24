@@ -245,11 +245,6 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-who li svg,.lp-price li svg{color:var(--accText);flex:none}
 .lp-who .pro{border:2px solid var(--acc);background:linear-gradient(180deg,var(--accRow),var(--panel) 55%)}
 .lp-who .pro .tag{background:var(--ink);color:var(--panel)}
-.lp-whoai{display:flex;gap:20px;align-items:flex-start;margin-top:var(--gap);padding:28px;border-radius:var(--rad);border:1px dashed color-mix(in srgb,var(--acc) 55%,var(--line));background:var(--soft2)}
-.lp-whoai>i{flex:none;width:48px;height:48px;border-radius:14px;background:var(--accSoft);color:var(--accText);display:flex;align-items:center;justify-content:center}
-.lp-whoai small{display:block;color:var(--mute);font-size:var(--fs-sm)}
-.lp-whoai b{display:block;margin-top:4px;font-size:20px;font-weight:800;letter-spacing:var(--ls-tight);line-height:1.4}
-.lp-whoai p{margin-top:10px;font-size:var(--fs-desc);line-height:1.8;color:var(--mute)}
 .lp-pillars{margin-top:40px;text-align:center}
 .lp-pillars>p{font-size:var(--fs-body);color:var(--mute);line-height:1.7}
 .lp-pillars>p b{color:var(--ink);font-weight:800}
@@ -409,8 +404,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
   .lp-head p br{display:none}
   .lp-feat{grid-template-columns:1fr}
   .lp-more{grid-template-columns:1fr}
-  .lp-whoai{flex-direction:column;padding:22px}
-  .lp-feat .art{height:112px}
+    .lp-feat .art{height:112px}
   .lp-val .art,.lp-who .art{height:160px}
   .lp-price article{padding:24px}
   .lp-hl b{font-size:24px}

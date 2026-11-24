@@ -391,11 +391,6 @@ export default async function Home() {
               <ul><li><I n="check" s={14} />캐릭터 시트 · 내 그림 올려서 컷에 넣기</li><li><I n="check" s={14} />말풍선 · 컷 배치 직접 편집</li></ul>
             </article>
           </div>
-          <div className="lp-whoai" data-r>
-            <i><I n="imgin" s={22} /></i>
-            <div><small>다른 AI 도구를 쓰고 있다면</small><b>그림은 익숙한 도구에서, 편집과 완성은 바로웹툰에서</b>
-              <p>지금 쓰는 작업 방식은 그대로 두세요. 컷마다 나노바나나 · GPT 이미지 · 미드저니용 프롬프트를 만들어 주고, 만든 그림을 가져오면 컷 · 말풍선 · 레이아웃까지 여기서 마무리해요.</p></div>
-          </div>
         </div>
       </section>
 
