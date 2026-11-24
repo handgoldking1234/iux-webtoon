@@ -12,6 +12,18 @@ body.reader .iabox,body.reader .iah{display:none!important}
 
 /* 이미지 크기 · 위치 모드의 [완료]: 오른쪽 위에 크게 · 초록 */
 .ov .iabtn.on,.hb .iabtn.on{left:auto!important;right:12px;top:12px!important;bottom:auto!important;transform:none!important;height:36px;padding:0 16px;font-size:13px;background:var(--accent,#1db954);color:#fff;z-index:9!important;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+
+/* 꼬리 방향 · 곡선 (말풍선 모양 창) */
+.tailctl{display:flex;gap:12px;align-items:flex-start;margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+.tdir{display:grid;grid-template-columns:repeat(3,28px);gap:3px;flex:none}
+.tdir button{width:28px;height:28px;border:1px solid var(--line);border-radius:7px;background:var(--panel);font-size:14px;cursor:pointer;color:var(--ink)}
+.tdir button:hover{border-color:var(--accent);color:var(--accent)}
+.tdir span{width:28px;height:28px}
+.tbend{flex:1;min-width:0}
+.tbend .fld{margin:0}
+.tbq{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
+.tbq button{height:26px;padding:0 8px;border:1px solid var(--line);border-radius:13px;background:var(--panel);font-size:11.5px;cursor:pointer;color:var(--ink)}
+.tbq button:hover{border-color:var(--accent);color:var(--accent)}
 </style></head><body>
 <title>바로웹툰 v2</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -2272,6 +2284,10 @@ const DLG_CRAFT=`Dialogue craft (Korean webtoon — this matters most):
 - No exposition dumps: the picture already shows what happens. A line should add what the picture cannot — intent, humor, tension, a secret.
 - Vary rhythm: mostly short punchy balloons, one longer line only at an emotional peak. End the episode on a hook.
 - Avoid translation-ese and clichés (그것은 ~이다 / ~하는 것이다 / overusing 정말·너무 / ending every line with "!"). Prefer natural spoken endings (~잖아, ~거든, ~네, ~지?).`;
+/* 말풍선 꼬리: 빠른 설정 창에서 방향 · 곡선 */
+const TDIR=[['nw','↖'],['n','↑'],['ne','↗'],['w','←'],['','·'],['e','→'],['sw','↙'],['s','↓'],['se','↘']];
+function tailCtl(it){return `<div class="tailctl"><div class="tdir" role="group" aria-label="꼬리 방향">${TDIR.map(([d,l])=>d?`<button type="button" data-tdir="${d}" title="꼬리를 ${l} 쪽으로">${l}</button>`:'<span></span>').join('')}</div><div class="tbend">${it.tail.straight?'<p class="note">직선 꼬리는 휘지 않아요</p>':`${rng('꼬리 곡선','data-k','tail.bend',-100,100,1,Math.round((it.tail.bend||0)*100),'%')}<div class="tbq"><button type="button" data-tbend="-60">왼쪽으로 휨</button><button type="button" data-tbend="0">곧게</button><button type="button" data-tbend="60">오른쪽으로 휨</button></div>`}</div></div>`;}
+function tailDir(c,it,d){const D=dims(c),gx=60/D.W0,gy=60/D.H0;const fx=d.includes('w')?.22:d.includes('e')?.78:.5;const x=d==='w'?it.x-gx:d==='e'?it.x+it.w+gx:it.x+it.w*fx;const y=d.startsWith('n')?it.y-gy:d.startsWith('s')?it.y+it.h+gy:it.y+it.h*.5;it.tail.x=clamp(x,0,1);it.tail.y=clamp(y,0,1);it.tail.on=true;}
 function sbStat(s){return s.img?'img':s.prompt?'prompt':s.ok?'ok':'draft';}
 function ratioStr(w,h){const L=[[1,1],[3,4],[4,3],[2,3],[3,2],[4,5],[5,4],[9,16],[16,9],[1,2],[2,1],[9,21]];const r=Math.log(w/h);let best=L[0],d=9;for(const p of L){const x=Math.abs(Math.log(p[0]/p[1])-r);if(x<d){d=x;best=p;}}return best.join(':');}
 async function drawSb(ctx,c,W,H,out){
@@ -4154,7 +4170,7 @@ function qpBody(it,k){const op=Math.round((it.op??1)*100);
  if(k==='op')return rng('불투명도','data-k','op',0,100,1,op,'%');
  if(k==='fill'){ensureFx(it);const i=it.fills.findIndex(f=>f.type==='solid'),f=it.fills[i];return f?`<div class="fld"><span>색</span><div class="clr"><input type="color" data-fx="fill" data-i="${i}" data-fk="color" value="${f.color||'#000000'}" aria-label="채우기 색"></div></div>`:`<p class="note">단색 채우기가 없어요</p><button class="btn sm" data-act="fx-add" data-kind="fill">채우기 추가</button>`;}
  if(k==='line'){ensureFx(it);const s=it.strokes[0];return s?`<div class="fld"><span>색</span><div class="clr"><input type="color" data-fx="stroke" data-i="0" data-fk="color" value="${s.color||'#111111'}" aria-label="선 색"></div></div><div class="fld"><span>굵기</span><div class="rng"><input type="number" class="rnum" data-fx="stroke" data-i="0" data-fk="w" min="0" max="60" step=".5" value="${s.w||2}" aria-label="선 굵기"><span class="unit">px</span></div></div>`:`<p class="note">선이 없어요</p><button class="btn sm" data-act="fx-add" data-kind="stroke">선 추가</button>`;}
- if(k==='shape')return shpGrid(it).replace('<span class="radh">모양</span>',`<span class="radh">모양</span>${it.tail&&it.type!=='thought'?`<label class="shpst"><input type="checkbox" data-k="tail.on"${it.tail.on?' checked':''}> 꼬리</label>${it.tail.on?`<label class="shpst"><input type="checkbox" data-k="tail.straight"${it.tail.straight?' checked':''}> 꼬리 직선</label>`:''}`:''}`);
+ if(k==='shape')return shpGrid(it).replace('<span class="radh">모양</span>',`<span class="radh">모양</span>${it.tail&&it.type!=='thought'?`<label class="shpst"><input type="checkbox" data-k="tail.on"${it.tail.on?' checked':''}> 꼬리</label>${it.tail.on?`<label class="shpst"><input type="checkbox" data-k="tail.straight"${it.tail.straight?' checked':''}> 꼬리 직선</label>`:''}`:''}`)+(it.tail&&it.tail.on&&it.type!=='thought'?tailCtl(it):'');
  if(k==='bcol')return `<div class="fld"><span>배경</span><div class="clr"><input type="color" data-k="fill" value="${it.fill==='none'?'#ffffff':it.fill}"><label><input type="checkbox" data-none="fill"${it.fill==='none'?' checked':''}> 투명</label></div></div><div class="fld"><span>테두리</span><div class="clr"><input type="color" data-k="stroke" value="${it.stroke==='none'?'#111111':it.stroke}"><label><input type="checkbox" data-none="stroke"${it.stroke==='none'?' checked':''}> 없음</label><label><input type="checkbox" data-k="dash"${it.dash?' checked':''}> 점선</label></div></div>${rng('테두리 굵기','data-k','lineW',.5,8,.5,it.lineW)}`;
  if(k==='txt')return `${rng('크기','data-k','size',8,140,1,it.size,'px')}<div class="fld"><span>글자색</span><div class="clr"><input type="color" data-k="color" value="${it.color}">${it.outline&&it.outline!=='none'&&!BOXED.has(it.type)?`<input type="color" data-k="outline" value="${it.outline}" aria-label="외곽선 색" title="외곽선 색">`:''}</div></div>`;
  if(k==='ai'){const img=it.type==='image'||qpCut(),P=img?['배경 지우기','웃는 표정으로','그림체 맞추기','밤 장면으로']:['더 짧게','자연스럽게','존댓말로','반말로','영어로','일본어로'];
@@ -4168,9 +4184,9 @@ function qpBody(it,k){const op=Math.round((it.op??1)*100);
    <p class="note">이미지 AI 연결은 개발 단계에서 해요. 지금 「재생성」은 프롬프트 복사 + 원본 저장 → 결과는 「결과 넣기」로.</p>`:''}</div>`;}
  return '';}
 function qpEl(){let p=$('#qpop');if(!p){p=document.createElement('div');p.id='qpop';p.className='qpop';p.hidden=true;document.body.appendChild(p);
-  p.addEventListener('input',ev=>{if(ev.target.id==='qaiTx')return;if(ev.target.id==='qaiPr'){const it=qpItem();if(it){it.aiPrompt=ev.target.value;clearTimeout(window.__qpS);window.__qpS=setTimeout(save,400);}return;}inspInput(ev);if(ev.target.hasAttribute('data-radsep')||ev.target.dataset.k==='shape'){qpRender();}clearTimeout(window.__qpT);window.__qpT=setTimeout(renderInspector,300);});
+  p.addEventListener('input',ev=>{if(ev.target.id==='qaiTx')return;if(ev.target.id==='qaiPr'){const it=qpItem();if(it){it.aiPrompt=ev.target.value;clearTimeout(window.__qpS);window.__qpS=setTimeout(save,400);}return;}inspInput(ev);if(ev.target.hasAttribute('data-radsep')||['shape','tail.on','tail.straight'].includes(ev.target.dataset.k)){qpRender();}clearTimeout(window.__qpT);window.__qpT=setTimeout(renderInspector,300);});
   p.addEventListener('focusin',ev=>{if(ev.target.matches('[data-k],[data-none],[data-fx],[data-radc]'))histArmed=true;});
-  p.addEventListener('click',ev=>{const q=ev.target.closest('[data-qaip]');if(q){const tx=$('#qaiTx');tx.value=tx.value?tx.value+', '+q.dataset.qaip:q.dataset.qaip;tx.focus();return;}if(ev.target.closest('[data-act]')&&!ev.target.closest('[data-act=qai-send]'))setTimeout(()=>{qpRender();renderInspector();},0);});}
+  p.addEventListener('click',ev=>{const td=ev.target.closest('[data-tdir],[data-tbend]');if(td){const it=qpItem(),c=cutById(activeCut);if(it&&c&&it.tail){mutate(()=>{if(td.dataset.tdir)tailDir(c,it,td.dataset.tdir);else it.tail.bend=+td.dataset.tbend/100;});baseCache.delete(c.id);sigs.delete(c.id);renderStrip();renderOverlay(c.id);qpRender();}return;}const q=ev.target.closest('[data-qaip]');if(q){const tx=$('#qaiTx');tx.value=tx.value?tx.value+', '+q.dataset.qaip:q.dataset.qaip;tx.focus();return;}if(ev.target.closest('[data-act]')&&!ev.target.closest('[data-act=qai-send]'))setTimeout(()=>{qpRender();renderInspector();},0);});}
  return p;}
 const qpCut=()=>QP.k==='cadj'||QP.k==='cai';
 function qpItem(){const c=cutById(activeCut);if(!c)return null;if(qpCut())return QP.cid===c.id?c:null;return c.items.find(i=>i.id===QP.id);}
