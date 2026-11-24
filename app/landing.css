@@ -219,6 +219,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-sctl .dots{display:flex;gap:8px}
 .lp-sctl .dots i{width:8px;height:8px;border-radius:8px;background:var(--ctl);cursor:pointer;transition:width .25s,background .25s}
 .lp-sctl .dots i.on{width:24px;background:var(--acc)}
+.lp-sctl .dots i[hidden]{display:none}
 .lp-val article{padding:24px 24px 32px}
 .lp-val .art{height:220px;margin-bottom:24px}
 .lp-val .art .big{width:96px;height:96px;border-radius:28px;z-index:1}

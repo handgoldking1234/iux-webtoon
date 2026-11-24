@@ -50,11 +50,12 @@ export default function LandingFx() {
       const at = () => { const x = track.scrollLeft; let k = 0, best = 1e9; cards.forEach((c, i) => { const d = Math.abs(c.offsetLeft - cards[0].offsetLeft - x); if (d < best) { best = d; k = i; } }); return k; };
       const maxX = () => track.scrollWidth - track.clientWidth - 2;
       const go = (i: number) => { const c = cards[Math.max(0, Math.min(cards.length - 1, i))]; track.scrollTo({ left: c.offsetLeft - cards[0].offsetLeft, behavior: calm ? 'auto' : 'smooth' }); setTimeout(sync, 600); };
-      const sync = () => { const k = at(); dots.forEach((d, i) => d.classList.toggle('on', i === k)); if (prev) prev.disabled = track.scrollLeft < 2; if (next) next.disabled = track.scrollLeft >= maxX(); };
+      const sync = () => { const k = at(), step = cards.length > 1 ? cards[1].offsetLeft - cards[0].offsetLeft : track.clientWidth, n = Math.max(1, cards.length - Math.round(track.clientWidth / Math.max(1, step)) + 1); dots.forEach((d, i) => { d.hidden = i >= n; d.classList.toggle('on', i === Math.min(k, n - 1)); }); if (prev) prev.disabled = track.scrollLeft < 2; if (next) next.disabled = track.scrollLeft >= maxX(); };
       prev?.addEventListener('click', () => go(at() - 1));
       next?.addEventListener('click', () => go(at() + 1));
       dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
       track.addEventListener('scroll', sync, { passive: true });
+      addEventListener('resize', sync);
       sync();
       if (calm) return;
       let hold = false, seen = false;
