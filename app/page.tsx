@@ -35,26 +35,30 @@ function I({ n, s = 20 }: { n: string; s?: number }) {
 
 // 컷 미리보기 띠 (그림 대신 색면 + 말풍선)
 const CUTS = [
-  { c: 'a', sc: 'S#1 · 비 오는 옥상', say: '오늘도 우산 안 가져왔지?' },
-  { c: 'b', sc: 'S#2 · 마법학교 복도', say: '그 책, 함부로 열면 안 돼!' },
-  { c: 'c', sc: 'S#3 · 편의점 앞', say: '…너 아직도 그 노래 들어?' },
-  { c: 'd', sc: 'S#4 · 새벽 사무실', say: '마감까지 세 시간 남았어요' },
-  { c: 'e', sc: 'S#5 · 여름 바닷가', say: '내년에도 여기 오자' },
-  { c: 'f', sc: 'S#6 · 왕궁 연회장', say: '드디어 만났군, 후계자.' },
+  ['cut1', '비 오는 학교 옥상에 혼자 선 학생'],
+  ['cut2', '밤 도시를 내려다보는 옥상 위 주인공'],
+  ['cut3', '편의점 앞에서 이어폰을 나눠 끼운 두 사람'],
+  ['cut4', '새벽 사무실에서 야근하는 직장인'],
+  ['cut5', '여름 바닷가에서 노을을 보는 두 친구'],
+  ['cut6', '비 오는 골목을 달리는 주인공'],
+  ['cut7', '노을 지는 옥상에서 칼을 든 주인공'],
+  ['cut8', '무너진 도시에서 맞붙는 두 사람'],
+  ['cut9', '절벽 길을 오르는 주인공'],
+  ['cut10', '비 오는 밤 육교 위의 세 사람'],
 ];
 
 const FEATS = [
-  { n: 'pen', en: 'IDEA & PLANNING', t: '작품 기획', d: '이야기만 있어도 충분해요. 로그라인부터 인물 설정, 관계도, 회차별 줄거리까지 AI와 함께 작품의 세계관을 만들어 보세요.' },
-  { n: 'grid', en: 'AI STORYBOARD', t: 'AI 콘티 제작', d: '시나리오를 입력하면 AI가 콘티와 컷별 이미지 프롬프트, 대사를 제안해요. 마음에 들지 않는 부분은 직접 수정하세요.' },
-  { n: 'users', en: 'CHARACTER & BACKGROUND', t: '캐릭터 & 배경 관리', d: '나만의 캐릭터와 배경을 시트로 관리하세요. 여러 컷에서도 인물의 얼굴과 분위기를 일관되게 유지할 수 있어요.' },
-  { n: 'cloud', en: 'CLOUD WORKSPACE', t: '클라우드 저장', d: '작업 중인 작품과 이미지를 안전하게 저장하고, 로그인한 기기 어디서든 이어서 작업하세요.' },
+  { img: 'feat-plan', n: 'pen', en: 'IDEA & PLANNING', t: '작품 기획', d: '이야기만 있어도 충분해요. 로그라인부터 인물 설정, 관계도, 회차별 줄거리까지 AI와 함께 작품의 세계관을 만들어 보세요.' },
+  { img: 'feat-conti', n: 'grid', en: 'AI STORYBOARD', t: 'AI 콘티 제작', d: '시나리오를 입력하면 AI가 콘티와 컷별 이미지 프롬프트, 대사를 제안해요. 마음에 들지 않는 부분은 직접 수정하세요.' },
+  { img: 'feat-char', n: 'users', en: 'CHARACTER & BACKGROUND', t: '캐릭터 & 배경 관리', d: '나만의 캐릭터와 배경을 시트로 관리하세요. 여러 컷에서도 인물의 얼굴과 분위기를 일관되게 유지할 수 있어요.' },
+  { img: 'feat-cloud', n: 'cloud', en: 'CLOUD WORKSPACE', t: '클라우드 저장', d: '작업 중인 작품과 이미지를 안전하게 저장하고, 로그인한 기기 어디서든 이어서 작업하세요.' },
 ];
 
 const GENRES = ['#로맨스', '#판타지', '#일상툰', '#학원물', '#액션', '#스릴러', '#코미디', '#회귀물', '#힐링', '#직장물', '#SF', '#무협'];
 const IDEAS = [
-  { n: 'heart', g: '로맨스', en: 'ROMANCE', line: '매일 같은 버스를 타는 두 사람, 한 사람만 그 사실을 알고 있다.', tags: ['설렘', '오해', '고백'] },
-  { n: 'wand', g: '판타지', en: 'FANTASY', line: '마법을 못 쓰는 마법학교 낙제생이 금지된 책을 열어 버린다.', tags: ['성장', '모험', '비밀'] },
-  { n: 'coffee', g: '일상툰', en: 'DAILY', line: '회사 앞 작은 카페 사장님이 손님들의 고민을 한 잔씩 들어 준다.', tags: ['공감', '힐링', '짧은 화'] },
+  { img: 'genre-romance', n: 'heart', g: '로맨스', en: 'ROMANCE', line: '매일 같은 버스를 타는 두 사람, 한 사람만 그 사실을 알고 있다.', tags: ['설렘', '오해', '고백'] },
+  { img: 'genre-fantasy', n: 'wand', g: '판타지', en: 'FANTASY', line: '마법을 못 쓰는 마법학교 낙제생이 금지된 책을 열어 버린다.', tags: ['성장', '모험', '비밀'] },
+  { img: 'genre-daily', n: 'coffee', g: '일상툰', en: 'DAILY', line: '회사 앞 작은 카페 사장님이 손님들의 고민을 한 잔씩 들어 준다.', tags: ['공감', '힐링', '짧은 화'] },
 ];
 
 export default async function Home() {
@@ -107,7 +111,10 @@ export default async function Home() {
           <a className="lp-btn pri" href={start}>{startLbl}</a>
           <a className="lp-btn out" href="#feat">기능 둘러보기</a>
         </div>
-        <dl className="lp-stats" data-r style={{ ['--d' as string]: 4 }}>
+        <div className="lp-heroimg" data-r style={{ ['--d' as string]: 4 }}>
+          <img src="/lp/hero.webp" alt="상상한 인물들이 화면 밖으로 뛰어나오는 웹툰 작가의 책상" width={1376} height={768} fetchPriority="high" decoding="async" />
+        </div>
+        <dl className="lp-stats" data-r style={{ ['--d' as string]: 5 }}>
           <div><dt>가입하면 바로</dt><dd><span data-count="20">20</span><em>장</em></dd><small>AI 이미지 무료</small></div>
           <div><dt>매달 새로</dt><dd><span data-count="30">30</span><em>회</em></dd><small>글 AI 무료</small></div>
           <div><dt>한 화를 완성하는</dt><dd><span data-count="5">5</span><em>단계</em></dd><small>기획부터 말풍선까지</small></div>
@@ -118,13 +125,34 @@ export default async function Home() {
       {/* 2. 컷 미리보기 띠 */}
       <section className="lp-strip" aria-label="컷 예시">
         <div className="track">
-          {[...CUTS, ...CUTS].map((c, i) => (
-            <figure key={i} className={`cut ${c.c}`} aria-hidden={i >= CUTS.length}>
-              <span className="sc">{c.sc}</span>
-              <span className="who" />
-              <span className="say">{c.say}</span>
+          {[...CUTS, ...CUTS].map(([k, alt], i) => (
+            <figure key={i} className="cut" aria-hidden={i >= CUTS.length}>
+              <img src={`/lp/${k}.webp`} alt={i < CUTS.length ? alt : ''} loading="lazy" decoding="async" width={760} height={424} />
             </figure>
           ))}
+        </div>
+      </section>
+
+      {/* 2-2. 세로 스크롤 한 화 예시 */}
+      <section className="lp-sec lp-show" id="show">
+        <div className="lp-w lp-showin">
+          <div className="txt" data-r>
+            <em>SHOWCASE</em>
+            <h3>휴대폰으로 보는 한 화,<br />이렇게 완성돼요</h3>
+            <p>세로로 내려 보는 웹툰 그대로 만들어요. 컷마다 그림을 넣고 대사와 나레이션을 얹으면 한 화가 완성돼요.</p>
+            <ul>
+              <li><I n="check" s={15} />세로 스크롤 웹툰 비율 그대로</li>
+              <li><I n="check" s={15} />나레이션 · 효과음도 글자 레이어로</li>
+              <li><I n="check" s={15} />완성본은 이미지 · ZIP으로 내보내기</li>
+            </ul>
+          </div>
+          <div className="phone" data-r style={{ ['--d' as string]: 1 }} aria-label="세로 스크롤 웹툰 예시">
+            <div className="scr">
+              <div className="roll">
+                {[1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3].map((n, i) => <img key={i} src={`/lp/ep${n}.webp`} alt={i < 8 ? `예시 웹툰 ${n}번째 컷` : ''} aria-hidden={i >= 8} loading="lazy" decoding="async" width={420} height={752} />)}
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -205,7 +233,7 @@ export default async function Home() {
             {FEATS.map((f, i) => (
               <article key={f.t} data-r style={{ ['--d' as string]: i }}>
                 <span className="no">0{i + 1}</span>
-                <div className="art"><span><I n={f.n} s={32} /></span></div>
+                <div className="art pic"><img src={`/lp/${f.img}.webp`} alt="" loading="lazy" decoding="async" width={760} height={424} /></div>
                 <em>{f.en}</em>
                 <b>{f.t}</b>
                 <p>{f.d}</p>
@@ -225,12 +253,12 @@ export default async function Home() {
           </header>
           <div className="lp-val">
             <article data-r>
-              <div className="art v1"><span className="dot" /><span className="dot" /><span className="dot" /><span className="big"><I n="smile" s={40} /></span></div>
+              <div className="art pic"><img src="/lp/val-consist.webp" alt="같은 인물이 네 컷에서 같은 얼굴로 나온 예시" loading="lazy" decoding="async" width={760} height={424} /></div>
               <b>일관성</b><em>CONSISTENCY</em>
               <p>캐릭터 시트와 그림체 설정을 모든 컷에 함께 넘겨요. 1화의 주인공이 10화에서도 같은 얼굴로 나와요.</p>
             </article>
             <article data-r style={{ ['--d' as string]: 1 }}>
-              <div className="art v2"><span className="ln" /><span className="ln" /><span className="ln" /><span className="big"><I n="zap" s={40} /></span></div>
+              <div className="art pic"><img src="/lp/val-speed.webp" alt="노트북에서 컷이 빠르게 만들어지는 모습" loading="lazy" decoding="async" width={760} height={424} /></div>
               <b>속도</b><em>SPEED</em>
               <p>버튼 한 번이면 콘티 초안이 나오고, 바로 다음 컷으로 넘어가요. 남는 시간은 이야기 다듬기에 쓰세요.</p>
             </article>
@@ -248,7 +276,7 @@ export default async function Home() {
           </header>
           <div className="lp-who">
             <article data-r>
-              <div className="art"><span><I n="spark" s={40} /></span></div>
+              <div className="art pic"><img src="/lp/who-new.webp" alt="AI 도우미와 함께 웹툰을 시작하는 초보 창작자" loading="lazy" decoding="async" width={760} height={424} /></div>
               <span className="tag">초보 창작자</span>
               <small>웹툰 제작이 처음이라면</small>
               <b>AI와 함께</b>
@@ -256,7 +284,7 @@ export default async function Home() {
               <ul><li><I n="check" s={14} />빈칸은 AI가 먼저 채워요</li><li><I n="check" s={14} />한 번에 한 화 초안 만들기</li></ul>
             </article>
             <article className="pro" data-r style={{ ['--d' as string]: 1 }}>
-              <div className="art"><span><I n="pen" s={40} /></span></div>
+              <div className="art pic"><img src="/lp/who-pro.webp" alt="태블릿으로 직접 그리는 전문 창작자" loading="lazy" decoding="async" width={760} height={424} /></div>
               <span className="tag">전문 창작자</span>
               <small>나만의 작업 방식이 있다면</small>
               <b>자유롭게 직접</b>
@@ -319,7 +347,7 @@ export default async function Home() {
           <div className="lp-ideas">
             {IDEAS.map((d, i) => (
               <article key={d.g} data-r style={{ ['--d' as string]: i }}>
-                <div className={`art g${i}`}><span><I n={d.n} s={36} /></span></div>
+                <div className="art pic"><img src={`/lp/${d.img}.webp`} alt="" loading="lazy" decoding="async" width={760} height={424} /></div>
                 <b>{d.g}</b><em>{d.en}</em>
                 <p>“{d.line}”</p>
                 <div className="tg">{d.tags.map((t) => <span key={t}>{t}</span>)}</div>
