@@ -11,11 +11,18 @@
   var uid = boot.user && boot.user.id;
 
   /* ---------- 작은 도우미 ---------- */
+  var aiCtl = [];
+  function abortAI() { var L = aiCtl; aiCtl = []; L.forEach(function (c) { try { c.abort(); } catch (_) {} }); return L.length; }
   function api(path, opt) {
     opt = opt || {};
     var init = { method: opt.method || 'GET', headers: {}, credentials: 'same-origin' };
     if (opt.json !== undefined) { init.headers['content-type'] = 'application/json'; init.body = JSON.stringify(opt.json); }
-    return fetch(path, init).then(function (r) {
+    /* 글 AI 요청은 「취소」로 바로 끊을 수 있게 해요 */
+    var ctl = null;
+    if (path.indexOf('/api/ai/text') === 0 && typeof AbortController === 'function') { ctl = new AbortController(); init.signal = ctl.signal; aiCtl.push(ctl); }
+    var done = function () { if (ctl) aiCtl = aiCtl.filter(function (c) { return c !== ctl; }); };
+    return fetch(path, init).catch(function (e) { done(); if (e && e.name === 'AbortError') { var a = new Error('취소했어요'); a.code = 'cancelled'; throw a; } throw e; }).then(function (r) {
+      done();
       var ct = r.headers.get('content-type') || '';
       if (!r.ok) return (ct.indexOf('json') >= 0 ? r.json() : Promise.resolve({})).then(function (j) { var e = new Error(j.message || ('HTTP ' + r.status)); e.code = j.code || ('http_' + r.status); e.status = r.status; throw e; });
       return ct.indexOf('json') >= 0 ? r.json() : r;
@@ -398,6 +405,7 @@
   window.__WBX = boot.ai.image ? '' : undefined;
   window.__WB = {
     boot: boot, dbSuffix: cloud ? ':' + uid : '',
+    abortAI: abortAI,
     sync: sync, pushWorks: pushWorks, deleteProject: deleteProject, putBlob: putBlob, getBlob: getBlob,
     txtAi: txtAi, imgLeft: imgLeft, image: image, refPrompt: refPrompt, sbPrompt: sbPrompt, refsFor: refsFor,
     publish: publish, aiBlocked: aiBlocked, noImageKey: noImageKey,

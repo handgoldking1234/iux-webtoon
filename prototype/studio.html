@@ -2894,7 +2894,7 @@ function sbAiOpen(){let m=$('#mSbAi');if(m)m.remove();const q=txtAi();if(!q.left
  m.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sbaiT" style="max-width:520px"><h3 id="sbaiT">✦ AI로 콘티 쓰기</h3><p class="sub">줄거리나 하고 싶은 이야기를 적으면 AI가 장면(S#)과 대사로 나눠서 원고에 넣어 줘요. 넣은 뒤에 자유롭게 고칠 수 있어요.</p>
   <textarea id="sbaiTx" rows="6" style="width:100%;box-sizing:border-box" placeholder="예) 1944년 경성, 사진관 견습생 현상이 유리건판 속 처녀가 고개를 돌리는 걸 보고 놀란다. 사장은 아무것도 못 봤다고 한다. 밤에 혼자 다시 확인하러 간다.">${esc((ep()&&ep().syn)||S.settings.sbAiLast||'')}</textarea>
   <p class="note" style="margin:6px 0 0">${planFill()?`${ic('list',12)} 작품 기획 · 인물${ep()&&ep().syn?' · 이번 화 시놉시스':''}도 함께 AI에 들어가요.`:`작품 기획이 비어 있어요 · 왼쪽 「기획」을 채우면 더 정확해져요.`}</p>
-  <div class="fld" style="margin-top:10px"><span>컷 수</span><div class="seg" id="sbaiN">${['자동',10,20,30,45].map((v,i)=>`<button data-sbain="${v}" aria-pressed="${i===0}">${v==='자동'?v:v+'컷'}</button>`).join('')}</div></div>
+  <div class="fld" style="margin-top:10px"><span>컷 수</span><div class="seg" id="sbaiN">${['자동',4,8,16,30,45].map((v,i)=>`<button data-sbain="${v}" aria-pressed="${i===0}">${v==='자동'?v:v+'컷'}</button>`).join('')}</div></div>
   <label class="ck" style="display:flex;gap:6px;align-items:center;margin-top:6px;font-size:13px"><input type="checkbox" id="sbaiD" checked> 대사 · 나레이션도 넣기</label>
   <label class="ck" style="display:flex;gap:6px;align-items:center;margin-top:4px;font-size:13px"><input type="checkbox" id="sbaiA"${$('#sbTx').value.trim()?'':' disabled'}> 지금 원고 뒤에 이어 쓰기${$('#sbTx').value.trim()?'':' <small class="note" style="margin:0">(원고가 비어 있어요)</small>'}</label>
   <div class="sbaicost">${ic('wand',13)}<span><b>글 AI 1회</b> 사용 · ${aiLeftLbl(q.left,'이번 달 무료 ',true)}</span></div>
@@ -3053,7 +3053,7 @@ ${JSON.stringify(cuts,null,1)}
 Answer with JSON only: [{"no": <panel no>, "prompt": "<english prompt>"}], one entry per panel.`;
 }
 function sbTemplate(e,c){const d=dims(c),st=S.settings,has=(c.items||[]).some(x=>x.text&&!FX.has(x.type));return `${st.sbStyle||SB_STYLE}. Scene: ${c.sb.scene}${c.sb.notes?` (object with blank lettering: ${c.sb.notes})`:''}. ${has?'Leave empty space near the top for speech bubbles. ':''}No text, no speech bubbles, no panel border.${sbRefsFor(c).length?' Match the attached reference images for characters and art style.':''} aspect ratio ${ratioStr(d.W0,d.H0)}${st.sbRes===undefined||st.sbRes?`, ${st.sbRes||'2K'} resolution`:''}`;}
-const SM_ERR={not_granted:'Claude 사용을 허락하지 않아 만들지 못했어요',rate_limited:'요청이 많아요. 잠시 뒤 다시 눌러 주세요',sampling_disabled:'이 계정에서는 Claude 호출이 꺼져 있어요',prompt_too_large:'한 번에 보내는 양이 너무 커요',session_expired:'로그인이 만료됐어요. 새로고침해 주세요',refused:'Claude가 이 장면의 프롬프트를 만들지 않았어요',invalid_json:'답을 읽지 못했어요. 다시 눌러 주세요'};
+const SM_ERR={cancelled:'취소했어요',not_granted:'Claude 사용을 허락하지 않아 만들지 못했어요',rate_limited:'요청이 많아요. 잠시 뒤 다시 눌러 주세요',sampling_disabled:'이 계정에서는 Claude 호출이 꺼져 있어요',prompt_too_large:'한 번에 보내는 양이 너무 커요',session_expired:'로그인이 만료됐어요. 새로고침해 주세요',refused:'Claude가 이 장면의 프롬프트를 만들지 않았어요',invalid_json:'답을 읽지 못했어요. 다시 눌러 주세요'};
 async function sbGen(cuts){
  const e=ep();if(SM&&!txtAi().left){paywall('txt');return;}
  if(!SM){mutate(()=>cuts.forEach(c=>{c.sb.prompt=sbTemplate(e,c);c.sb.ok=true;}));toast('여기서는 Claude를 부를 수 없어 기본 틀로 채웠어요 · 장면을 영어로 다듬으면 더 잘 나와요');return;}
@@ -6054,7 +6054,7 @@ document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!a
 const PROG_TIPS=['바로웹툰은 웹툰 한 화를 한곳에서 만드는 편집기예요','이야기 한두 줄만 적으면 AI가 스토리를 써 줘요','스토리는 「더 짧게」처럼 말로 고칠 수 있어요','컷마다 이미지 프롬프트와 말풍선을 같이 만들어요','말풍선은 원고에서 눌러 바로 고칠 수 있어요','프롬프트를 복사해 다른 그림 AI에서 그려도 돼요','캐릭터 시트를 만들어 두면 컷마다 얼굴이 같게 나와요','만든 컷은 이미지로 내보낼 수 있어요','작품은 이 브라우저에 자동으로 저장돼요'];
 let progTipT=0,progTipI=0;
 function progTip(){const el=$('#pTip');if(!el)return;el.textContent=PROG_TIPS[progTipI++%PROG_TIPS.length];el.classList.remove('on');void el.offsetWidth;el.classList.add('on');}
-function prog(title){cancelFlag=false;$('#pT').textContent=title;$('#pBar').style.width='0%';$('#pTx').textContent='';$('#mProg').hidden=false;clearInterval(progTipT);progTipI=Math.floor(Math.random()*PROG_TIPS.length);progTip();progTipT=setInterval(progTip,3600);}
+function prog(title){cancelFlag=false;{const cb=document.querySelector('#mProg [data-act=prog-cancel]');if(cb){cb.disabled=false;cb.textContent='취소';}}$('#pT').textContent=title;$('#pBar').style.width='0%';$('#pTx').textContent='';$('#mProg').hidden=false;clearInterval(progTipT);progTipI=Math.floor(Math.random()*PROG_TIPS.length);progTip();progTipT=setInterval(progTip,3600);}
 function progSet(f,t){$('#pBar').style.width=Math.round(f*100)+'%';$('#pTx').textContent=t||'';}
 function progEnd(){$('#mProg').hidden=true;clearInterval(progTipT);progTipT=0;}
 async function epFiles(e,folder,list,manifest,base,total){
@@ -6643,7 +6643,9 @@ document.addEventListener('click',async ev=>{
   case'mh':S.settings.mergeH=+b.dataset.v;$('#mH').value=b.dataset.v;save();mergeInfo();break;case'merge-run':runMerge();break;
   case'zip-ep':zipEpisodes(false);break;case'zip-all':zipEpisodes(true);break;
   case'modal-close':closeModals();break;
-  case'prog-cancel':cancelFlag=true;break;
+  case'prog-cancel':{cancelFlag=true;let n=0;try{n=window.__WB&&window.__WB.abortAI?window.__WB.abortAI():0;}catch(_){}
+   /* 이미 보낸 그림 요청은 돌려받을 수 없어서 한 장만 끝나면 멈춰요 — 바로 알 수 있게 창을 '멈추는 중'으로 바꿔요 */
+   b.disabled=true;b.textContent='멈추는 중…';$('#pT').textContent='멈추는 중';$('#pTx').textContent=n?'보내던 요청을 끊었어요. 곧 닫혀요.':'지금 만들고 있는 것 하나만 끝나면 멈춰요. 이미 만든 결과는 남겨 둬요.';break;}
   case'undo':undo();break;case'redo':redo();break;
   case'ep-go':if(b.dataset.ep)switchEp(b.dataset.ep);break;
   case'ep-add':addEp();break;
