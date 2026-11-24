@@ -16,7 +16,9 @@ export const env = {
   authProviders: ['google', 'kakao', 'naver', 'email'].filter((p) => ['google', 'kakao', 'naver', 'email'].includes(p) || (process.env.AUTH_PROVIDERS || '').split(',').map((s) => s.trim().toLowerCase()).includes(p)),
   adminEmails: (process.env.ADMIN_EMAILS || '').split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
   anthropicKey: (process.env.ANTHROPIC_API_KEY || process.env.CLAUDE_API_KEY || '').trim(),
-  claudeModel: process.env.CLAUDE_MODEL || 'claude-sonnet-5-5',
+  // 글 AI: 스토리 · 콘티 · 대사처럼 '글맛'이 중요한 일은 Opus, 그림 프롬프트 만들기는 Sonnet (반값)
+  claudeModel: process.env.CLAUDE_MODEL || 'claude-opus-5-5',
+  claudeModelPrompt: process.env.CLAUDE_MODEL_PROMPT || 'claude-sonnet-5-5',
   // 이름을 다르게 넣는 경우가 많아서 흔한 이름도 같이 읽어요
   geminiKey: (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_KEY || '').trim(),
   geminiModel: process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image',
@@ -46,7 +48,7 @@ export const env = {
   },
   budgetKrw: n(process.env.AI_MONTHLY_BUDGET_KRW, 500000),
   cost: {
-    text: n(process.env.COST_TEXT_KRW, 15),
+    text: n(process.env.COST_TEXT_KRW, 120), // 글 AI 1회 어림값 (Opus 5.5 기준 · 관리자 › 설정에서 바꿀 수 있어요)
     image: n(process.env.COST_IMAGE_KRW, 55),
     imagePro: n(process.env.COST_IMAGE_PRO_KRW, 180),
   },

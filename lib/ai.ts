@@ -40,6 +40,9 @@ export function repairJson(t: string): unknown {
   try { return JSON.parse(t.slice(0, cut) + tail); } catch { return undefined; }
 }
 
+/** 어떤 Claude 모델로 쓸지: 그림 프롬프트 만들기(영문 지시문)는 Sonnet, 나머지 글쓰기는 Opus */
+export const claudeModelFor = (prompt: string) => (/^\s*You write image-(generation|editing) prompts/i.test(prompt) ? env.claudeModelPrompt : env.claudeModel);
+
 /** 글 AI — Claude Messages API, 편집기가 보내는 프롬프트는 "JSON만 답해" 형식이에요 */
 export async function claudeJson(prompt: string) {
   if (!env.anthropicKey) throw new AiError('not_configured', '글 AI 키가 없어요', 503);
@@ -47,7 +50,7 @@ export async function claudeJson(prompt: string) {
     method: 'POST',
     headers: { 'x-api-key': env.anthropicKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
     body: JSON.stringify({
-      model: env.claudeModel,
+      model: claudeModelFor(prompt),
       max_tokens: 24000,
       system: 'You are the writing assistant inside 바로웹툰, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.',
       messages: [{ role: 'user', content: prompt }],
@@ -70,7 +73,7 @@ export async function claudeTextStream(prompt: string, onDone: (u: { inTokens: n
     method: 'POST',
     headers: { 'x-api-key': env.anthropicKey, 'anthropic-version': '2023-06-01', 'content-type': 'application/json' },
     body: JSON.stringify({
-      model: env.claudeModel,
+      model: claudeModelFor(prompt),
       max_tokens: 24000,
       stream: true,
       system: 'You are the writing assistant inside 바로웹툰, a Korean webtoon production tool. Follow the user instructions exactly and answer with valid JSON only — no markdown fences, no commentary.',

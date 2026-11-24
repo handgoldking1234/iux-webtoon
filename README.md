@@ -96,7 +96,7 @@ npm test                     # 한도 · AI 엔진 · 편집기 패치 테스트
 
 - Framework: Next.js · Build command: `npm run build` (편집기 HTML을 먼저 만들어요)
 - 환경 변수: `.env.example`의 항목 전부
-- `GEMINI_IMAGE_MODEL` · `GEMINI_IMAGE_MODEL_PRO` · `CLAUDE_MODEL`은 쓰는 계정에서 열려 있는 모델 이름으로 확인해 주세요.
+- `GEMINI_IMAGE_MODEL` · `GEMINI_IMAGE_MODEL_PRO` · `CLAUDE_MODEL`(글쓰기 · 기본 claude-opus-5-5) · `CLAUDE_MODEL_PROMPT`(그림 프롬프트 · 기본 claude-sonnet-5-5)은 쓰는 계정에서 열려 있는 모델 이름으로 확인해 주세요.
 
 ## 선택 연결
 

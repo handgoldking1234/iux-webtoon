@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { aiBlock, aiMe } from '@/lib/ai-access';
 import { err, isRes } from '@/lib/api';
 import { aiGate, logUsage } from '@/lib/quota';
-import { AiError, claudeTextStream, textJson } from '@/lib/ai';
+import { AiError, claudeModelFor, claudeTextStream, textJson } from '@/lib/ai';
 import { env } from '@/lib/env';
 
 export const maxDuration = 300;
@@ -24,7 +24,7 @@ export async function POST(req: Request) {
   const g = await aiGate(me.profile, me.isAdmin, 'text');
   if (g.block) return err(...g.block);
   const engine = g.settings.engines.text;
-  const model = engine === 'openai' ? env.openaiTextModel : env.claudeModel;
+  const model = engine === 'openai' ? env.openaiTextModel : claudeModelFor(prompts[0]);
   const quota = { ...g.quota, text: { ...g.quota.text, used: g.quota.text.used + 1 } };
   try {
     if (body.stream === true && prompts.length === 1 && engine === 'claude') {

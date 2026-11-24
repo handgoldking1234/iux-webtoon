@@ -2262,6 +2262,13 @@ let SBo={ratio:'3:4',where:'new',ly:'one',all:4,per:{},rnd:{}},sbTarget=null,SM=
 (async()=>{try{if(window.claude&&typeof window.claude.use==='function')SM=await window.claude.use('sample');}catch(_){SM=null;}})();
 /* 콘티 컷 바탕색: 그림이 들어가면 기본 베이지 대신 흰색 (직접 고른 색은 그대로) */
 function sbBg(c){const col=c.color||'#ffffff';return c.sb&&c.sb.img&&col.toLowerCase()==='#f2f0ec'?'#ffffff':col;}
+/* 대사 글맛 지침 — 대사가 들어가는 글 AI 요청에 함께 붙여요 */
+const DLG_CRAFT=`Dialogue craft (Korean webtoon — this matters most):
+- Write like real people talk, not like a narrator explaining. Never state feelings outright ("나 너무 슬퍼"); show them with subtext, reactions, interruptions, trailing off (…), a one-word reply, or silence.
+- Give each character a distinct voice: speech level (반말/존댓말), habits, era. Historical settings use period speech (e.g. 조선: 하오체/하게체, 전하·소인 호칭); modern slang only for modern characters.
+- No exposition dumps: the picture already shows what happens. A line should add what the picture cannot — intent, humor, tension, a secret.
+- Vary rhythm: mostly short punchy balloons, one longer line only at an emotional peak. End the episode on a hook.
+- Avoid translation-ese and clichés (그것은 ~이다 / ~하는 것이다 / overusing 정말·너무 / ending every line with "!"). Prefer natural spoken endings (~잖아, ~거든, ~네, ~지?).`;
 function sbStat(s){return s.img?'img':s.prompt?'prompt':s.ok?'ok':'draft';}
 function ratioStr(w,h){const L=[[1,1],[3,4],[4,3],[2,3],[3,2],[4,5],[5,4],[9,16],[16,9],[1,2],[2,1],[9,21]];const r=Math.log(w/h);let best=L[0],d=9;for(const p of L){const x=Math.abs(Math.log(p[0]/p[1])-r);if(x<d){d=x;best=p;}}return best.join(':');}
 async function drawSb(ctx,c,W,H,out){
@@ -2923,6 +2930,7 @@ async function sbAiWrite(idea,N,dl,ap){
  const cur=$('#sbTx').value.trim(),start=ap?Math.max(0,...[...cur.matchAll(/#\s*(\d+)/g)].map(x=>+x[1]))+1:1;let txt='';
  prog('AI가 콘티를 쓰는 중');progSet(.15,'줄거리를 장면으로 나누는 중…');
  if(SM){try{const res=await SM.json(`You are a Korean webtoon storyboard writer. Turn the idea into vertical-scroll webtoon panels.
+${DLG_CRAFT}
 Idea (Korean): """${idea}"""
 ${planFill()?`Story bible — follow it for characters, their voices, world rules and tone:\n${planCtx(ep())}\n`:''}
 ${ap?`Continue after this existing storyboard (keep characters and tone):\n${cur.slice(-3000)}\n`:''}Panels: ${N||'choose 8-20 that fit the idea'}. Start numbering at ${start}.
@@ -3401,6 +3409,7 @@ async function ezWrite(){const e=ezEp(),P=plan(),st=S.settings;if(!(P.idea||'').
  if(!ezOk())return;const L=plChars(),need=!L.some(c=>c.name);
  EZ.busy=true;EZ.live=false;ezProg(`${e.num}화 스토리를 쓰는 중`,need?'인물과 배경을 정하는 중':'앞 이야기를 읽는 중',need?20:8);
  try{const r=await ezAsk(`You are a veteran Korean webtoon writer. ${need?`From the creator's idea below, first decide the series basics (title, one-sentence logline, genre, 2-4 main characters each with a concrete visual look an image AI can draw, 1-3 key locations). Then write`:'Write'} the complete story of episode ${e.num} of this vertical-scroll webtoon in Korean, ready to be split into panels.
+${DLG_CRAFT}
 ${ezCtx(e)}
 The whole episode will be drawn in exactly ${ezN()} panels, so keep the story small enough to fit them${ezN()<=4?' (a 4-panel comic: 기-승-전-결, setup → development → twist → punchline)':''}. Story format — plain text, no markdown: ${ezScenes(ezN())} numbered scenes. Each scene starts with "N. " followed by one or two sentences of what we see (where, who, action, emotion). Under it put that scene's dialogue, one per line, as "- 이름: 대사"; narration as "- (나레이션) …". Some scenes have no dialogue. Keep dialogue short like real webtoon balloons. ${+e.num>1?'Continue naturally from the previous episodes.':'Open with a hook that makes the reader curious.'} ${ezN()<=4?'End with a punchline or a small twist.':'End on a cliffhanger.'}
 Answer JSON only: {${need?'"title":"(작품 제목 2-14자)","logline":"(한 문장)","genre":"(장르 1-2개, · 로 구분)","chars":[{"name":"","role":"(역할 · 나이)","pers":"(성격)","voice":"(말투)","look":"(외모: 머리 · 얼굴 · 체형을 그림 AI용으로 구체적으로)","outfit":"(고정 의상)"}],"locs":[{"name":"","desc":"(그림 AI용 장소 묘사)"}],':''}"ep_title":"(이번 화 제목 2-10자)","story":"1. …\\n- 이름: 대사\\n\\n2. …"}`,true);
@@ -4182,7 +4191,7 @@ async function qaiSend(btn){const it=qpItem();if(!it)return;const isImg=it.type=
  if(!SM){toast('이 주소에는 AI가 연결돼 있지 않아요 · AI가 연결된 주소에서 열어 주세요');return;}
  if(!txtAi().left){paywall('txt');return;}
  const old=btn.textContent;btn.disabled=true;btn.textContent='다듬는 중…';
- try{const res=await SM.json(`You edit dialogue for a vertical Korean webtoon. Rewrite the ${KLABEL[it.type]||'text'} below following the instruction. Keep line breaks short enough for a speech balloon (max ~12 Korean characters per line). Instruction: ${q}\nFor a dialect or character voice, keep the meaning and the speaker's intent, make it sound natural and easy to read for Korean webtoon readers, and avoid slurs or profanity.\nText:\n${it.text}\n\nAnswer JSON only: {"text": "<rewritten text>"}`,{cache:false});
+ try{const res=await SM.json(`You edit dialogue for a vertical Korean webtoon.\n${DLG_CRAFT}\n Rewrite the ${KLABEL[it.type]||'text'} below following the instruction. Keep line breaks short enough for a speech balloon (max ~12 Korean characters per line). Instruction: ${q}\nFor a dialect or character voice, keep the meaning and the speaker's intent, make it sound natural and easy to read for Korean webtoon readers, and avoid slurs or profanity.\nText:\n${it.text}\n\nAnswer JSON only: {"text": "<rewritten text>"}`,{cache:false});
   const nt=res&&(res.text||res.rewritten);if(!nt)throw{code:'invalid_json'};txtAiUse(1);mutate(()=>{it.text=String(nt).trim();});await ensureFonts([it]);renderOverlay(activeCut);renderInspector();qpRender();toast(`대사를 다듬었어요 · 글 AI ${aiLeftLbl(txtAi().left,'',false)} · 마음에 안 들면 Ctrl+Z`);}
  catch(x){toast(SM_ERR[x&&x.code]||'다듬지 못했어요 · 다시 눌러 주세요');}
  finally{btn.disabled=false;btn.textContent=old;}}
@@ -5911,6 +5920,7 @@ async function scAiWrite(idea,amt,nar,keep){const e=ep();if(!SM){toast('이 주�
  prog('AI가 대사를 쓰는 중');progSet(.2,`${T.length}컷의 대사를 쓰는 중…`);
  const amtT=amt==='적게'?'0-1 short line per panel':amt==='많게'?'2-3 lines per panel':'1-2 lines per panel';
  try{const res=await SM.json(`You write dialogue for a Korean vertical-scroll webtoon episode. Write Korean lines for each panel below.
+${DLG_CRAFT}
 ${planFill()?`Story bible — follow characters' voices and the tone:\n${planCtx(e)}\n`:''}${idea?`This episode (Korean): «${idea}»\n`:''}Amount: ${amtT}. Some panels may stay silent (no lines) when the picture should speak.
 Line formats: "이름: 대사", inner voice "이름(속마음): …", whisper "이름(작게): …", shout "이름(외침): …"${nar?', narration "나레이션: …", sound effect "효과음: 쾅!"':'. No narration or sound effects.'}
 Keep each balloon short (max ~12 Korean characters per line). Keep the story flowing across panels in order.
@@ -5929,6 +5939,7 @@ async function scTone(){const tx=$('#scTx'),src=tx.value.trim();if(!src){toast('
  const L=scSelLines(),lines=src.split('\n');const part=L?tx.value.split('\n').slice(L[0],L[1]+1).join('\n'):tx.value;
  const btn=$('#scToneGo'),old=btn.textContent;btn.disabled=true;btn.textContent='바꾸는 중…';
  try{const res=await SM.json(`You rewrite dialogue in a Korean webtoon script. Change ONLY the spoken words to this voice: ${SCTONE}.
+${DLG_CRAFT}
 Keep every line, line order, panel headers (lines starting with #), speaker names, labels before ":" (화자, 나레이션, 효과음, 자막, (속마음) etc.), table separators "|", and positions exactly as they are. Do not add or remove lines. Keep the meaning and intent, make it natural and easy to read for Korean webtoon readers, avoid slurs or profanity. Sound effects (효과음) stay as they are.
 Script:
 ${part}
