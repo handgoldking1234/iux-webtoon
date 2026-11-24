@@ -4070,6 +4070,8 @@ function iaDecorate(c){const el=cardEls.get(c.id);if(!el)return;el.querySelector
  if(b)T.host.insertAdjacentHTML('beforeend',`<div class="iabox" style="left:${b.l}%;top:${b.t}%;width:${b.w}%;height:${b.h}%"><i class="iah" data-iah="se"></i><i class="iah" data-iah="nw"></i><i class="iah" data-iah="ne"></i><i class="iah" data-iah="sw"></i></div>`);
  if(IAHELP){IAHELP=false;const tc=matchMedia('(pointer:coarse)').matches;T.host.insertAdjacentHTML('beforeend',`<div class="iahelp" role="status"><span>${ic('zoom',16)}<em>${tc?'<b>두 손가락</b>으로 벌려 확대 · 오므려 축소':'<b>마우스 휠</b>로 확대 · 축소'}</em></span><span>${ic('hand',16)}<em><b>끌어서</b> 위치 옮기기</em></span><small>${tc?'모서리 점을 끌어도 크기가 바뀌어요 · ':''}다 하면 「완료」</small></div>`);}}
 var IAHELP=false;
+/* 이미지 크기 · 위치 모드: Esc로도 끝내요 */
+document.addEventListener('keydown',ev=>{if(ev.key!=='Escape'||!IA)return;IA=null;const c=cutById(activeCut);if(c){renderOverlay(c.id);renderInspector();}ev.stopPropagation();},true);
 document.addEventListener('click',ev=>{const b=ev.target.closest&&ev.target.closest('[data-act=ia-toggle],[data-act=ia-sb]');if(!b)return;ev.stopPropagation();ev.preventDefault();
  const sb=b.dataset.act==='ia-sb';if(sb&&activeItem){activeItem=null;}IA=IA?null:(sb?'sb':activeItem);IAHELP=!!IA;const c=cutById(activeCut);if(c){renderOverlay(c.id);if(sb)renderInspector();}},true);
 /* 콘티 박스는 버튼 없이도 빈 곳을 끌면 바로 이미지 이동 */
