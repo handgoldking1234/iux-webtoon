@@ -24,6 +24,13 @@ body.reader .iabox,body.reader .iah{display:none!important}
 .tbq{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap}
 .tbq button{height:26px;padding:0 8px;border:1px solid var(--line);border-radius:13px;background:var(--panel);font-size:11.5px;cursor:pointer;color:var(--ink)}
 .tbq button:hover{border-color:var(--accent);color:var(--accent)}
+
+/* 진행 창 썸네일 */
+.pthumbs{display:flex;gap:6px;overflow-x:auto;margin:10px 0 2px;padding-bottom:4px;scrollbar-width:thin}
+.pthumbs img{flex:none;width:64px;height:64px;object-fit:cover;border-radius:8px;border:1px solid var(--line);animation:pthIn .3s ease}
+@keyframes pthIn{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}
+#mProg .foot{display:flex;align-items:center;justify-content:space-between}
+.pcnt{font-size:12px;color:var(--accent-ink,#148a3f);font-weight:700}
 </style></head><body>
 <title>바로웹툰 v2</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -2058,8 +2065,9 @@ body.reader .coach{display:none}
 
 <div class="modal" id="mProg" hidden><div class="sheet" style="width:min(420px,100%)">
  <div class="phd"><h3 id="pT">만드는 중</h3><span class="pspin" role="img" aria-label="진행 중"></span></div><div class="bar"><i id="pBar"></i></div><p class="note" id="pTx"></p>
+ <div class="pthumbs" id="pThumbs" hidden></div>
  <p class="ptip" id="pTip" aria-hidden="true"></p>
- <div class="foot"><button class="btn" data-act="prog-cancel">취소</button></div>
+ <div class="foot"><span class="pcnt" id="pCnt"></span><button class="btn" data-act="prog-cancel">중지</button></div>
 </div></div>
 <div id="toast" hidden role="status" aria-live="polite"></div>
 
@@ -3521,7 +3529,7 @@ async function stuGo(){const st=S.settings,nc=st.aiN||1,left=AI_FREE-(st.aiUsed|
  if(left<=0){$('#mAiImg')?.remove();paywall('img');return;}if(nc>left){toast(`맛보기가 ${left}장 남았어요 · 후보 수를 줄여 주세요`);return;}
  const [W,H]=stuSize(),prompt=stuPrompt(),c=STU.src==='sb'?cutById(STU.cid):null,seed=c?c.sb.no:[...STU.p].reduce((a,ch)=>(a*31+ch.charCodeAt(0))%997,7);
  $('#mAiImg')?.remove();prog(`장면 만드는 중 · ${st.aiModel||'나노바나나 2'}`);const ks=[];
- for(let v=0;v<nc;v++){if(cancelFlag)break;progSet(v/nc,`${v+1}/${nc}장 그리는 중… 참고 ${stuRefs().length}장`);await new Promise(r=>setTimeout(r,350));const b=await sbMockImg(W,H,seed,v+(c&&c.sb.cands?c.sb.cands.length:0));const k='ai_'+uid();blobs.set(k,b);putBlob(k,b);libAdd(k,'ai',{model:st.aiModel||'나노바나나 Pro',prompt:prompt.slice(0,400),...(c?{sno:c.sb.no}:{})});ks.push(k);}
+ for(let v=0;v<nc;v++){if(cancelFlag)break;progSet(v/nc,`${v+1}/${nc}장 그리는 중… 참고 ${stuRefs().length}장`);await new Promise(r=>setTimeout(r,350));const b=await sbMockImg(W,H,seed,v+(c&&c.sb.cands?c.sb.cands.length:0));const k='ai_'+uid();blobs.set(k,b);putBlob(k,b);progThumb(b);libAdd(k,'ai',{model:st.aiModel||'나노바나나 Pro',prompt:prompt.slice(0,400),...(c?{sno:c.sb.no}:{})});ks.push(k);}
  progEnd();if(!ks.length)return;st.aiUsed=(st.aiUsed||0)+ks.length;save();
  if(c){mutate(()=>{c.sb.cast={chars:[...STU.chars],loc:STU.loc||null,vars:Object.fromEntries(STU.chars.map(id=>[id,(STU.vars||{})[id]||'']))};const base=stuBase();if(base&&base!==c.sb.prompt){sbHistPush(c,'AI 이미지 창에서 고치기 전');c.sb.prompt=base;c.sb.ok=true;}c.sb.cands=[...ks,...(c.sb.cands||[])].slice(0,8);c.sb.img=ks[0];c.sb.aiModel=st.aiModel||'나노바나나 Pro';});baseCache.delete(c.id);sigs.delete(c.id);renderStrip();setActive(c.id,null);renderInspector();if(NAV==='ai'||NAV==='lib')renderEps();toast(`S#${c.sb.no}에 ${ks.length}장을 넣었어요${ks.length>1?' · 오른쪽에서 후보를 바꿀 수 있어요':''} (예시 이미지)`);requestAnimationFrame(()=>cardEls.get(c.id)?.scrollIntoView({block:'nearest',behavior:'smooth'}));return;}
  if(NAV==='lib'||NAV==='ai')renderEps();const e=ep(),a=activeCut&&cutById(activeCut),pos=e?(a?e.cuts.indexOf(a)+1:e.cuts.length):0;
@@ -3540,7 +3548,7 @@ async function sbAiGen(T,asked){
   if(!asked&&(need>1||noS.size)&&!await confirmBox({title:`이미지 ${need}장을 만들까요?`,body:`${T.length}컷 · ${left>9000?`이미지 ${need}장을 만들어요.`:`남은 이미지 ${left}장 가운데 ${need}장을 써요.`}${noS.size?`<br><br><b>${esc([...noS].join(', '))}</b> — 캐릭터 시트가 없어요. 이대로 그리면 컷마다 얼굴 · 옷이 달라질 수 있어요. 취소하고 콘티·AI ③에서 시트를 먼저 만들 수 있어요.`:hasR?'<br>캐릭터 시트 · 배경 그림이 참고 이미지로 같이 붙어요.':''}`,ok:noS.size?`시트 없이 ${need}장 만들기`:`${need}장 만들기`,danger:false}))return;}
  prog(`이미지 만드는 중 · ${model}`);const res=[];let used=0;
  for(let i=0;i<plan.length;i++){if(cancelFlag)break;const P=plan[i],c=P.c,d=dims(c);progSet(i/plan.length,`S#${c.sb.no} 그리는 중…${P.fr?` 칸 ${P.fr.length}개`:''} (${i+1}/${plan.length}컷)`);await new Promise(r=>setTimeout(r,350));
-  const mk=async(w,h,v)=>{const b=await sbMockImg(Math.max(40,Math.round(w)),Math.max(40,Math.round(h)),c.sb.no,v);const k='sb_'+uid();blobs.set(k,b);putBlob(k,b);used++;libAdd(k,'ai',{sno:c.sb.no,model:st.aiModel||'나노바나나 Pro'});return k;};
+  const mk=async(w,h,v)=>{const b=await sbMockImg(Math.max(40,Math.round(w)),Math.max(40,Math.round(h)),c.sb.no,v);const k='sb_'+uid();blobs.set(k,b);putBlob(k,b);used++;progThumb(b);libAdd(k,'ai',{sno:c.sb.no,model:st.aiModel||'나노바나나 Pro'});return k;};
   if(P.fr){const ks=[];for(let f=0;f<P.fr.length;f++){const it=P.fr[f];ks.push(await mk(it.w*d.W0,it.h*d.H0,f));}res.push({c,fr:P.fr,ks});}
   else{const ks=[];for(let v=0;v<nc;v++)ks.push(await mk(d.W0,d.H0,v+(c.sb.cands?c.sb.cands.length:0)));res.push({c,ks});}}
  progEnd();if(!res.length)return;
@@ -6100,7 +6108,9 @@ document.addEventListener('click',ev=>{const b=ev.target.closest('button');if(!a
 const PROG_TIPS=['바로웹툰은 웹툰 한 화를 한곳에서 만드는 편집기예요','이야기 한두 줄만 적으면 AI가 스토리를 써 줘요','스토리는 「더 짧게」처럼 말로 고칠 수 있어요','컷마다 이미지 프롬프트와 말풍선을 같이 만들어요','말풍선은 원고에서 눌러 바로 고칠 수 있어요','프롬프트를 복사해 다른 그림 AI에서 그려도 돼요','캐릭터 시트를 만들어 두면 컷마다 얼굴이 같게 나와요','만든 컷은 이미지로 내보낼 수 있어요','작품은 이 브라우저에 자동으로 저장돼요'];
 let progTipT=0,progTipI=0;
 function progTip(){const el=$('#pTip');if(!el)return;el.textContent=PROG_TIPS[progTipI++%PROG_TIPS.length];el.classList.remove('on');void el.offsetWidth;el.classList.add('on');}
-function prog(title){cancelFlag=false;{const cb=document.querySelector('#mProg [data-act=prog-cancel]');if(cb){cb.disabled=false;cb.textContent='취소';}}$('#pT').textContent=title;$('#pBar').style.width='0%';$('#pTx').textContent='';$('#mProg').hidden=false;clearInterval(progTipT);progTipI=Math.floor(Math.random()*PROG_TIPS.length);progTip();progTipT=setInterval(progTip,3600);}
+function prog(title){cancelFlag=false;{const cb=document.querySelector('#mProg [data-act=prog-cancel]');if(cb){cb.disabled=false;cb.textContent='중지';}const th=$('#pThumbs');if(th){th.querySelectorAll('img').forEach(i=>URL.revokeObjectURL(i.src));th.innerHTML='';th.hidden=true;}const pc=$('#pCnt');if(pc)pc.textContent='';}$('#pT').textContent=title;$('#pBar').style.width='0%';$('#pTx').textContent='';$('#mProg').hidden=false;clearInterval(progTipT);progTipI=Math.floor(Math.random()*PROG_TIPS.length);progTip();progTipT=setInterval(progTip,3600);}
+/* 그림이 한 장 만들어질 때마다 진행 창에 작은 그림으로 보여 줘요 */
+function progThumb(b){const th=$('#pThumbs');if(!th||!b)return;try{const u=URL.createObjectURL(b);th.insertAdjacentHTML('beforeend',`<img src="${u}" alt="">`);th.hidden=false;th.scrollLeft=th.scrollWidth;const n=th.querySelectorAll('img').length,pc=$('#pCnt');if(pc)pc.textContent=`${n}장 완성`;}catch(_){}}
 function progSet(f,t){$('#pBar').style.width=Math.round(f*100)+'%';$('#pTx').textContent=t||'';}
 function progEnd(){$('#mProg').hidden=true;clearInterval(progTipT);progTipT=0;}
 async function epFiles(e,folder,list,manifest,base,total){
@@ -6691,7 +6701,7 @@ document.addEventListener('click',async ev=>{
   case'modal-close':closeModals();break;
   case'prog-cancel':{cancelFlag=true;let n=0;try{n=window.__WB&&window.__WB.abortAI?window.__WB.abortAI():0;}catch(_){}
    /* 이미 보낸 그림 요청은 돌려받을 수 없어서 한 장만 끝나면 멈춰요 — 바로 알 수 있게 창을 '멈추는 중'으로 바꿔요 */
-   b.disabled=true;b.textContent='멈추는 중…';$('#pT').textContent='멈추는 중';$('#pTx').textContent=n?'보내던 요청을 끊었어요. 곧 닫혀요.':'지금 만들고 있는 것 하나만 끝나면 멈춰요. 이미 만든 결과는 남겨 둬요.';break;}
+   b.disabled=true;b.textContent='멈추는 중…';$('#pT').textContent='멈추는 중';$('#pTx').textContent=n?'보내던 요청을 끊었어요. 곧 닫혀요.':'지금 그리는 한 장만 끝나면 멈춰요. 이미 만든 그림만 컷에 넣고, AI 이미지도 만든 장수만큼만 써요.';break;}
   case'undo':undo();break;case'redo':redo();break;
   case'ep-go':if(b.dataset.ep)switchEp(b.dataset.ep);break;
   case'ep-add':addEp();break;
