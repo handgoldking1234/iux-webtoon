@@ -35,16 +35,18 @@ function I({ n, s = 20 }: { n: string; s?: number }) {
 
 // 컷 미리보기 띠 (그림 대신 색면 + 말풍선)
 const CUTS = [
-  ['cut1', '비 오는 학교 옥상에 혼자 선 학생'],
-  ['cut2', '밤 도시를 내려다보는 옥상 위 주인공'],
+  ['s1', '비 오는 밤 아파트 옥상 난간 앞에 선 주인공'],
+  ['s2', '네온 빛 고층 빌딩 꼭대기에 웅크린 주인공'],
+  ['s3', '오래된 사진관 문 앞에 들이닥친 사람들'],
   ['cut3', '편의점 앞에서 이어폰을 나눠 끼운 두 사람'],
+  ['s5', '노을 진 바닷가에 나란히 앉은 두 사람'],
+  ['s6', '푸른 빛 창을 든 무사와 맞서는 주인공'],
+  ['s7', '비 내리는 육교 위에서 마주친 세 사람'],
   ['cut4', '새벽 사무실에서 야근하는 직장인'],
-  ['cut5', '여름 바닷가에서 노을을 보는 두 친구'],
-  ['cut6', '비 오는 골목을 달리는 주인공'],
-  ['cut7', '노을 지는 옥상에서 칼을 든 주인공'],
-  ['cut8', '무너진 도시에서 맞붙는 두 사람'],
-  ['cut9', '절벽 길을 오르는 주인공'],
-  ['cut10', '비 오는 밤 육교 위의 세 사람'],
+  ['s9', '안개 낀 절벽 길을 오르는 주인공'],
+  ['s10', '불타는 도시를 내려다보는 검객'],
+  ['s11', '기와 지붕 골목에서 몸을 숨긴 두 사람'],
+  ['s12', '붉은 번개 속 사진관 앞에 선 사람들'],
 ];
 
 // 휴대폰 예시 한 화: 그림 위에 말풍선 · 나레이션을 따로 얹어요 (x · y는 % 위치)
@@ -271,12 +273,12 @@ export default async function Home() {
           </header>
           <div className="lp-val">
             <article data-r>
-              <div className="art pic"><img src="/lp/val-consist.webp" alt="같은 인물이 네 컷에서 같은 얼굴로 나온 예시" loading="lazy" decoding="async" width={760} height={424} /></div>
+              <div className="art pic"><img src="/lp/val-consist.webp" alt="여러 컷에서 같은 얼굴로 이어지는 주인공" loading="lazy" decoding="async" width={760} height={424} /></div>
               <b>일관성</b><em>CONSISTENCY</em>
               <p>캐릭터 시트와 그림체 설정을 모든 컷에 함께 넘겨요. 1화의 주인공이 10화에서도 같은 얼굴로 나와요.</p>
             </article>
             <article data-r style={{ ['--d' as string]: 1 }}>
-              <div className="art pic"><img src="/lp/val-speed.webp" alt="노트북에서 컷이 빠르게 만들어지는 모습" loading="lazy" decoding="async" width={760} height={424} /></div>
+              <div className="art pic"><img src="/lp/val-speed.webp" alt="태블릿 주위로 컷들이 빠르게 떠오르는 작업 모습" loading="lazy" decoding="async" width={760} height={424} /></div>
               <b>속도</b><em>SPEED</em>
               <p>버튼 한 번이면 콘티 초안이 나오고, 바로 다음 컷으로 넘어가요. 남는 시간은 이야기 다듬기에 쓰세요.</p>
             </article>
@@ -294,7 +296,7 @@ export default async function Home() {
           </header>
           <div className="lp-who">
             <article data-r>
-              <div className="art pic"><img src="/lp/who-new.webp" alt="AI 도우미와 함께 웹툰을 시작하는 초보 창작자" loading="lazy" decoding="async" width={760} height={424} /></div>
+              <div className="art pic"><img src="/lp/who-new.webp" alt="비 오는 밤 노트북으로 첫 웹툰을 시작하는 창작자" loading="lazy" decoding="async" width={760} height={424} /></div>
               <span className="tag">초보 창작자</span>
               <small>웹툰 제작이 처음이라면</small>
               <b>AI와 함께</b>
