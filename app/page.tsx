@@ -47,6 +47,19 @@ const CUTS = [
   ['cut10', '비 오는 밤 육교 위의 세 사람'],
 ];
 
+// 휴대폰 예시 한 화: 그림 위에 말풍선 · 나레이션을 따로 얹어요 (x · y는 % 위치)
+type Txt = { k: 'say' | 'nar' | 'sfx'; s: string; x: number; y: number; r?: boolean };
+const EP: { n: number; t?: Txt[] }[] = [
+  { n: 1, t: [{ k: 'nar', s: '재개발 구역에 마지막까지 남은 사진관.', x: 6, y: 6 }] },
+  { n: 2, t: [{ k: 'nar', s: '그 사진관엔 오래된 소문이 있었다.', x: 8, y: 82 }] },
+  { n: 3 },
+  { n: 4, t: [{ k: 'say', s: '…어서 오세요.', x: 54, y: 8 }] },
+  { n: 5, t: [{ k: 'sfx', s: '번쩍', x: 66, y: 30 }, { k: 'nar', s: '그날, 그의 눈이 변했다.', x: 6, y: 88 }] },
+  { n: 6 },
+  { n: 7, t: [{ k: 'say', s: '이 사진… 누가 찍은 거죠?', x: 8, y: 8 }] },
+  { n: 8, t: [{ k: 'say', s: '설마…!', x: 58, y: 70, r: true }] },
+];
+
 const FEATS = [
   { img: 'feat-plan', n: 'pen', en: 'IDEA & PLANNING', t: '작품 기획', d: '이야기만 있어도 충분해요. 로그라인부터 인물 설정, 관계도, 회차별 줄거리까지 AI와 함께 작품의 세계관을 만들어 보세요.' },
   { img: 'feat-conti', n: 'grid', en: 'AI STORYBOARD', t: 'AI 콘티 제작', d: '시나리오를 입력하면 AI가 콘티와 컷별 이미지 프롬프트, 대사를 제안해요. 마음에 들지 않는 부분은 직접 수정하세요.' },
@@ -149,7 +162,12 @@ export default async function Home() {
           <div className="phone" data-r style={{ ['--d' as string]: 1 }} aria-label="세로 스크롤 웹툰 예시">
             <div className="scr">
               <div className="roll">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 1, 2, 3].map((n, i) => <img key={i} src={`/lp/ep${n}.webp`} alt={i < 8 ? `예시 웹툰 ${n}번째 컷` : ''} aria-hidden={i >= 8} loading="lazy" decoding="async" width={420} height={752} />)}
+                {[...EP, ...EP.slice(0, 3)].map((c, i) => (
+                  <div className="ep" key={i} aria-hidden={i >= EP.length}>
+                    <img src={`/lp/ep${c.n}.webp`} alt={i < EP.length ? `예시 웹툰 ${c.n}번째 컷` : ''} loading="lazy" decoding="async" width={420} height={752} />
+                    {c.t?.map((t, j) => <span key={j} className={`${t.k}${t.r ? ' r' : ''}`} style={{ left: `${t.x}%`, top: `${t.y}%` }}>{t.s}</span>)}
+                  </div>
+                ))}
               </div>
             </div>
           </div>
