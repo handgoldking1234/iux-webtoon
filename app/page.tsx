@@ -66,7 +66,6 @@ function OvalBubble() {
 // 바로웹툰을 쓰는 이유 (옆으로 넘기는 카드)
 const VALS = [
   { img: 'val-mine', t: '나만의 웹툰', en: 'MY OWN WEBTOON', alt: '등불 아래에서 자기 이야기를 읽는 인물', p: 'AI에 전부 맡기지 않아요. AI는 초안을 돕고, 이야기 · 연출 · 대사의 마지막 결정은 내가 해요. 그래서 끝까지 내 웹툰이에요.' },
-  { img: 'val-edit', t: '따로 고치는 편집', en: 'EDIT SEPARATELY', alt: '체스 말을 정확한 자리에 옮기는 손', p: '편집 모드에서 그림과 말풍선을 따로 고쳐요. 대사는 직접 또는 AI로, 그림은 마음에 안 드는 컷만 다시 — AI 비용과 시간이 그만큼 줄어요.' },
   { img: 'val-consist', t: '일관성', en: 'CONSISTENCY', alt: '여러 컷에서 같은 얼굴로 이어지는 주인공', p: '캐릭터 시트와 그림체 설정을 모든 컷에 함께 넘겨요. 1화의 주인공이 10화에서도 같은 얼굴로 나와요.' },
   { img: 'val-speed', t: '속도', en: 'SPEED', alt: '태블릿 주위로 컷들이 빠르게 떠오르는 작업 모습', p: '버튼 한 번이면 콘티 초안이 나오고, 바로 다음 컷으로 넘어가요. 남는 시간은 이야기 다듬기에 쓰세요.' },
 ];
@@ -190,7 +189,7 @@ export default async function Home() {
         <dl className="lp-stats" data-r style={{ ['--d' as string]: 5 }}>
           <div><dt>가입하면 바로</dt><dd><span data-count="20">20</span><em>장</em></dd><small>AI 이미지 무료</small></div>
           <div><dt>매달 새로</dt><dd><span data-count="30">30</span><em>회</em></dd><small>글 AI 무료</small></div>
-          <div><dt>한 화를 완성하는</dt><dd><span data-count="5">5</span><em>단계</em></dd><small>기획부터 말풍선까지</small></div>
+          <div><dt>웹툰 한 편을 완성하는</dt><dd><span data-count="4">4</span><em>단계</em></dd><small>기획부터 말풍선까지</small></div>
           <div><dt>대사 고칠 때 AI 비용</dt><dd><span>0</span><em>원</em></dd><small>그림을 다시 만들지 않아요</small></div>
         </dl>
       </section>
@@ -216,7 +215,6 @@ export default async function Home() {
             <ul>
               <li><I n="check" s={15} />세로 스크롤 웹툰 비율 그대로</li>
               <li><I n="check" s={15} />나레이션 · 효과음도 글자 레이어로</li>
-              <li><I n="check" s={15} />완성본은 이미지 · ZIP으로 내보내기</li>
             </ul>
           </div>
           <div className="phone" data-r style={{ ['--d' as string]: 1 }} aria-label="세로 스크롤 웹툰 예시">
@@ -295,15 +293,6 @@ export default async function Home() {
               <div className="row"><i><I n="spark" s={16} /></i>막히는 칸은 AI가 먼저 채워 줘요</div>
             </div>
           </div>
-          <div className="lp-pillars" data-r>
-            <p><b>AI는 자유롭게, 웹툰 제작은 한곳에서.</b> 다른 AI 도구에서 만든 그림도 가져와 웹툰으로 완성해요.</p>
-            <ul>
-              <li><i><I n="spark" s={18} /></i><b>AI 제작</b><span>기획 · 콘티 · 그림</span></li>
-              <li><i><I n="layout" s={18} /></i><b>전문 편집</b><span>컷 · 레이아웃 · 대사</span></li>
-              <li><i><I n="imgin" s={18} /></i><b>자유로운 활용</b><span>다른 도구 그림 가져오기</span></li>
-              <li><i><I n="sliders" s={18} /></i><b>AI 후편집</b><span>보정 · 그림 고치기</span></li>
-            </ul>
-          </div>
           <div className="lp-center" data-r><a className="lp-btn pri sm" href="#how">만드는 순서 자세히 보기</a></div>
         </div>
       </section>
@@ -314,7 +303,7 @@ export default async function Home() {
           <header className="lp-head" data-r>
             <em>OUR FEATURES</em>
             <h3>웹툰을 완성하는 데 필요한 것만</h3>
-            <p>기획 · 콘티 · 캐릭터 · 저장까지, 흩어져 있던 작업을 한곳에 모았어요.</p>
+            <p>AI는 자유롭게, 웹툰 제작은 한곳에서. 기획부터 완성까지 필요한 작업을 모았고, 다른 AI 도구에서 만든 그림도 가져와 이어서 작업해요.</p>
           </header>
           <div className="lp-feat">
             {FEATS.map((f, i) => (
@@ -380,7 +369,7 @@ export default async function Home() {
               <small>웹툰 제작이 처음이라면</small>
               <b>AI와 함께</b>
               <p>복잡한 제작 기술 없이 아이디어만으로 시작할 수 있어요. 막막한 기획부터 콘티와 그림까지 AI가 도와요.</p>
-              <ul><li><I n="check" s={14} />빈칸은 AI가 먼저 채워요</li><li><I n="check" s={14} />한 번에 한 화 초안 만들기</li></ul>
+              <ul><li><I n="check" s={14} />4 · 8 · 16컷 분량 골라 시작</li><li><I n="check" s={14} />한 번에 한 화 초안 만들기</li></ul>
             </article>
             <article className="pro" data-r style={{ ['--d' as string]: 1 }}>
               <div className="art pic"><img src="/lp/who-pro.webp" alt="태블릿으로 직접 그리는 전문 창작자" loading="lazy" decoding="async" width={760} height={424} /></div>
@@ -487,14 +476,10 @@ export default async function Home() {
             <a className="lp-ghost" href={start}>지금 만들어 보기 <I n="arrow" s={14} /></a>
           </div>
           <div className="lp-steps">
-            <div data-r><b>01</b><strong>작품 기획하기</strong><span>주제와 등장인물을 정해요. 로그라인 · 줄거리의 빈칸은 AI가 채워요.</span></div>
+            <div data-r><b>01</b><strong>작품 기획하기</strong><span>주제와 등장인물, 로그라인과 줄거리를 정해요.</span></div>
             <div data-r style={{ ['--d' as string]: 1 }}><b>02</b><strong>콘티 구성하기</strong><span>이야기를 장면과 컷으로 나누고, 컷마다 그림 설명과 대사를 붙여요.</span></div>
             <div data-r style={{ ['--d' as string]: 2 }}><b>03</b><strong>그림 만들기</strong><span>캐릭터와 장면에 맞는 그림을 만들어요. 마음에 안 드는 컷만 다시 그려요.</span></div>
             <div data-r style={{ ['--d' as string]: 3 }}><b>04</b><strong>웹툰 완성하기</strong><span>대사와 말풍선을 얹어 나만의 웹툰을 완성하고 내보내요.</span></div>
-          </div>
-          <div className="lp-hl" data-r>
-            <div><b>20장</b><span>가입하면 AI 이미지를 무료로 만들어 볼 수 있어요</span></div>
-            <div><b>30회</b><span>글 AI(기획 · 콘티)는 매달 새로 채워져요</span></div>
           </div>
         </div>
       </section>
