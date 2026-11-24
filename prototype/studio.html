@@ -2316,7 +2316,7 @@ async function drawSb(ctx,c,W,H,out){
  ctx.textAlign='right';ctx.font=`${Math.round(13*u)}px ${FONTS.sans}`;ctx.fillText(s.ok?'콘티 확인 · 이미지 대기':'콘티',W-m-10*u,H-m-14*u);
 }
 /* ---------- 무료 AI 사용량 · 유료 안내 ---------- */
-const TXT_FREE=30;/* 글 AI 남은 횟수 문구 — 로그인 전에는 '로그인하면', 관리자(한도 없음)에게는 '횟수 제한 없음'으로 보여 줘요 */function aiLeftLbl(n,pre='',b=false){const W=window.__WB;if(W&&W.boot&&W.boot.aiNeed==='login'||W&&W.boot&&W.boot.aiNeed==='setup')return `로그인하면 이번 달 무료 ${b?`<b>${TXT_FREE}</b>`:TXT_FREE}회`;if(n>9000)return '횟수 제한 없음';return `${pre}${b?`<b>${n}</b>`:n}/${TXT_FREE}회 남음`;}
+const TXT_FREE=5;/* 글 AI 남은 횟수 문구 — 로그인 전에는 '로그인하면', 관리자(한도 없음)에게는 '횟수 제한 없음'으로 보여 줘요 */function aiLeftLbl(n,pre='',b=false){const W=window.__WB;if(W&&W.boot&&W.boot.aiNeed==='login'||W&&W.boot&&W.boot.aiNeed==='setup')return `로그인하면 이번 달 무료 ${b?`<b>${TXT_FREE}</b>`:TXT_FREE}회`;if(n>9000)return '횟수 제한 없음';return `${pre}${b?`<b>${n}</b>`:n}/${TXT_FREE}회 남음`;}
 /* 테스트 모드 — 작품을 열 때마다(새로고침 포함) AI 횟수를 0으로 되돌려요. 출시 때 false로 */
 const AI_TEST=true,AI_RS=new WeakSet();
 function aiTestReset(force){const st=S&&S.settings;if(!AI_TEST||!st)return;if(!force&&AI_RS.has(st))return;AI_RS.add(st);st.aiUsed=0;st.txtAi={m:new Date().toISOString().slice(0,7),n:0};}
@@ -3119,7 +3119,7 @@ async function sbGen(cuts){
  if(err&&err!=='cancelled')toast((SM_ERR[err]||'프롬프트를 만들지 못했어요')+(out.size?` · ${out.size}컷은 만들어 뒀어요`:''));
  else toast(out.size?`${out.size}컷의 이미지 프롬프트를 만들었어요 · 컷을 눌러 다듬고 복사해 이미지를 만드세요`:'만든 이미지 프롬프트가 없어요');
 }
-const AI_FREE=20;
+const AI_FREE=10;
 function sbMockImg(W,H,seed,v){const sc=Math.min(1,720/W),cv=document.createElement('canvas');cv.width=Math.round(W*sc);cv.height=Math.round(H*sc);const x=cv.getContext('2d'),w=cv.width,h=cv.height;
  let r=seed*9301+v*49297;const rnd=()=>((r=(r*9301+49297)%233280)/233280);const hue=(seed*47+v*23)%360;
  const g=x.createLinearGradient(0,0,0,h);g.addColorStop(0,`hsl(${hue},55%,${70+rnd()*15}%)`);g.addColorStop(1,`hsl(${(hue+40)%360},45%,${35+rnd()*15}%)`);x.fillStyle=g;x.fillRect(0,0,w,h);
@@ -3344,7 +3344,7 @@ function ezOpen(o){o=o||{};EZ.ep=o.ep||null;const e=ezEp();EZ.step=o.step||(ezHa
 function ezClose(){const m=$('#mEasy');if(m)m.remove();}
 /* 빈 새 작품을 열면 먼저 띄워요 — 「직접 만들래요」를 누른 작품은 다시 띄우지 않아요 */
 function ezAuto(){try{const P=plan();if(S.settings.ezSkip||(P.idea||'').trim()||(P.logline||'').trim())return;if(S.episodes.some(e=>e.cuts.length||(e.syn||'').trim()||e.pack))return;if((S.settings.sbCharList||[]).some(c=>c.name))return;ezOpen();}catch(_){}}
-/* 분량: 컷 하나 = AI 이미지 1장. 기본은 인스타툰 8컷(무료 맛보기 20장으로 2편 완성) */
+/* 분량: 컷 하나 = AI 이미지 1장. 기본은 인스타툰 8컷(무료 맛보기 10장으로 1편 완성) */
 const EZ_SIZES=[[4,'4컷 만화','기승전결 한 편'],[8,'인스타툰','SNS용 짧은 한 편'],[16,'짧은 웹툰','도전만화 · 홍보툰'],[40,'연재 1화','정식 연재 분량']];
 function ezN(){const n=Math.round(+S.settings.ezCuts);return n>=2&&n<=80?n:8;}
 function ezScenes(n){return n<=4?n:n<=10?Math.max(4,Math.round(n*.7)):Math.min(18,Math.round(n/2.2));}

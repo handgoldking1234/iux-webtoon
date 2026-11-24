@@ -105,7 +105,7 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
         </>
       )}
       <div className="authbox">
-        <div><span>처음이신가요?</span><b>AI 이미지 20장 무료</b></div>
+        <div><span>처음이신가요?</span><b>AI 이미지 10장 무료</b></div>
         <div><span>로그인 없이 먼저 써 볼래요?</span><a href="/studio">편집기 둘러보기</a></div>
       </div>
       <p className="authhelp">로그인에 어려움이 있나요? <a href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%EB%A1%9C%EA%B7%B8%EC%9D%B8%20%EB%AC%B8%EC%9D%98">문의하기</a></p>
