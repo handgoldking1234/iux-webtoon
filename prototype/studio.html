@@ -1,4 +1,7 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
+/* 고르기 칸 글자가 아래로 잘리지 않게: 부모의 줄 높이를 물려받지 않아요 */
+select{line-height:1.25}
+</style></head><body>
 <title>바로웹툰 v2</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -708,7 +711,7 @@ body{word-break:keep-all;overflow-wrap:break-word}
 .modal textarea:focus-visible,.modal input:not([type=checkbox]):not([type=radio]):not([type=range]):focus-visible,.modal select:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
 body:has(.modal:not([hidden]),#ed:not([hidden])) .coach{display:none}
 .btn,.etb,.frbtn,.rb,.seg button,.sbtabs button,.mtabs button,.pltabs button,.stuchips button{white-space:nowrap}
-@media (max-width:1100px){.edright{width:auto;margin-right:0;padding-right:0}}.wklv{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:6px}.wklv select{width:100%;height:30px;padding:0 8px;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:var(--panel)}
+@media (max-width:1100px){.edright{width:auto;margin-right:0;padding-right:0}}.wklv{display:flex;flex-direction:column;gap:4px;width:100%;margin-top:6px}.wklv select{width:100%;height:30px;padding:0 8px;line-height:1.25;border:1px solid var(--line);border-radius:8px;font:inherit;font-size:12px;background:var(--panel)}
 .wklr{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:6px}.wklr .plref{position:relative;width:54px;height:auto;display:flex;flex-direction:column;border:0;background:none}.wklr .plref img{width:54px;height:40px;object-fit:cover;border-radius:6px}.wklr .plref small{font-size:9.5px;color:var(--muted);line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .wkck{list-style:none;margin:0 0 12px;padding:0;display:grid;gap:4px}.wkck li{display:flex;gap:8px;align-items:flex-start;padding:7px 10px;border-radius:10px;font-size:12.5px;background:var(--panel2)}.wkck li.ok{color:var(--muted);background:none;padding:3px 10px}.wkck li.err{background:color-mix(in srgb,#e5484d 9%,var(--panel))}.wkck li.warn{background:color-mix(in srgb,#f59e0b 11%,var(--panel))}
 .wkcki{flex:none;width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font-size:11px;font-weight:800;background:var(--panel);color:var(--ink)}.wkck li.ok .wkcki{background:color-mix(in srgb,var(--accent) 18%,var(--panel));color:var(--accent)}.wkck li.err .wkcki{background:#e5484d;color:#fff}.wkck li.warn .wkcki{background:#f59e0b;color:#fff}
