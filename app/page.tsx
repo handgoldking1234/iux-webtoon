@@ -6,6 +6,20 @@ import { dbReady } from '@/lib/env';
 import { Logo } from '@/components';
 import { activeNotices } from '@/lib/notices';
 import LandingFx from './LandingFx';
+import type { Metadata } from 'next';
+import { SITE_DESC, SITE_NAME, SITE_URL } from '@/lib/site';
+
+export const metadata: Metadata = { alternates: { canonical: '/' } };
+
+// 검색 결과에 서비스 정보가 잘 나오도록 알려 주는 구조화 데이터
+const LD = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    { '@type': 'WebSite', name: SITE_NAME, alternateName: ['바로 웹툰', 'BaroWebtoon'], url: SITE_URL, inLanguage: 'ko-KR' },
+    { '@type': 'WebApplication', name: SITE_NAME, url: SITE_URL, applicationCategory: 'DesignApplication', operatingSystem: 'Web', inLanguage: 'ko-KR', description: SITE_DESC, offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' } },
+    { '@type': 'Organization', name: 'IUX', url: 'https://iux.kr', email: 'handgoldking@gmail.com' },
+  ],
+};
 
 export const dynamic = 'force-dynamic';
 
@@ -137,6 +151,7 @@ export default async function Home() {
   return (
     <div className="lp">
       <LandingFx />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({ ...LD, '@graph': [...LD['@graph'], { '@type': 'FAQPage', mainEntity: FAQ.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })) }] }).replace(/</g, '\\u003c') }} />
       <header className="lp-nav">
         <div className="lp-w">
           <a href="#top" className="lp-logo"><i><Logo /></i><b>바로웹툰</b></a>

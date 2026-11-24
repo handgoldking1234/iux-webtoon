@@ -6,7 +6,7 @@ import { Logo } from '@/components';
 import AccountClient from './AccountClient';
 import { mailReady } from '@/lib/mail';
 
-export const metadata = { title: '내 계정' };
+export const metadata = { title: '내 계정', robots: { index: false } };
 export const dynamic = 'force-dynamic';
 
 const PLAN = { free: '무료', pro: '프로', edu: '교육' } as const;

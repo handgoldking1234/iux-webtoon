@@ -4,7 +4,7 @@ import { supabaseAdmin } from '@/lib/supabase/server';
 import { Logo } from '@/components';
 import Nav from './Nav';
 
-export const metadata = { title: { default: '관리자', template: '%s · 바로웹툰 관리자' } };
+export const metadata = { robots: { index: false, follow: false }, title: { default: '관리자', template: '%s · 바로웹툰 관리자' } };
 export const dynamic = 'force-dynamic';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
