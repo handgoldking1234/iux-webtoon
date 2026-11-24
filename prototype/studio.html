@@ -36,6 +36,11 @@ body.reader .iabox,body.reader .iah{display:none!important}
 .ezcnt{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:10px 0 4px;font-size:13px;font-weight:700}
 .ezcnt select{height:32px;padding:0 28px 0 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font:inherit;line-height:1.25}
 .ezcnt small{font-weight:500;color:var(--mute);font-size:12px}
+
+/* 콘티 창 · AI로 채우기 */
+.sbai{display:flex;gap:6px;margin:6px 0 4px}
+.sbai input{flex:1;min-width:0;height:34px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--panel);font:inherit;font-size:13px}
+.sbaiinfo{margin:0 0 8px}
 </style></head><body>
 <title>바로웹툰 v2</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -2010,6 +2015,7 @@ body.reader .coach{display:none}
    <div class="sbtabrow"><div class="sbtabs" role="tablist"><button role="tab" data-act="sb-tab" data-v="all" aria-selected="true">한번에 쓰기</button><button role="tab" data-act="sb-tab" data-v="cut" aria-selected="false">컷별로 쓰기</button></div><span class="note" id="sbcN" hidden></span><button class="btn sm icon" data-act="sbc-add" id="sbcAddTop" hidden title="맨 아래에 컷 추가" aria-label="컷 추가"><i data-ic="plus"></i></button><button class="btn sm sbaibtn" data-act="sb-ai" title="줄거리만 적으면 AI가 장면 · 대사로 나눠 줘요">✦ AI로 쓰기</button></div>
    <div id="sbCuts" hidden></div>
    <p class="txsrc" id="sbSrc" hidden></p>
+   <div class="sbai"><input id="sbAiIdea" placeholder="이야기 한두 줄 · 비우면 기획 · 이 화 시놉시스로 써요" autocomplete="off" aria-label="AI에게 줄 이야기"><button class="btn sm pri" data-act="sb-ai">✦ AI로 콘티 채우기</button></div><p class="note sbaiinfo" id="sbAiInfo"></p>
    <textarea id="sbTx" spellcheck="false" placeholder="**#3** — 암실, 유리건판에 번호를 적는 사진사&#10;- (그림 속 글씨: 百七)&#10;- 사진사(작게): …백일곱.&#10;&#10;**#4** — 건판 속 처녀가 고개를 돌린다&#10;- (대사 없음 · 그림만)"></textarea>
    <div class="row" style="margin-top:8px"><button class="btn sm pri" data-act="sb-pack" title="기획 › 회차 패키지의 콘티(S# · 장면 · 대사)를 불러와요">기획에서 불러오기</button><button class="btn sm" data-act="sb-ext" title="ChatGPT · 제미나이 같은 다른 AI에 붙여 넣을 요청문을 복사해요 · 받은 답을 글 상자에 붙여 넣으면 돼요">다른 AI용 요청문 복사</button><button class="btn sm" data-act="sb-sample">현상 1화 원고 넣기</button><button class="btn sm" data-act="sb-clear">모두 비우기</button></div>
    <details class="ref" style="margin-top:10px"><summary>쓰는 법</summary><ul style="padding-left:18px;margin:0">
@@ -2756,6 +2762,7 @@ function pkNorm(r,N){const cuts=((r&&r.cuts)||[]).map((c,i)=>({no:+c.no||i+1,sce
 async function pkMake(e,N,full,part,dry){const st=S.settings,P=plan(),style=st.sbStyle||SB_STYLE;
  if(SM||dry){const PRM=`You are a Korean vertical-scroll webtoon writer and storyboard artist. Build the full production package for episode ${e.num}.
 ${planCtx(e)}
+${DLG_CRAFT}
 ${full?`Below is the finished script of this episode. Follow it exactly: keep its scene order and reuse its dialogue word for word as "lines" (a line "- 이름: 대사" becomes who + text; "- (나레이션) …" becomes type 나레이션 with empty who); split a long scene into several panels when needed. Return "syn" as an empty string. Script: <<<${String(full).slice(0,12000)}>>>`:(e.syn||'').trim()?`Use the 「${e.num}화 시놉시스(이번 화)」 given above as the outline; return "syn" as an empty string.`:`First write this episode's synopsis in Korean (이번 화 목표, 주요 사건 3~5개(번호), 마지막 장면(클리프행어), 심어 둘 복선; 8-14 lines), continuing from previous episodes and fitting the overall story.`}
 Then split the episode into ${N||'12-24 (choose what fits)'} panels numbered from 1.${part?' '+part:''} For each panel:
 - "scene": one Korean line — shot + what we see, using the exact character names and location names from the lists above
@@ -3023,7 +3030,31 @@ function sbSummary(){
  const W=S.settings.width||690,R=SBR[SBo.ratio],ns=selCuts().length;$('#sbInfo').textContent=!P.nums.length?'':SBo.where==='sel'&&ns?`고른 ${ns}컷에 장면 ${Math.min(ns,P.nums.length)}개 · 대사 ${P.rows.length}개${P.nums.length>ns?` · 남는 ${P.nums.length-ns}장면은 새 컷으로`:''}`:`빈 박스 ${P.nums.length}컷 · 대사 ${P.rows.length}개 · 컷 크기 ${W}×${Math.round(W*R[1]/R[0])}px`;
  $('#sbApply').disabled=!P.nums.length;return P;
 }
-function openSb(){setTimeout(()=>{if(SBTAB==='cut'){SBC=sbSplit($('#sbTx').value);if(!SBC.list.length)SBC.list.push({no:1,scene:'',body:''});sbCutsRender();}},0);const e=ep();SBo.where=(!e||e.kind==='cover'||e.cuts.length)?'new':'here';if(e&&e.kind!=='cover'&&selCuts().length)SBo.where='sel';let pkl=false;if(e&&SBo.forEp!==e.id){SBo.forEp=e.id;const t=e.script||(pkStat(e)?(pkl=true,pkSbText(e)):'');$('#sbTx').value=t;if(SBTAB==='cut'){SBC=sbSplit(t);}}else if(!$('#sbTx').value&&e){$('#sbTx').value=e.script||(pkStat(e)?(pkl=true,pkSbText(e)):'');}sbSeg();$('#mSb').hidden=false;sbSummary();txSrc('#sbSrc',pkl?`${ic('list',12)}<span><b>${e.num}화 기획 콘티</b>를 자동으로 불러왔어요 · 맞지 않으면 고치거나, 다른 AI 답을 붙여 넣어요</span>`:'');if(pkl)toast(`${e.num}화 기획 콘티 ${pkStat(e).n}컷을 불러왔어요 · 고쳐서 「콘티 만들기」를 누르면 돼요`);setTimeout(()=>$('#sbTx').focus(),30);}
+function openSb(ai){setTimeout(()=>{sbAiInfo();if(ai)$('#sbAiIdea')?.focus();},30);setTimeout(()=>{if(SBTAB==='cut'){SBC=sbSplit($('#sbTx').value);if(!SBC.list.length)SBC.list.push({no:1,scene:'',body:''});sbCutsRender();}},0);const e=ep();SBo.where=(!e||e.kind==='cover'||e.cuts.length)?'new':'here';if(e&&e.kind!=='cover'&&selCuts().length)SBo.where='sel';let pkl=false;if(e&&SBo.forEp!==e.id){SBo.forEp=e.id;const t=e.script||(pkStat(e)?(pkl=true,pkSbText(e)):'');$('#sbTx').value=t;if(SBTAB==='cut'){SBC=sbSplit(t);}}else if(!$('#sbTx').value&&e){$('#sbTx').value=e.script||(pkStat(e)?(pkl=true,pkSbText(e)):'');}sbSeg();$('#mSb').hidden=false;sbSummary();txSrc('#sbSrc',pkl?`${ic('list',12)}<span><b>${e.num}화 기획 콘티</b>를 자동으로 불러왔어요 · 맞지 않으면 고치거나, 다른 AI 답을 붙여 넣어요</span>`:'');if(pkl)toast(`${e.num}화 기획 콘티 ${pkStat(e).n}컷을 불러왔어요 · 고쳐서 「콘티 만들기」를 누르면 돼요`);setTimeout(()=>$('#sbTx').focus(),30);}
+/* 내 레이아웃에 AI 콘티 채우기 — 고른 컷(없으면 콘티가 없는 컷)의 수 · 칸 수에 맞춰 장면 · 프롬프트 · 대사를 써서 그 자리에 넣어요 */
+function sbAiTargets(){const e=ep();if(!e||e.kind==='cover')return[];const s=selCuts();return s.length?s:e.cuts.filter(c=>!c.sb);}
+function sbAiInfo(){const el=$('#sbAiInfo');if(!el)return;const T=sbAiTargets(),fr=T.filter(c=>(c.items||[]).filter(x=>x.frame).length>1).length;
+ el.innerHTML=T.length?`${selCuts().length?'고른':'콘티가 없는'} <b>${T.length}컷</b>${fr?` (칸 나뉜 컷 ${fr}개)`:''}에 맞춰 써요 · 레이아웃은 그대로 · 글 AI 1회`:'컷을 고르면 그 컷 수 · 칸 수에 맞춰 써요 · 고른 컷이 없으면 새 컷으로 만들어요';}
+async function sbAiFill(){const e=ep();if(!e||e.kind==='cover'){toast('회차를 먼저 골라 주세요');return;}
+ const T=sbAiTargets();if(!T.length){toast('채울 컷이 없어요 · 컷을 고르거나 빈 컷 · 레이아웃을 먼저 만들어 주세요');return;}
+ if(SM&&!txtAi().left){paywall('txt');return;}
+ const N=T.length,idea=(($('#sbAiIdea')||{}).value||'').trim(),FR=T.map(c=>(c.items||[]).filter(x=>x.frame));
+ const lay=T.map((c,i)=>{const k=FR[i].length,d=dims(c);return `panel ${i+1}: ${d.W0>d.H0*1.15?'wide':d.H0>d.W0*1.6?'tall':'normal'} box${k>1?`, split into ${k} frames (read in order)`:''}`;}).join('; ');
+ const part=`${idea?`Story idea from the author (follow it): <<<${idea.slice(0,2000)}>>>. `:''}The page layout is already drawn and must not change — ${lay}. For a panel split into several frames, write "scene" as one short Korean line per frame joined with " / " (프레임 순서대로), and add "frames": an array of English prompts, one per frame in order, each a complete image prompt for that frame. Panels without frames do not need "frames".`;
+ const prev=e.pack;let o,raw;
+ prog('내 레이아웃에 콘티 쓰는 중');progSet(.3,`${N}컷${FR.some(f=>f.length>1)?' · 칸 나뉜 컷 포함':''} · 장면 · 프롬프트 · 대사`);
+ try{if(SM){const PRM=await pkMake(e,`exactly ${N}`,null,part,true);raw=await SM.json(PRM,{cache:false});o=pkNorm(raw,N);if(!o.cuts.length)throw{code:'invalid_json'};txtAiUse(1);}
+  else o=await pkMake(e,N,null,part);}
+ catch(err){progEnd();if(err&&err.code==='cancelled')return;toast(SM_ERR[err&&err.code]||'콘티를 쓰지 못했어요 · 다시 해 주세요');return;}
+ progEnd();if(cancelFlag)return;
+ const C=o.cuts.slice(0,N);while(C.length<N)C.push({no:C.length+1,scene:'',notes:'',prompt:'',lines:[]});C.forEach((c,i)=>c.no=i+1);
+ const RF=((raw&&raw.cuts)||[]).map(c=>Array.isArray(c.frames)?c.frames.map(String):[]);
+ /* 기존 sbApply(고른 컷에 넣기)를 그대로 써요 — 프롬프트는 잠깐 패키지 자리를 빌려 넘겨요 */
+ e.pack={...(prev||{}),cuts:C,at:Date.now()};selected.clear();T.forEach(c=>selected.add(c.id));SBo.where='sel';SBo.forEp=e.id;
+ $('#sbTx').value=(()=>{const t=pkSbText(e);return t;})();sbSummary();
+ try{sbApply();}finally{e.pack=prev;}
+ mutate(()=>{T.forEach((c,i)=>{const fr=FR[i],fp=RF[i]||[],P=C[i];if(c.sb&&P.prompt){c.sb.prompt=P.prompt;c.sb.ok=true;}if(c.sb&&P.dir)c.sb.dir=P.dir;if(fr.length>1)fr.forEach((it,j)=>{if(fp[j])it.aiPrompt=fp[j];});baseCache.delete(c.id);sigs.delete(c.id);});});
+ save();toast(`${N}컷에 콘티를 채웠어요 · 레이아웃은 그대로예요 · 「이미지 만들기」로 ${FR.some(f=>f.length>1)?'칸마다 ':''}그림을 넣어요`);}
 function sbApply(){
  const P=sbSummary();if(!P.nums.length)return;const W=S.settings.width||690,R=SBR[SBo.ratio],H=Math.round(W*R[1]/R[0]);
  const by=new Map();P.rows.forEach(r=>{if(!by.has(r.n))by.set(r.n,[]);by.get(r.n).push(r);});
@@ -3319,7 +3350,7 @@ function refGuide(R,chars,loc,full,vmap){vmap=vmap||{};return (full&&chars.lengt
 function sbCutRefs(c){const x=sbCast(c);return refPick(x.chars,x.loc,sbTxt(c),x.vmap);}
 /* 연출 메모(위치 · 시선 · 카메라 · 분위기)를 그림 AI에 보내는 글 */
 function dirLine(c){const d=(c&&c.sb&&c.sb.dir)||{},P=[d.pos&&`positions and movement: ${d.pos}`,d.gaze&&`distance and gaze: ${d.gaze}`,d.cam&&`camera: ${d.cam}`,d.mood&&`lighting and mood: ${d.mood}`].filter(Boolean);return P.length?`\nStaging — ${P.join('; ')}.`:'';}
-function sbCutPrompt(c){const x=sbCast(c),d=dims(c);const has=!!(c.sb.prompt||'').trim();return (has?c.sb.prompt.trim():`${S.settings.sbStyle||SB_STYLE}. Scene: ${c.sb.scene||''}`)+dirLine(c)+refGuide(sbCutRefs(c),x.chars,x.loc,!has,x.vmap)+`\nSingle vertical webtoon panel, ${d.W0}×${d.H0}. Leave space for speech balloons, no text, no speech bubbles.`;}
+function sbCutPrompt(c,pr){const x=sbCast(c),d=dims(c);const own=String(pr||c.sb.prompt||'').trim(),has=!!own;return (has?own:`${S.settings.sbStyle||SB_STYLE}. Scene: ${c.sb.scene||''}`)+dirLine(c)+refGuide(sbCutRefs(c),x.chars,x.loc,!has,x.vmap)+`\nSingle vertical webtoon panel, ${d.W0}×${d.H0}. Leave space for speech balloons, no text, no speech bubbles.`;}
 function stuSize(){if(STU.src==='sb'){const c=cutById(STU.cid);if(c){const d=dims(c);return[d.W0,d.H0];}}const R=BRATIO.find(x=>x[0]===STU.r)||BRATIO[2],W=S.settings.width||690;return[W,Math.round(W*R[2]/R[1])];}
 function stuRefs(){return refPick(stChars().filter(c=>STU.chars.includes(c.id)),stLocs().find(x=>x.id===STU.loc)||null,STU.p,stuVmap());}
 const stuUseP=()=>STU.src==='sb'&&STU.hasP;
@@ -3554,8 +3585,8 @@ async function sbAiGen(T,asked){
   if(!asked&&(need>1||noS.size)&&!await confirmBox({title:`이미지 ${need}장을 만들까요?`,body:`${T.length}컷 · ${left>9000?`이미지 ${need}장을 만들어요.`:`남은 이미지 ${left}장 가운데 ${need}장을 써요.`}${noS.size?`<br><br><b>${esc([...noS].join(', '))}</b> — 캐릭터 시트가 없어요. 이대로 그리면 컷마다 얼굴 · 옷이 달라질 수 있어요. 취소하고 콘티·AI ③에서 시트를 먼저 만들 수 있어요.`:hasR?'<br>캐릭터 시트 · 배경 그림이 참고 이미지로 같이 붙어요.':''}`,ok:noS.size?`시트 없이 ${need}장 만들기`:`${need}장 만들기`,danger:false}))return;}
  prog(`이미지 만드는 중 · ${model}`);const res=[];let used=0;
  for(let i=0;i<plan.length;i++){if(cancelFlag)break;const P=plan[i],c=P.c,d=dims(c);progSet(i/plan.length,`S#${c.sb.no} 그리는 중…${P.fr?` 칸 ${P.fr.length}개`:''} (${i+1}/${plan.length}컷)`);await new Promise(r=>setTimeout(r,350));
-  const mk=async(w,h,v)=>{const b=await sbMockImg(Math.max(40,Math.round(w)),Math.max(40,Math.round(h)),c.sb.no,v);const k='sb_'+uid();blobs.set(k,b);putBlob(k,b);used++;progThumb(b);libAdd(k,'ai',{sno:c.sb.no,model:st.aiModel||'나노바나나 Pro'});return k;};
-  if(P.fr){const ks=[];for(let f=0;f<P.fr.length;f++){const it=P.fr[f];ks.push(await mk(it.w*d.W0,it.h*d.H0,f));}res.push({c,fr:P.fr,ks});}
+  const mk=async(w,h,v,fr)=>{const b=await sbMockImg(Math.max(40,Math.round(w)),Math.max(40,Math.round(h)),c.sb.no,v);const k='sb_'+uid();blobs.set(k,b);putBlob(k,b);used++;progThumb(b);libAdd(k,'ai',{sno:c.sb.no,model:st.aiModel||'나노바나나 Pro'});return k;};
+  if(P.fr){const ks=[];for(let f=0;f<P.fr.length;f++){const it=P.fr[f];ks.push(await mk(it.w*d.W0,it.h*d.H0,f,it));}res.push({c,fr:P.fr,ks});}
   else{const ks=[];for(let v=0;v<nc;v++)ks.push(await mk(d.W0,d.H0,v+(c.sb.cands?c.sb.cands.length:0)));res.push({c,ks});}}
  progEnd();if(!res.length)return;
  mutate(()=>{for(const r of res){const c=r.c;c.sb.aiModel=model;
@@ -3680,6 +3711,8 @@ async function sbAct(act,b){
   case'wk-cand':{const c=cutById(b.dataset.cid);if(!c)break;mutate(()=>{c.sb.img=b.dataset.k;});baseCache.delete(c.id);wkRender();break;}
   case'wk-hist':{const c=cutById(b.dataset.cid);const h=c&&(c.sb.hist||[])[+b.dataset.j];if(!h)break;sbHistPush(c,'되돌리기 전');c.sb.prompt=h.p;c.sb.ok=true;save();wkRender();toast(`S#${c.sb.no} 프롬프트를 되돌렸어요`);break;}
   case'sb-pack':await pkLoadSb();break;
+  case'sb-ai':await sbAiFill();break;
+  case'sb-ai-open':openSb(true);break;
   case'sb-ext':copyTx(extPrompt('sb'),'요청문을 복사했어요 · 다른 AI에 붙여 넣고, 받은 답을 이 글 상자에 붙여 넣으세요');txSrc('#sbSrc',`${ic('copy',12)}<span>다른 AI 답을 아래에 붙여 넣으면 장면 · 대사가 자동으로 나뉘어요</span>`);break;
   case'sb-open-pack':openSb();setTimeout(pkLoadSb,40);break;
   case'sb-pkpr':await pkLoadPrompts();break;
@@ -4481,7 +4514,7 @@ function setActive(cid,iid,openSheet){if(typeof NAV!=='undefined'&&NAV==='lib'){
 function renderAll(){aiTestReset();renderEps();if($('#mWork')&&!window.__wkR){window.__wkR=1;requestAnimationFrame(()=>{window.__wkR=0;wkRender();});}renderStrip();renderInspector();updSel();}
 function renderSBar(){const bar=$('#sBar');if(!bar)return;const e=ep();if(!e){bar.innerHTML='';return;}const n=e.cuts.length,k=e.cuts.filter(c=>selected.has(c.id)).length,cov=e.kind==='cover';
  const sbc=cov?[]:e.cuts.filter(c=>c.sb),sk=sbc.filter(c=>selected.has(c.id)).length,hasPr=sbc.some(c=>c.sb.prompt);
- const acts=cov||!k?'':`<div class="sbacts" role="group" aria-label="고른 ${k}컷에 한꺼번에"><button class="btn sm ghost" data-act="sb-open" title="고른 컷 순서대로 장면 · 대사를 넣어요">${ic('rows',13)}<span class="lb">콘티</span></button><button class="btn sm ghost" data-act="sel-up" title="여러 장을 고르면 파일 이름 순서대로 고른 컷 · 칸에 넣어요">${ic('imgplus',13)}<span class="lb">이미지 올리기</span></button><button class="btn sm ghost" data-act="sb-ai-gen" title="${sk?`콘티가 있는 ${sk}컷의 그림을 AI로 만들어요 · 프롬프트가 없으면 먼저 만들어요 (예시)`:'고른 컷에 콘티가 없어요 · 먼저 「콘티」로 장면을 넣어 주세요'}"${sk?'':' aria-disabled="true"'}>${ic('wand',13)}<span class="lb">이미지 만들기</span></button><span class="sbsep"></span><button class="btn sm ghost" data-act="sel-more" aria-haspopup="menu" title="이어붙이기 · GIF">${ic('stitch',13)}<span class="lb">만들기</span></button></div>`;
+ const acts=cov||!k?'':`<div class="sbacts" role="group" aria-label="고른 ${k}컷에 한꺼번에"><button class="btn sm ghost" data-act="sb-open" title="고른 컷 순서대로 장면 · 대사를 넣어요">${ic('rows',13)}<span class="lb">콘티</span></button><button class="btn sm ghost" data-act="sb-ai-open" title="레이아웃은 그대로 두고, 고른 컷 · 칸 수에 맞춰 AI가 장면 · 프롬프트 · 대사를 채워요 (글 AI 1회)">${ic('wand',13)}<span class="lb">AI 콘티</span></button><button class="btn sm ghost" data-act="sel-up" title="여러 장을 고르면 파일 이름 순서대로 고른 컷 · 칸에 넣어요">${ic('imgplus',13)}<span class="lb">이미지 올리기</span></button><button class="btn sm ghost" data-act="sb-ai-gen" title="${sk?`콘티가 있는 ${sk}컷의 그림을 AI로 만들어요 · 프롬프트가 없으면 먼저 만들어요 (예시)`:'고른 컷에 콘티가 없어요 · 먼저 「콘티」로 장면을 넣어 주세요'}"${sk?'':' aria-disabled="true"'}>${ic('wand',13)}<span class="lb">이미지 만들기</span></button><span class="sbsep"></span><button class="btn sm ghost" data-act="sel-more" aria-haspopup="menu" title="이어붙이기 · GIF">${ic('stitch',13)}<span class="lb">만들기</span></button></div>`;
  bar.innerHTML=`<div class="sbin"><button class="sball" data-act="${k===n&&n?'sel-none':'sel-all'}" aria-pressed="${k===n&&n>0}" ${n?'':'disabled'}><span class="sbck${k===n&&n?' on':k?' part':''}"></span>${k===n&&n?'선택 해제':'전체 선택'}</button><span class="sbinfo">${cov?'표지 · 썸네일 · ':''}${n}컷${k?` · <b>${k}개 선택</b>`:''}</span><span style="flex:1"></span>${k&&k!==n?`<button class="btn sm ghost" data-act="sel-none">선택 해제</button>`:''}${acts}${k?`<button class="btn sm sbdel" data-act="sel-del" title="고른 컷 삭제 (되돌리기 가능)">${ic('trash',13)}<span class="lb">삭제</span></button>`:''}${cov?`<label class="plsel"><span>플랫폼</span><select data-plat aria-label="플랫폼">${Object.entries(PLATFORMS).map(([k,v])=>`<option value="${k}"${(S.settings.platform||'naver')===k?' selected':''}>${k==='naver'?'네이버 웹툰':'직접 정하기'}</option>`).join('')}</select></label>`:''}<button class="btn sm sbout" data-act="exp-open" aria-haspopup="dialog" title="내보내기 — 범위 · 저장 방식 · 형식 고르기">${ic('dl',13)}<span class="lb">내보내기</span></button></div>`;if(!k){bar.innerHTML=(n?`<div class="sbin sbmini"><button class="sball" data-act="sel-all" aria-pressed="false"><span class="sbck"></span>전체 선택</button><span class="sbinfo">${cov?'표지 · 썸네일 · ':''}${n}컷</span></div>`:'');}bar.hidden=!bar.innerHTML.trim();}
 $('#sBar')&&$('#sBar').addEventListener('change',ev=>{if(ev.target.matches('[data-plat]')){S.settings.platform=ev.target.value;save();renderInspector();renderSBar();}});
 function updSel(){renderSBar();if(typeof NAV!=='undefined'&&NAV==='ai')renderEps();}
