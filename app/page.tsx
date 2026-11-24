@@ -95,7 +95,7 @@ const VALS: { img?: string; ic?: string; t: string; en: string; alt?: string; p:
 // 자주 묻는 질문
 const FAQ = [
   ['그림을 못 그려도 만들 수 있나요?', '네. 이야기만 적으면 AI가 콘티와 그림을 함께 만들어요. 직접 그린 그림이나 사진을 불러와 컷에 넣고 말풍선만 얹을 수도 있어요.'],
-  ['무료로 어디까지 쓸 수 있나요?', '가입하면 AI 이미지 10장을 무료로 만들 수 있고, 글 AI(기획 · 콘티)는 매달 3회가 새로 채워져요. 대사 고치기 · 말풍선 편집 · 직접 올린 그림 쓰기는 AI를 쓰지 않아서 횟수와 상관없어요.'],
+  ['무료로 어디까지 쓸 수 있나요?', '가입하면 AI 이미지 10장을 무료로 만들 수 있고, 글 AI(기획 · 콘티)는 매달 8회가 새로 채워져요. 대사 고치기 · 말풍선 편집 · 직접 올린 그림 쓰기는 AI를 쓰지 않아서 횟수와 상관없어요.'],
   ['내가 만든 웹툰은 누구 것인가요?', '만든 작품의 권리는 만든 사람에게 있어요. 다만 AI로 만든 그림의 권리와 쓸 수 있는 범위는 법과 각 AI 업체의 정책에 따라 달라질 수 있어요. 자세한 내용은 이용약관을 봐 주세요.'],
   ['작품은 어디에 저장되나요?', '쓰는 기기의 브라우저에 먼저 저장돼요. 로그인하면 바뀐 작품이 내 계정 저장소에도 올라가서 다른 기기에서 이어서 작업할 수 있어요. 로그인하지 않으면 브라우저에만 있어서 방문 기록을 지우면 사라질 수 있어요.'],
   ['휴대폰에서도 되나요?', '네. 휴대폰 브라우저에서 기획 · 콘티 · 대사 고치기까지 할 수 있어요. 컷을 세밀하게 다듬는 작업은 화면이 넓은 PC가 더 편해요.'],
@@ -201,7 +201,7 @@ export default async function Home() {
         </div>
         <dl className="lp-stats" data-r style={{ ['--d' as string]: 5 }}>
           <div><dt>가입하면 바로</dt><dd><span data-count="10">10</span><em>장</em></dd><small>AI 이미지 무료</small></div>
-          <div><dt>매달 새로</dt><dd><span data-count="3">3</span><em>회</em></dd><small>글 AI 무료</small></div>
+          <div><dt>매달 새로</dt><dd><span data-count="8">8</span><em>회</em></dd><small>글 AI 무료</small></div>
           <div><dt>웹툰 한 편을 완성하는</dt><dd><span data-count="4">4</span><em>단계</em></dd><small>기획부터 말풍선까지</small></div>
           <div><dt>대사 고칠 때 AI 비용</dt><dd><span>0</span><em>원</em></dd><small>그림을 다시 만들지 않아요</small></div>
         </dl>
@@ -407,7 +407,7 @@ export default async function Home() {
               <div className="amt">0<span>원</span></div>
               <ul>
                 <li><I n="check" s={15} />AI 이미지 10장 (가입 시)</li>
-                <li><I n="check" s={15} />글 AI 매달 3회</li>
+                <li><I n="check" s={15} />글 AI 매달 8회</li>
                 <li><I n="check" s={15} />작품 기획 · 콘티 · 말풍선 편집</li>
                 <li><I n="check" s={15} />클라우드 저장</li>
               </ul>
