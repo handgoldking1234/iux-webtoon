@@ -360,7 +360,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
   .lp-stats dd{font-size:30px}
   .lp-tags{gap:4px 16px;padding-top:56px;padding-bottom:80px}
   .cut{width:260px}
-  .lp-heroimg{margin-top:40px;border-radius:16px}
+  .lp-heroimg{margin-top:76px;border-radius:16px}
   .lp-heroimg .hb{left:var(--mx);top:var(--my)}
   .lp-heroimg .oval{font-size:11px}
   .lp-heroimg .hb.pc{display:none}
