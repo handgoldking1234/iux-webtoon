@@ -2048,6 +2048,7 @@ const fmtB=b=>b<1024?b+' B':b<1048576?Math.round(b/1024)+' KB':(b/1048576).toFix
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const IC={ /* Lucide 아이콘 (ISC 라이선스) */
  up:'<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>',
+ clippaste:'<path d="M11 14h10"/><path d="M16 4h2a2 2 0 0 1 2 2v1.344"/><path d="m17 18 4-4-4-4"/><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113"/><rect x="8" y="2" width="8" height="4" rx="1"/>',
  down:'<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>',
  edit:'<path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/>',
  swap:'<path d="M8 3 4 7l4 4"/><path d="M4 7h16"/><path d="m16 21 4-4-4-4"/><path d="M20 17H4"/>',
@@ -4110,13 +4111,13 @@ const QAIG=[['다듬기',[['더 짧게'],['자연스럽게'],['존댓말로'],['
  ['사투리',[['전라도','전라도 사투리로'],['경상도','경상도 사투리로'],['충청도','충청도 사투리로'],['강원도','강원도 사투리로'],['제주','제주 방언으로 (뜻이 통하게)'],['북한','북한 말투로'],['연변','연변 조선족 말투로'],['교포','재미교포 말투로 (영어 단어 섞어서)']]],
  ['말투',[['양아치','양아치 말투로 (욕설 없이)'],['초딩','초등학생 말투로'],['사극','사극 말투로'],['어르신','할머니 · 할아버지 말투로'],['로봇','기계적인 로봇 말투로']]]];
 const QPI={rad:'<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M3.5 13V8a4.5 4.5 0 0 1 4.5-4.5h5"/></svg>'};
-function qpTools(it){const t=it.type,L=[];if(it.frame){L.push(['frep',frameEmpty(it)?'이미지 넣기':'이미지 바꾸기','imgplus']);if(!frameEmpty(it))L.push(['fia','이미지 크기 · 위치','crop'],['fadj','이미지 보정 — 노출 · 대비 · 채도 · 색온도','sliders']);}
- if(t==='image')L.push(['rep','이미지 바꾸기','imgplus'],['rad','모서리'],['bd','테두리','sqdash'],['col','색상 · 밝기','sliders']);
+function qpTools(it){const t=it.type,L=[];if(it.frame){L.push(['frep',frameEmpty(it)?'이미지 넣기':'이미지 바꾸기','imgplus'],['cpaste','복사한 이미지 붙여넣기 (Ctrl+V)','clippaste']);if(!frameEmpty(it))L.push(['fia','이미지 크기 · 위치','crop'],['fadj','이미지 보정 — 노출 · 대비 · 채도 · 색온도','sliders']);}
+ if(t==='image')L.push(['rep','이미지 바꾸기','imgplus'],['cpaste','복사한 이미지로 바꾸기 (Ctrl+V)','clippaste'],['rad','모서리'],['bd','테두리','sqdash'],['col','색상 · 밝기','sliders']);
  else if(SHAPE_T.has(t)){L.push(['fill','채우기 색','droplet'],['line','선','sqdash']);if(t==='rect')L.push(['rad','모서리']);L.push(['op','불투명도','opac']);}
  else if(!FX.has(t)){if(t==='speech'||t==='shout')L.push(['shape','말풍선 모양','msg']);if(BOXED.has(t))L.push(['bcol','배경 · 테두리','droplet']);L.push(['txt','글자 크기 · 색','type']);}
  return{L,ai:t==='image'||(!FX.has(t)&&!SHAPE_T.has(t))};}
 function qpBtns(it){const{L,ai}=qpTools(it);if(!L.length&&!ai)return'';
- return L.map(([k,l,icn])=>k==='fadj'?`<button class="qb" data-act="rtab" data-t="adjust" data-tt="${l}" aria-label="이미지 보정">${ic(icn,14)}</button>`:k==='flib'?`<button class="qb" data-act="lib-open" data-cid="${activeCut}" data-fid="${it.id}" data-tt="${l}" aria-label="${l}">${ic(icn,14)}</button>`:k==='fia'?`<button class="qb" data-act="ia-toggle" data-tt="${l}" aria-label="${l}">${ic(icn,14)}</button>`:k==='frep'?`<button class="qb" data-act="frame-img" data-fi="${it.id}" data-tt="${l}" aria-label="${l}">${ic(icn,14)}</button>`:k==='rep'?`<button class="qb" data-act="layer-rep" data-tt="${l}" aria-label="${l}">${ic(icn,14)}</button>`:`<button class="qb" data-qp="${k}" data-tt="${l}" aria-label="${l}" aria-pressed="${QP.k===k}">${icn?ic(icn,14):QPI[k]}</button>`).join('')+(ai?`<button class="qb qai-b" data-qp="ai" aria-pressed="${QP.k==='ai'}" data-tt="${it.type==='image'?'AI로 이미지 고치기':'AI로 대사 다듬기'}">✦ AI</button>`:'')+'<span class="qsep"></span>';}
+ return L.map(([k,l,icn])=>k==='fadj'?`<button class="qb" data-act="rtab" data-t="adjust" data-tt="${l}" aria-label="이미지 보정">${ic(icn,14)}</button>`:k==='flib'?`<button class="qb" data-act="lib-open" data-cid="${activeCut}" data-fid="${it.id}" data-tt="${l}" aria-label="${l}">${ic(icn,14)}</button>`:k==='fia'?`<button class="qb" data-act="ia-toggle" data-tt="${l}" aria-label="${l}">${ic(icn,14)}</button>`:k==='frep'?`<button class="qb" data-act="frame-img" data-fi="${it.id}" data-tt="${l}" aria-label="${l}">${ic(icn,14)}</button>`:k==='rep'?`<button class="qb" data-act="layer-rep" data-tt="${l}" aria-label="${l}">${ic(icn,14)}</button>`:k==='cpaste'?`<button class="qb" data-act="clip-img" data-tt="${l}" aria-label="${l}">${ic(icn,14)}</button>`:`<button class="qb" data-qp="${k}" data-tt="${l}" aria-label="${l}" aria-pressed="${QP.k===k}">${icn?ic(icn,14):QPI[k]}</button>`).join('')+(ai?`<button class="qb qai-b" data-qp="ai" aria-pressed="${QP.k==='ai'}" data-tt="${it.type==='image'?'AI로 이미지 고치기':'AI로 대사 다듬기'}">✦ AI</button>`:'')+'<span class="qsep"></span>';}
 function qpBody(it,k){const op=Math.round((it.op??1)*100);
  if(k==='cadj'){const a=it.adj||{};return rng('밝기','data-adj','br',-100,100,1,a.br||0)+rng('대비','data-adj','ct',-100,100,1,a.ct||0)+rng('채도','data-adj','sat',-100,100,1,a.sat||0)+rng('위 자르기','data-adj','cropT',0,.45,.005,a.cropT||0)+rng('아래 자르기','data-adj','cropB',0,.45,.005,a.cropB||0)+'<p class="note">블러·비네팅·색 덮기는 오른쪽 「이미지 조정」에 있어요.</p>';}
  if(k==='cai')k='ai';
@@ -6607,6 +6608,7 @@ document.addEventListener('click',async ev=>{
   case'sc-apply':applyScript();break;
   case'item-vis':{const cc=cutById(activeCut);const x=cc&&cc.items.find(i=>i.id===b.dataset.item);if(x){mutate(()=>x.hide=!x.hide);renderOverlay(cc.id);}break;}
   case'g-item-vis':{const x=G.items.find(i=>i.id===b.dataset.item);if(x){x.hide=!x.hide;gAfterItem();}break;}
+  case'clip-img':clipImgPaste();break;
   case'layer-rep':case'g-layer-rep':{const g=act.startsWith('g-');layerCtx={where:g?'g':'main',rep:g?G.sel:activeItem};libOpen({ctx:layerCtx});break;}
   case'mask-img':case'g-mask-img':{const g=act.startsWith('g-');layerCtx={where:g?'g':'main',mask:g?G.sel:activeItem};libOpen({ctx:layerCtx});break;}
   case'mask-clear':{const cc=cutById(activeCut),x=cc&&cc.items.find(i=>i.id===activeItem);if(x){mutate(()=>{delete x.fillImg;});renderInspector();}break;}
@@ -6818,7 +6820,22 @@ stage.addEventListener('dragover',e=>{if([...e.dataTransfer.types].includes('Fil
 stage.addEventListener('drop',e=>{e.preventDefault();dragDepth=0;stage.classList.remove('dropping');const fs=[...e.dataTransfer.files];if(!fs.length)return;
  {const el=document.elementFromPoint(e.clientX,e.clientY),cd=el&&el.closest('.cut'),c0=cd&&cutById(cd.dataset.id);if(c0&&c0.sb&&fs.length===1&&/^image\//.test(fs[0].type)&&!el.closest('.cut-bar')){sbSetImg(c0,fs[0]);return;}}
  const cd=document.elementFromPoint(e.clientX,e.clientY)?.closest('.cut');let at=null;if(cd){const r=cd.getBoundingClientRect();const i=ep().cuts.findIndex(c=>c.id===cd.dataset.id);at=e.clientY<r.top+r.height/2?i:i+1;}importFiles(fs,at);});
-document.addEventListener('paste',e=>{if(e.target.matches('input,textarea'))return;const fs=[...(e.clipboardData?.files||[])].filter(f=>/^image\//.test(f.type));if(!fs.length)return;if(ED.on){layerCtx={where:'ed'};addImageLayer(fs[0]).then(()=>toast('붙여 넣은 이미지를 레이어로 넣었어요'));return;}const ec=ep();const at=activeCut?ec.cuts.findIndex(c=>c.id===activeCut)+1:null;importFiles(fs.map((f,i)=>new File([f],f.name&&f.name!=='image.png'?f.name:`붙여넣기_${Date.now()}_${i}.png`,{type:f.type})),at);});
+/* 고른 레이어에 이미지 붙여넣기 — 이미지 레이어는 바꾸고, 칸은 채우고, 글자 · 도형을 골랐으면 같은 컷에 새 레이어로 */
+async function pasteToLayer(f){
+ if(ED.on){const it=ED.active&&ED.items.find(i=>i.id===ED.active);
+  if(it&&it.frame){ensureFx(it);let i=frameImgIdx(it);if(i<0){it.fills.push({type:'image',fit:'cover',op:1});i=it.fills.length-1;}layerCtx={where:'ed',fillImg:it.id,idx:i};await addImageLayer(f);layerCtx=null;toast('고른 칸에 이미지를 붙여 넣었어요');return true;}
+  if(it&&it.type==='image'){layerCtx={where:'ed',rep:it.id};await addImageLayer(f);layerCtx=null;toast('고른 이미지 레이어를 바꿨어요');return true;}
+  layerCtx={where:'ed'};await addImageLayer(f);layerCtx=null;toast('붙여 넣은 이미지를 레이어로 넣었어요');return true;}
+ const c=activeCut&&cutById(activeCut),it=c&&activeItem&&c.items.find(i=>i.id===activeItem);if(!it)return false;
+ if(it.frame){ensureFx(it);let i=frameImgIdx(it);if(i<0){it.fills.push({type:'image',fit:'cover',op:1});i=it.fills.length-1;}layerCtx={where:'main',fillImg:it.id,idx:i};await addImageLayer(f);layerCtx=null;renderOverlay(c.id);toast(`${it.label||'칸'}에 이미지를 붙여 넣었어요`);return true;}
+ if(it.type==='image'){layerCtx={where:'main',rep:it.id};await addImageLayer(f);layerCtx=null;renderOverlay(c.id);renderInspector();toast('고른 이미지 레이어를 바꿨어요');return true;}
+ layerCtx={where:'main'};await addImageLayer(f);layerCtx=null;toast('이 컷에 이미지 레이어로 붙여 넣었어요');return true;}
+/* 휴대폰처럼 Ctrl+V가 없을 때: 버튼으로 클립보드 이미지 읽기 */
+async function clipImgPaste(){if(!navigator.clipboard||!navigator.clipboard.read){toast('이 브라우저는 버튼 붙여넣기를 지원하지 않아요 · Ctrl+V로 붙여 넣어 주세요');return;}
+ try{const its=await navigator.clipboard.read();for(const ci of its){const t=ci.types.find(x=>/^image\//.test(x));if(t){const b=await ci.getType(t);await pasteToLayer(new File([b],`붙여넣기_${Date.now()}.png`,{type:b.type||t}));return;}}toast('클립보드에 이미지가 없어요 · 이미지를 먼저 복사해 주세요');}
+ catch(_){toast('클립보드를 읽지 못했어요 · 붙여넣기 권한을 허용해 주세요');}}
+document.addEventListener('paste',e=>{if(e.target.matches('input,textarea'))return;const fs=[...(e.clipboardData?.files||[])].filter(f=>/^image\//.test(f.type));if(!fs.length)return;
+ if(ED.on||(activeCut&&activeItem)){e.preventDefault();pasteToLayer(fs[0]);return;}const ec=ep();const at=activeCut?ec.cuts.findIndex(c=>c.id===activeCut)+1:null;importFiles(fs.map((f,i)=>new File([f],f.name&&f.name!=='image.png'?f.name:`붙여넣기_${Date.now()}_${i}.png`,{type:f.type})),at);});
 if(document.fonts)document.fonts.addEventListener('loadingdone',()=>{clearTimeout(window.__fT);window.__fT=setTimeout(()=>{sigs.clear();renderStrip();},150);});
 
 /* ---------------- v2 · 왼쪽 패널 전환 ---------------- */
