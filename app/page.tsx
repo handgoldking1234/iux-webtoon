@@ -434,10 +434,7 @@ export default async function Home() {
               <a className="lp-btn out sm" href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84%20%EC%86%8C%EC%8B%9D%20%EB%B0%9B%EA%B8%B0">소식 받기</a>
             </article>
           </div>
-          <div className="lp-extra" data-r>
-            <div><i><I n="zap" s={18} /></i><p><b>구독 없이 필요한 만큼</b>AI 이미지를 묶음으로 충전해서 쓰는 충전팩 (준비 중)</p></div>
-            <div><i><I n="users" s={18} /></i><p><b>학교 · 학원 · 팀</b>수업이나 팀 작업용 단체 요금 — <a href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%EB%8B%A8%EC%B2%B4%20%EC%9A%94%EA%B8%88%20%EB%AC%B8%EC%9D%98">문의하기</a></p></div>
-          </div>
+          <p className="lp-extra" data-r>구독 없이 필요한 만큼 쓰는 AI 이미지 충전팩도 준비 중이에요 · 학교 · 학원 · 팀 단체 요금은 <a href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%EB%8B%A8%EC%B2%B4%20%EC%9A%94%EA%B8%88%20%EB%AC%B8%EC%9D%98">문의하기</a></p>
         </div>
       </section>
 

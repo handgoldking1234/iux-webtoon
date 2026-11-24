@@ -257,11 +257,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-price ul{flex:1;margin:24px 0 32px;padding-top:24px;border-top:1px solid var(--line2)}
 .lp-price .lp-btn{align-self:stretch}
 .lp-price .pro{border:2px solid var(--acc);background:linear-gradient(180deg,var(--accRow),var(--panel) 50%)}
-.lp-extra{display:grid;grid-template-columns:1fr 1fr;gap:12px;max-width:1080px;margin:var(--gap) auto 0}
-.lp-extra>div{display:flex;align-items:center;gap:14px;padding:18px 22px;border-radius:14px;background:var(--panel);border:1px dashed var(--line)}
-.lp-extra i{flex:none;width:38px;height:38px;border-radius:11px;background:var(--accSoft);color:var(--accText);display:flex;align-items:center;justify-content:center}
-.lp-extra p{font-size:var(--fs-sm);color:var(--mute);line-height:1.6}
-.lp-extra b{display:block;color:var(--ink);font-size:15px;font-weight:800}
+.lp-extra{max-width:1080px;margin:28px auto 0;text-align:center;font-size:var(--fs-sm);color:var(--mute);line-height:1.7}
 .lp-extra a{color:var(--accText);font-weight:700;text-decoration:underline;text-underline-offset:3px}
 .lp-price .prem{background:#141a16;border-color:#141a16;color:#eef1ef}
 .lp-price .prem em{color:#4fdc85}
@@ -339,8 +335,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
   .lp-more{grid-template-columns:1fr 1fr}
   .lp-price{grid-template-columns:1fr 1fr}
   .lp-price .prem{grid-column:1/-1}
-  .lp-extra{grid-template-columns:1fr}
-    .lp-stats{grid-template-columns:1fr 1fr}
+      .lp-stats{grid-template-columns:1fr 1fr}
   .lp-stats div:nth-child(3){border-left:0}
   .lp-stats div:nth-child(n+3){border-top:1px solid var(--line2)}
   .lp-ideas{grid-template-columns:1fr 1fr}
