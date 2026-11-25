@@ -260,7 +260,7 @@ export default async function Home() {
           </header>
           <div className="lp-split">
             <div className="lp-layer" data-r aria-hidden="true">
-              <div className="ly img"><span className="tag">그림 레이어</span><span className="fig" /><span className="re"><I n="spark" s={13} /> 이 컷만 다시 그리기</span></div>
+              <div className="ly img"><span className="tag">그림 레이어</span><span className="pic" aria-hidden="true" style={{ ['--p1' as string]: 'url(/lp/s13.webp)', ['--p2' as string]: 'url(/lp/s7.webp)' }} /><span className="re"><I n="spark" s={13} /> 이 컷만 다시 그리기</span></div>
               <div className="ly txt"><span className="tag">말풍선 레이어</span><span className="bub">오늘도 우산 안 가져왔지<b>?</b><i className="caret" /></span></div>
             </div>
             <div className="lp-pts">
