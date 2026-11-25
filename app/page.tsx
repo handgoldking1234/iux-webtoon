@@ -197,7 +197,7 @@ export default async function Home() {
         <div className="lp-heroimg" data-r style={{ ['--d' as string]: 4 }}>
           <img src="/lp/hero.webp" alt="상상한 인물들이 화면 밖으로 뛰어나오는 웹툰 작가의 책상" width={1376} height={768} fetchPriority="high" decoding="async" />
           {HERO_TALK.map((b, i) => (
-            <span key={i} className={`hb t${i} ${b.k}${b.tr ? ' tr' : ''}${b.m ? '' : ' pc'}`} style={{ ['--x' as string]: `${b.x}%`, ['--y' as string]: `${b.y}%`, ['--mx' as string]: `${b.mx ?? b.x}%`, ['--my' as string]: `${b.my ?? b.y}%`, ['--i' as string]: i }} aria-hidden="true">{b.k === 'oval' ? <><OvalBubble /><b className="q"><span>{b.s}</span></b><b className="a"><span>그래! <em>바로웹툰</em>!</span></b></> : b.s}</span>
+            <span key={i} className={`hb t${i} ${b.k}${b.tr ? ' tr' : ''}${b.m ? '' : ' pc'}`} style={{ ['--x' as string]: `${b.x}%`, ['--y' as string]: `${b.y}%`, ['--mx' as string]: `${b.mx ?? b.x}%`, ['--my' as string]: `${b.my ?? b.y}%`, ['--i' as string]: i }} aria-hidden="true">{b.k === 'oval' ? <><OvalBubble /><b className="q"><span>{b.s}</span></b><b className="a"><span>그래! <em>바로웹툰</em>!</span></b></> : b.k === 'say' ? <><OvalBubble /><span className="t">{b.s}</span></> : b.s}</span>
           ))}
         </div>
         <dl className="lp-stats" data-r style={{ ['--d' as string]: 5 }}>
@@ -260,8 +260,8 @@ export default async function Home() {
           </header>
           <div className="lp-split">
             <div className="lp-layer" data-r aria-hidden="true">
-              <div className="ly img"><span className="tag">그림 레이어</span><span className="pic" aria-hidden="true" style={{ ['--p1' as string]: 'url(/lp/s13.webp)', ['--p2' as string]: 'url(/lp/s7.webp)' }} /><span className="re"><I n="spark" s={13} /> 이 컷만 다시 그리기</span></div>
-              <div className="ly txt"><span className="tag">말풍선 레이어</span><span className="bub">오늘도 우산 안 가져왔지<b>?</b><i className="caret" /></span></div>
+              <div className="ly img"><span className="tag">그림 레이어</span><span className="pic" aria-hidden="true" style={{ ['--p1' as string]: 'url(/lp/edit-a.webp)', ['--p2' as string]: 'url(/lp/edit-b.webp)' }} /><span className="re"><I n="spark" s={13} /> 이 컷만 다시 그리기</span></div>
+              <div className="ly txt"><span className="tag">말풍선 레이어</span><span className="bub"><OvalBubble /><span className="t">오늘도 우산<br />안 가져왔지<b>?</b><i className="caret" /></span></span></div>
             </div>
             <div className="lp-pts">
               <article data-r>
