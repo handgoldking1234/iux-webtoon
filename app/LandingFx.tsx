@@ -39,6 +39,17 @@ export default function LandingFx() {
       items.forEach((el) => io.observe(el));
     }
 
+    // 마우스로 끌어서 옆으로 넘기기 (손가락은 원래 되니 마우스만)
+    root.querySelectorAll<HTMLElement>('[data-drag]').forEach((el) => {
+      let sx = 0, sl = 0, moved = false, on = false;
+      el.addEventListener('pointerdown', (ev) => { if (ev.pointerType !== 'mouse' || el.scrollWidth <= el.clientWidth) return; on = true; moved = false; sx = ev.clientX; sl = el.scrollLeft; });
+      el.addEventListener('pointermove', (ev) => { if (!on) return; const dx = ev.clientX - sx; if (Math.abs(dx) > 4) { moved = true; el.classList.add('drag'); el.style.scrollBehavior = 'auto'; } if (moved) el.scrollLeft = sl - dx; });
+      const end = () => { if (!on) return; on = false; el.classList.remove('drag'); el.style.scrollBehavior = ''; };
+      el.addEventListener('pointerup', end); el.addEventListener('pointerleave', end);
+      el.addEventListener('click', (ev) => { if (moved) { ev.preventDefault(); ev.stopPropagation(); moved = false; } }, true);
+      el.addEventListener('dragstart', (ev) => ev.preventDefault());
+    });
+
     // 옆으로 넘기는 카드: 화살표 · 점 · 저절로 넘기기(마우스를 올리거나 만지면 멈춤)
     const stops: (() => void)[] = [];
     root.querySelectorAll<HTMLElement>('[data-slide]').forEach((box) => {

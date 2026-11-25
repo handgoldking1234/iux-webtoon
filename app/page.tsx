@@ -341,7 +341,7 @@ export default async function Home() {
             <p>그림 실력보다 이야기가 먼저예요. 나머지는 바로웹툰이 받쳐 줄게요.</p>
           </header>
           <div className="lp-slide" data-slide data-r>
-            <div className="lp-val">
+            <div className="lp-val" data-drag>
               {VALS.map((v, i) => (
                 <article key={v.t} aria-roledescription="slide" aria-label={`${i + 1} / ${VALS.length}`}>
                   {v.img
@@ -399,7 +399,7 @@ export default async function Home() {
             <h3>부담 없이 시작하고, 자유롭게 만들어 보세요</h3>
             <p>가입만 하면 무료로 바로 써 볼 수 있어요. 더 많이 쓰고 싶은 분을 위한 요금제는 준비 중이에요.</p>
           </header>
-          <div className="lp-price">
+          <div className="lp-price" data-drag>
             <article data-r>
               <em>FREE</em>
               <b>무료</b>
