@@ -63,6 +63,11 @@ export async function getMe(): Promise<Me | null> {
       const { data: made } = await supabaseAdmin().from('profiles').upsert(row, { onConflict: 'id', ignoreDuplicates: true }).select('*').maybeSingle();
       p = made || (await supabaseAdmin().from('profiles').select('*').eq('id', u.id).maybeSingle()).data;
     }
+    if (!p) {
+      // 서비스 키가 없어도: 본인 프로필은 본인 권한으로 만들 수 있어요 (DB 규칙 "own profile create" — 일반 회원 · 무료로만)
+      const { error } = await sb.from('profiles').insert(row);
+      if (!error || error.code === '23505') p = (await sb.from('profiles').select('*').eq('id', u.id).maybeSingle()).data;
+    }
     if (!p) p = { ...LOCAL_PROFILE, ...row, role: 'user', created_at: u.created_at };
   }
   const isAdmin = p.role === 'admin' || (!!p.email && env.adminEmails.includes(p.email.toLowerCase()));
