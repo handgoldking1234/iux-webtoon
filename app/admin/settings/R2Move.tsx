@@ -1,6 +1,8 @@
 'use client';
 import { useEffect, useState } from 'react';
 
+type Res = { moved: number; skipped: number; failed: string[]; next: string[]; done: boolean; message?: string };
+
 /** 그림 저장소를 R2로 옮기기 — 버튼 한 번이면 끝까지 이어서 옮겨요 (이미 옮긴 파일은 건너뛰어요) */
 export default function R2Move() {
   const [ready, setReady] = useState<boolean | null>(null);
@@ -10,8 +12,8 @@ export default function R2Move() {
     setBusy(true); setLog('옮기는 중…'); let next: string[] | null = null; const t = { moved: 0, skipped: 0, failed: 0 };
     try {
       for (let i = 0; i < 500; i++) {
-        const r = await fetch('/api/admin/r2-move', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ next }) });
-        const j = await r.json();
+        const r: Response = await fetch('/api/admin/r2-move', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ next }) });
+        const j = (await r.json()) as Res;
         if (!r.ok) { setLog(j.message || '옮기지 못했어요'); break; }
         t.moved += j.moved; t.skipped += j.skipped; t.failed += j.failed.length; setTot({ ...t });
         if (j.done) { setLog(t.failed ? `끝났어요 · 실패 ${t.failed}개는 다시 누르면 다시 시도해요` : '끝났어요 · 모든 그림이 R2에 있어요'); break; }
