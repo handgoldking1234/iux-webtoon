@@ -21,6 +21,39 @@ async function r2Sign(path: string, method: 'GET' | 'PUT', ttl: number, bucket?:
   return signed.url;
 }
 
+/** R2에 파일이 있는지 */
+export async function r2Has(path: string): Promise<boolean> {
+  try { const r = await r2().fetch(r2Url(path), { method: 'HEAD' }); return r.ok; } catch { return false; }
+}
+
+/** 관리자용: Supabase 저장소 → R2로 한 묶음 옮기기. done이 true가 될 때까지 next를 넘겨 다시 불러요 */
+export async function moveToR2(next: string[] | null, max = 40): Promise<{ moved: number; skipped: number; failed: string[]; next: string[]; done: boolean }> {
+  if (!r2Ready()) throw new Error('R2가 아직 연결되지 않았어요');
+  const sb = supabaseAdmin().storage.from(env.bucket);
+  // next = 아직 살펴볼 폴더 · 파일 목록 (처음엔 맨 위 폴더부터)
+  let queue = next ?? [''];
+  const failed: string[] = [];
+  let moved = 0, skipped = 0, steps = 0;
+  while (queue.length && moved + skipped < max && steps < 200) {
+    steps++;
+    const item = queue.shift()!;
+    if (item.endsWith('/') || item === '') {
+      const { data } = await sb.list(item.replace(/\/$/, ''), { limit: 1000 });
+      for (const o of data || []) queue.push(o.id ? `${item}${o.name}` : `${item}${o.name}/`);
+      continue;
+    }
+    try {
+      if (await r2Has(item)) { skipped++; continue; }
+      const { data: blob, error } = await sb.download(item);
+      if (error || !blob) throw new Error(error?.message || 'download');
+      const r = await r2().fetch(r2Url(item), { method: 'PUT', body: await blob.arrayBuffer(), headers: { 'content-type': blob.type || 'application/octet-stream' } });
+      if (!r.ok) throw new Error('put ' + r.status);
+      moved++;
+    } catch { failed.push(item); }
+  }
+  return { moved, skipped, failed, next: queue, done: queue.length === 0 };
+}
+
 export async function signUpload(path: string): Promise<string> {
   if (r2Ready()) return r2Sign(path, 'PUT', 600);
   const sb = await supabaseServer();
@@ -30,7 +63,8 @@ export async function signUpload(path: string): Promise<string> {
 }
 
 export async function signDownload(path: string, ttl = 60): Promise<string | null> {
-  if (r2Ready()) return r2Sign(path, 'GET', ttl);
+  // R2로 옮기는 중에도 끊기지 않게: R2에 없으면 예전 Supabase 저장소에서 받아요
+  if (r2Ready() && (await r2Has(path))) return r2Sign(path, 'GET', ttl);
   const sb = await supabaseServer();
   const { data } = await sb.storage.from(env.bucket).createSignedUrl(path, ttl);
   return data?.signedUrl || null;
