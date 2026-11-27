@@ -372,6 +372,7 @@
       + '.pubsheet .agree label{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:6px 0;cursor:pointer}.pubsheet .agree input{margin-top:3px}'
       + '.pubsheet .pfoot{position:sticky;bottom:-24px;background:var(--panel);margin:18px -24px -24px;padding:12px 24px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pubsheet .pfoot .left{flex:1;min-width:160px;font-size:12.5px;color:var(--muted)}.pubsheet .pfoot .left b{color:var(--danger,#e5484d)}'
       + '.pick .pkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;max-height:56vh;overflow:auto;padding:2px}.pick .pkgrid button{position:relative;border:2px solid transparent;border-radius:8px;padding:0;background:#000;cursor:pointer;aspect-ratio:3/4;overflow:hidden}.pick .pkgrid button:hover{border-color:var(--accent)}.pick .pkgrid img,.pick .pkgrid canvas{width:100%;height:100%;object-fit:cover;display:block}.pick .pkgrid span{position:absolute;left:4px;bottom:4px;font-size:11px;font-weight:800;background:rgba(0,0,0,.7);color:#fff;padding:2px 5px;border-radius:4px}'
+      + '.pick .pkfrom{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin:0 0 12px}.pick .pkfrom span{font-size:12.5px;font-weight:700;color:var(--muted)}.pick .pkfrom select{width:auto;min-width:200px;max-width:100%}.pick .pkfrom small{flex-basis:100%;color:var(--muted);font-size:11.5px}'
       + '@media (max-width:640px){.pubsheet .pf{grid-template-columns:1fr}.pubsheet .pf>span{padding-top:0}.pubsheet .pa-ep{width:100%}}';
     document.head.appendChild(st);
   }
@@ -480,16 +481,37 @@
       say('컷을 맞춰 자르는 중');
       renderCut(c, 1080, null, false).then(function (cv) { return fitArt(cv, ART[k].w, ART[k].h, k !== 'ep'); }).then(function (b) { setArt(k, b); }).catch(function () { say('컷을 가져오지 못했어요'); });
     }
-    function libKeys() {
-      var L = []; try { L = (S.settings.lib || []).slice().reverse(); } catch (_) {}
-      return L.map(function (x) { return x.k; }).filter(function (k) { return k && blobs.has(k); });
+    /** 작품 하나에서 내가 만든 그림 모으기 — 라이브러리 · AI 컷 그림 · 캐릭터 시트 · 그림체 참고 (말풍선 없는 원본) */
+    function imgKeysOf(P) {
+      var out = [], add = function (key) { if (key && out.indexOf(key) < 0) out.push(key); };
+      var st2 = (P && P.settings) || {};
+      (st2.lib || []).slice().reverse().forEach(function (x) { add(x && x.k); });
+      (P && P.episodes || []).forEach(function (e2) { (e2.cuts || []).forEach(function (c) { add(c.sb && c.sb.img); add(c.blob); (c.items || []).forEach(function (it) { add(it.blob); }); }); });
+      (st2.sbCharList || []).forEach(function (ch) { (ch.refs || []).forEach(add); });
+      (st2.sbStyleRefs || []).forEach(add);
+      (st2.sbBgList || []).forEach(function (bg) { (bg.refs || []).forEach(add); });
+      return out;
+    }
+    var projCache = {};
+    function projOf(id) {
+      if (id === 'here') return Promise.resolve(S);
+      if (projCache[id]) return Promise.resolve(projCache[id]);
+      return idbReq(DB, 'kv', 'readonly', function (s2) { return s2.get('project:' + id); }).then(function (raw) { var P2 = null; try { P2 = JSON.parse(raw || 'null'); } catch (_) {} projCache[id] = P2; return P2; }).catch(function () { return null; });
+    }
+    /** 그림 꺼내기: 지금 열린 그림 → 이 기기 저장소 → 클라우드 순서 */
+    function blobOf(key) {
+      if (blobs.has(key)) return Promise.resolve(blobs.get(key));
+      return (DB ? idbReq(DB, 'blobs', 'readonly', function (s2) { return s2.get(key); }) : Promise.resolve(null)).catch(function () { return null; })
+        .then(function (b) { return b || getBlob(key, DB); });
     }
     function fromKey(k, key) {
-      var b = blobs.get(key); if (!b) return;
-      blobImg(b).then(function (im) { return fitArt(im, ART[k].w, ART[k].h, k !== 'ep'); }).then(function (o) { setArt(k, o); }).catch(function () { say('그림을 열지 못했어요'); });
+      blobOf(key).then(function (b) { if (!b) throw 0; return blobImg(b); }).then(function (im) { return fitArt(im, ART[k].w, ART[k].h, k !== 'ep'); }).then(function (o) { setArt(k, o); }).catch(function () { say('그림을 열지 못했어요'); });
     }
+    function libKeys() { return imgKeysOf(S).filter(function (k2) { return blobs.has(k2); }); }
     function pick(k) {
-      var tabs = [['cut', '이번 회차 컷', cuts.length], ['cover', '표지 · 썸네일', coverCuts.length], ['lib', '라이브러리', libKeys().length]];
+      var tabs = [['cut', '이번 회차 컷', cuts.length], ['cover', '표지 · 썸네일', coverCuts.length], ['lib', '내 그림 · 라이브러리', libKeys().length]];
+      var works = []; try { works = (WI || []).filter(function (w) { return w.id !== WID; }); } catch (_) {}
+      var from = 'here', seq = 0;
       var tab = tabs.filter(function (t) { return t[2]; })[0]; tab = tab ? tab[0] : 'cut';
       var ov = document.createElement('div'); ov.className = 'modal'; ov.style.zIndex = 80;
       document.body.appendChild(ov);
@@ -500,9 +522,9 @@
         var h = '<div class="sheet pubsheet pick" role="dialog" aria-modal="true" aria-label="' + ART[k].l + ' 고르기"><h3>' + ART[k].l + ' 고르기</h3><p class="sub">고른 그림을 ' + ART[k].d.split(' · ')[0] + ' 크기에 맞게 가운데를 잘라 넣어요</p>'
           + '<div class="pseg" style="margin-bottom:12px">' + tabs.map(function (t) { return '<label><input type="radio" name="pkT" data-pt="' + t[0] + '"' + (t[0] === tab ? ' checked' : '') + '>' + t[1] + ' ' + t[2] + '</label>'; }).join('') + '</div><div class="pkgrid">';
         if (tab === 'lib') {
-          var ks = libKeys();
-          if (!ks.length) h += '<p class="sub">라이브러리에 그림이 없어요 · 왼쪽 「라이브러리」에 그림을 올려 두면 여기서 골라요</p>';
-          ks.forEach(function (key) { var u = URL.createObjectURL(blobs.get(key)); urls.push(u); h += '<button type="button" data-pk="lib" data-v="' + escH(key) + '"><img src="' + u + '" alt=""></button>'; });
+          h = h.replace('<div class="pkgrid">', '<div class="pkfrom"><span>작품</span><select data-pfrom aria-label="그림을 가져올 작품"><option value="here"' + (from === 'here' ? ' selected' : '') + '>지금 작품 · ' + escH(st.workTitle || '') + '</option>'
+            + works.map(function (w) { return '<option value="' + escH(w.id) + '"' + (from === w.id ? ' selected' : '') + '>' + escH(w.title || '제목 없음') + '</option>'; }).join('') + '</select><small>' + (from === 'here' ? '이 작품에서 만든 그림이 먼저예요 · 다른 작품 그림도 골라 쓸 수 있어요' : '다른 작품의 그림이에요 · 인물 · 그림체가 다를 수 있어요') + '</small></div><div class="pkgrid">');
+          h += '<p class="sub" data-pkload>그림을 모으는 중…</p>';
         } else {
           var L = tab === 'cover' ? coverCuts : cuts;
           if (!L.length) h += '<p class="sub">' + (tab === 'cover' ? '표지 · 썸네일 회차에 만든 그림이 없어요' : '컷이 없어요') + '</p>';
@@ -510,14 +532,31 @@
         }
         h += '</div><div class="pfoot"><div class="left"></div><button class="btn" data-pk="x">닫기</button></div></div>';
         ov.innerHTML = h;
-        if (tab !== 'lib') {
+        if (tab === 'lib') {
+          var my = ++seq;
+          projOf(from).then(function (P2) {
+            if (my !== seq) return;
+            var ks = imgKeysOf(P2).slice(0, 150), grid = ov.querySelector('.pkgrid'), ld = ov.querySelector('[data-pkload]');
+            if (!grid) return;
+            if (ld) ld.remove();
+            if (!ks.length) { grid.insertAdjacentHTML('beforeend', '<p class="sub">' + (P2 ? '이 작품에는 만든 그림이 없어요' : '이 기기에 이 작품이 아직 없어요 · 작품 목록에서 한 번 열면 생겨요') + '</p>'); return; }
+            grid.insertAdjacentHTML('beforeend', ks.map(function (key) { return '<button type="button" data-pk="lib" data-v="' + escH(key) + '"><img alt="" data-key="' + escH(key) + '"></button>'; }).join(''));
+            var imgsEl = Array.prototype.slice.call(grid.querySelectorAll('img[data-key]')), j = 0;
+            var next = function () {
+              if (my !== seq || j >= imgsEl.length) return Promise.resolve();
+              var el = imgsEl[j++];
+              return blobOf(el.dataset.key).then(function (b) { if (my !== seq) return; if (b) { var u = URL.createObjectURL(b); urls.push(u); el.src = u; } else el.closest('button').remove(); }).then(next);
+            };
+            next(); next(); next(); next();
+          });
+        } else {
           var L2 = tab === 'cover' ? coverCuts : cuts;
           Array.prototype.forEach.call(ov.querySelectorAll('canvas[data-ci]'), function (cv) {
             renderCut(L2[+cv.dataset.ci], 240, null, true).then(function (r) { cv.width = r.width; cv.height = r.height; cv.getContext('2d').drawImage(r, 0, 0); }).catch(function () {});
           });
         }
       }
-      ov.addEventListener('change', function (ev) { var t = ev.target; if (t.dataset && t.dataset.pt) { tab = t.dataset.pt; draw(); } });
+      ov.addEventListener('change', function (ev) { var t = ev.target; if (t.dataset && t.dataset.pt) { tab = t.dataset.pt; draw(); } else if (t.hasAttribute && t.hasAttribute('data-pfrom')) { from = t.value; draw(); } });
       ov.addEventListener('click', function (ev) {
         if (ev.target === ov) { shut(); return; }
         var b = ev.target.closest('[data-pk]'); if (!b) return;
