@@ -341,17 +341,217 @@
   document.addEventListener('DOMContentLoaded', function () { setTimeout(applyUser, 0); setTimeout(showNotices, 600); });
   if (cloud) fetch('/api/me', { method: 'POST', credentials: 'same-origin' }).catch(function () {});
 
-  /* ---------- 연재하기 — 지금 회차를 연재 규격(가로 690px)으로 만들어 연재관에 올려요
+  /* ---------- 연재하기 — 팝업에서 작품 · 작가 · 스토리 · 연재 이미지를 모두 채워야 올라가요
+   * 이미지는 네이버 · WEBTOON 양식: 정사각형 대표 1080×1080 · 세로 대표 1080×1920 · 회차 썸네일 202×90(2배 404×180로 저장)
    * 연재관과는 /read/api/* 로만 이야기해요 (연재관을 다른 사이트로 떼어 내도 그대로 쓰게) */
   var READ_API = '/read/api/';
+  var ART = { sq: { w: 1080, h: 1080, l: '정사각형 대표 이미지', d: '1080×1080 · 목록 · 검색에 보여요' }, vt: { w: 1080, h: 1920, l: '세로 대표 이미지', d: '1080×1920 · 작품 페이지 · 추천 칸에 보여요' }, ep: { w: 404, h: 180, l: '회차 썸네일', d: '202×90 비율 · 회차 목록에 보여요' } };
+  function pubCuts(e) { return (e.cuts || []).filter(function (c) { return c.kind !== 'blank' || (c.items && c.items.length); }); }
+  function escH(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (m) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[m]; }); }
+  /** 그림(캔버스 · 이미지)을 W×H에 꽉 차게 가운데 자르기 → JPEG */
+  function fitArt(src, W, H, top) {
+    var sw = src.naturalWidth || src.width, sh = src.naturalHeight || src.height;
+    var s = Math.max(W / sw, H / sh), dw = sw * s, dh = sh * s;
+    var cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+    var x = cv.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, W, H);
+    x.drawImage(src, (W - dw) / 2, top ? 0 : (H - dh) / 2, dw, dh);
+    return new Promise(function (r) { cv.toBlob(r, 'image/jpeg', 0.88); });
+  }
+  function blobImg(b) { return new Promise(function (ok, no) { var u = URL.createObjectURL(b), im = new Image(); im.onload = function () { ok(im); }; im.onerror = no; im.src = u; }); }
+  function pubCss() {
+    if (document.getElementById('wbPubCss')) return;
+    var st = document.createElement('style'); st.id = 'wbPubCss';
+    st.textContent = '.pubsheet{width:min(760px,100%)}.pubsheet h4{margin:20px 0 8px;font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px}.pubsheet h4 small{font-weight:500;color:var(--muted);font-size:12px}'
+      + '.pubsheet .pf{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;align-items:start;margin:8px 0;font-size:13px}.pubsheet .pf>span{color:var(--muted);padding-top:9px;font-weight:600}.pubsheet .pf>span b{color:var(--danger,#e5484d);margin-left:2px}'
+      + '.pubsheet input[type=text],.pubsheet input[type=datetime-local],.pubsheet select,.pubsheet textarea{width:100%;min-height:36px;border:1px solid transparent;border-radius:6px;background:var(--panel2);padding:7px 10px;font:inherit;font-size:13px;color:var(--ink)}.pubsheet textarea{min-height:76px;resize:vertical;line-height:1.55}'
+      + '.pubsheet .bad input,.pubsheet .bad textarea,.pubsheet .bad select,.pubsheet .bad .artbox{border-color:var(--danger,#e5484d)!important}.pubsheet .cnt{font-size:11.5px;color:var(--muted);margin-top:3px}.pubsheet .cnt.ok{color:#13863c}'
+      + '.pubsheet .seg{display:flex;flex-wrap:wrap;gap:6px}.pubsheet .seg label{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:var(--panel2);cursor:pointer;font-size:12.5px}.pubsheet .seg label:has(input:checked){background:color-mix(in srgb,var(--accent) 16%,var(--panel));color:#13863c;font-weight:700}'
+      + '.pubsheet .arts{display:grid;grid-template-columns:1fr 0.62fr 1.5fr;gap:12px;align-items:start}.pubsheet .art{display:flex;flex-direction:column;gap:6px;min-width:0}.pubsheet .art b{font-size:12.5px}.pubsheet .art b i{color:var(--danger,#e5484d);font-style:normal}.pubsheet .art small{color:var(--muted);font-size:11px;line-height:1.4}'
+      + '.pubsheet .artbox{position:relative;border:1.5px dashed var(--line);border-radius:8px;background:var(--panel2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;overflow:hidden}.pubsheet .artbox.has{border-style:solid;border-color:var(--line)}'
+      + '.pubsheet .artbtn{display:flex;flex-wrap:wrap;gap:4px}.pubsheet .artbtn button,.pubsheet .artbtn select{height:28px;font-size:11.5px;padding:0 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;max-width:100%}'
+      + '.pubsheet .agree label{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:6px 0;cursor:pointer}.pubsheet .agree input{margin-top:3px}'
+      + '.pubsheet .pfoot{position:sticky;bottom:-24px;background:var(--panel);margin:18px -24px -24px;padding:12px 24px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pubsheet .pfoot .left{flex:1;min-width:160px;font-size:12.5px;color:var(--muted)}.pubsheet .pfoot .left b{color:var(--danger,#e5484d)}'
+      + '@media (max-width:640px){.pubsheet .pf{grid-template-columns:1fr}.pubsheet .pf>span{padding-top:0}.pubsheet .arts{grid-template-columns:1fr 1fr}.pubsheet .art.ep{grid-column:1/-1}}';
+    document.head.appendChild(st);
+  }
+
   function publish() {
     var e = null; try { e = ep(); } catch (_) {}
-    if (guest) { if (typeof confirmBox === 'function') confirmBox({ title: '연재는 회원만 할 수 있어요', body: '무료로 가입하면 이 회차를 연재관에 바로 올릴 수 있어요. 지금까지 만든 작품은 그대로 이어져요.', ok: '로그인 · 가입', danger: false }).then(function (y) { if (y) location.href = loginUrl(); }); else location.href = loginUrl(); return; }
+    if (guest) { if (typeof confirmBox === 'function') confirmBox({ title: '연재는 회원만 할 수 있어요', body: '무료로 가입하면 이 회차를 연재관에 바로 올릴 수 있어요. 지금까지 만든 작품은 그대로 이어져요.', ok: '가입 · 로그인', danger: false }).then(function (y) { if (y) location.href = '/login?next=/studio'; }); return; }
     if (!e || e.kind === 'cover') { say('연재할 회차를 열어 주세요'); return; }
-    var cuts = (e.cuts || []).filter(function (c) { return c.kind !== 'blank' || (c.items && c.items.length); });
+    var cuts = pubCuts(e);
     if (!cuts.length) { say('이 회차에는 올릴 컷이 없어요'); return; }
+    api(READ_API + 'mine').then(function (cfg) { pubForm(e, cuts, cfg); }).catch(function (err) { say((err && err.message) || '연재관에 연결하지 못했어요 · 잠시 뒤 다시 해 주세요'); });
+  }
+
+  function pubForm(e, cuts, cfg) {
+    pubCss();
     var P = {}; try { P = plan() || {}; } catch (_) {}
-    var ai = cuts.some(function (c) { return c.sb && c.sb.aiModel; });
+    var st = (typeof S !== 'undefined' && S.settings) || {};
+    var series = cfg.series || [];
+    var cover = (typeof S !== 'undefined' && S.episodes || []).filter(function (x) { return x.kind === 'cover'; })[0];
+    var coverCuts = cover ? pubCuts(cover) : [];
+    var F = {
+      target: series[0] ? series[0].id : 'new',
+      title: st.workTitle || '', author: cfg.penName || '', genre: (cfg.genres || []).indexOf(P.genre) >= 0 ? P.genre : '', age: '', desc: P.logline || '',
+      epTitle: e.title && !/^\d+화$/.test(e.title) && e.title !== '새 회차' ? e.title : '', note: '',
+      apply: false, days: [], when: 'now', at: '', ai: cuts.some(function (c) { return c.sb && c.sb.aiModel; }) ? 'yes' : '',
+      art: { sq: null, vt: null, ep: null }, agree: [false, false, false],
+    };
+    var tried = false;
+    var m = document.createElement('div'); m.className = 'modal'; m.id = 'mPub';
+    document.body.appendChild(m);
+    var close = function () { Object.keys(F.art).forEach(function (k) { if (F.art[k] && F.art[k].url) URL.revokeObjectURL(F.art[k].url); }); m.remove(); };
+    function cur() { return series.filter(function (s) { return s.id === F.target; })[0]; }
+    function isNew() { return F.target === 'new'; }
+    function needCover() { return isNew() || !(cur() && cur().hasCover); }
+    function missing() {
+      var out = [];
+      if (isNew()) {
+        if (!F.title.trim()) out.push(['title', '작품 제목']);
+        if (!F.author.trim()) out.push(['author', '필명']);
+        if (!F.genre) out.push(['genre', '장르']);
+        if (!F.age) out.push(['age', '이용 연령']);
+        if (F.desc.trim().length < 20) out.push(['desc', '작품 소개 20자 이상']);
+        if (F.apply && !F.days.length) out.push(['days', '연재 요일']);
+      }
+      if (needCover()) { if (!F.art.sq) out.push(['sq', '정사각형 대표 이미지']); if (!F.art.vt) out.push(['vt', '세로 대표 이미지']); }
+      if (!F.art.ep) out.push(['ep', '회차 썸네일']);
+      if (!F.epTitle.trim()) out.push(['epTitle', '회차 제목']);
+      if (F.note.trim().length < 10) out.push(['note', '작가의 말 10자 이상']);
+      if (!F.ai) out.push(['ai', 'AI 활용 표시']);
+      if (F.when === 'later' && !F.at) out.push(['at', '공개 일시']);
+      if (!F.agree.every(Boolean)) out.push(['agree', '확인 3가지']);
+      return out;
+    }
+    var cutOpts = function () {
+      var o = '<option value="">컷에서 고르기</option>';
+      coverCuts.forEach(function (c, i) { o += '<option value="c' + i + '">표지 · ' + (i + 1) + '번째</option>'; });
+      cuts.forEach(function (c, i) { o += '<option value="' + i + '">' + (i + 1) + '번째 컷</option>'; });
+      return o;
+    };
+    function artBox(k) {
+      var a = ART[k], has = F.art[k], ratio = a.w / a.h;
+      return '<div class="art ' + k + '" data-f="' + k + '"><b>' + a.l + ' <i>*</i></b>'
+        + '<div class="artbox' + (has ? ' has' : '') + '" style="aspect-ratio:' + ratio + ';' + (has ? 'background-image:url(' + has.url + ')' : '') + '">' + (has ? '' : '비어 있어요') + '</div>'
+        + '<div class="artbtn"><button type="button" data-pa="file" data-k="' + k + '">파일</button><select data-pa="cut" data-k="' + k + '" aria-label="' + a.l + ' 컷에서 고르기">' + cutOpts() + '</select><button type="button" data-pa="ai" data-k="' + k + '" title="AI 그림 1장을 써요">AI로 만들기</button></div>'
+        + '<small>' + a.d + '</small></div>';
+    }
+    function fld(key, label, inner, req) { return '<div class="pf" data-f="' + key + '"><span>' + label + (req === false ? '' : '<b>*</b>') + '</span><div>' + inner + '</div></div>'; }
+    function render() {
+      var miss = missing(), bad = {}; miss.forEach(function (x) { bad[x[0]] = 1; });
+      var sOpts = '<option value="new"' + (isNew() ? ' selected' : '') + '>＋ 새 작품으로 시작 (1화)</option>' + series.map(function (s) { return '<option value="' + escH(s.id) + '"' + (s.id === F.target ? ' selected' : '') + '>' + escH(s.title) + ' · ' + (s.episodes + 1) + '화로 이어서</option>'; }).join('');
+      var h = '<div class="sheet pubsheet" role="dialog" aria-modal="true" aria-labelledby="pubT"><h3 id="pubT">연재하기</h3>'
+        + '<p class="sub">' + escH(st.workTitle || '') + ' ' + (e.num ? e.num + '화' : '') + ' · 컷 ' + cuts.length + '개 · <b>*</b> 표시는 모두 채워야 올라가요. 독자가 처음 보는 정보라 꼼꼼히 적어 주세요.</p>'
+        + fld('target', '올릴 작품', '<select data-in="target">' + sOpts + '</select>');
+      if (isNew()) {
+        h += '<h4>작가 · 작품 <small>작품 페이지 맨 위에 보여요</small></h4>'
+          + fld('title', '작품 제목', '<input type="text" data-in="title" maxlength="40" value="' + escH(F.title) + '" placeholder="예) 우산 같이 쓸래요">')
+          + fld('author', '필명', '<input type="text" data-in="author" maxlength="20" value="' + escH(F.author) + '" placeholder="글/그림 작가 이름">')
+          + fld('genre', '장르', '<select data-in="genre"><option value="">고르세요</option>' + (cfg.genres || []).map(function (g) { return '<option' + (g === F.genre ? ' selected' : '') + '>' + escH(g) + '</option>'; }).join('') + '</select>')
+          + fld('age', '이용 연령', '<div class="seg">' + (cfg.ages || []).map(function (a) { return '<label><input type="radio" name="pAge" data-in="age" value="' + a[0] + '"' + (F.age === a[0] ? ' checked' : '') + '>' + escH(a[1]) + (a[0] === 'all' ? '' : ' 이상') + '</label>'; }).join('') + '</div>')
+          + fld('desc', '작품 소개', '<textarea data-in="desc" maxlength="300" placeholder="어떤 이야기인지 2~3문장으로 · 주인공 · 갈등 · 분위기">' + escH(F.desc) + '</textarea><div class="cnt' + (F.desc.trim().length >= 20 ? ' ok' : '') + '" data-cnt="desc">' + F.desc.trim().length + ' / 300자 · 20자 이상</div>');
+      }
+      h += '<h4>연재 이미지 <small>네이버 웹툰 · WEBTOON 양식 · 파일 · 컷 · AI 중 골라 넣으면 크기에 맞게 잘라 줘요</small></h4><div class="arts">'
+        + (needCover() ? artBox('sq') + artBox('vt') : '') + artBox('ep') + '</div>'
+        + (needCover() || isNew() ? '' : '<p class="sub" style="margin:6px 0 0">작품 대표 이미지는 이미 있어요 · 회차 썸네일만 넣으면 돼요</p>');
+      h += '<h4>이번 회차</h4>'
+        + fld('epTitle', '회차 제목', '<input type="text" data-in="epTitle" maxlength="60" value="' + escH(F.epTitle) + '" placeholder="예) 붉은 등 아래">')
+        + fld('note', '작가의 말', '<textarea data-in="note" maxlength="500" placeholder="회차 끝에 보여요 · 이번 화 이야기, 다음 화 예고, 독자에게 한마디">' + escH(F.note) + '</textarea><div class="cnt' + (F.note.trim().length >= 10 ? ' ok' : '') + '" data-cnt="note">' + F.note.trim().length + ' / 500자 · 10자 이상</div>');
+      h += '<h4>공개 설정</h4>';
+      if (isNew()) {
+        h += fld('apply', '연재 방식', '<div class="seg"><label><input type="radio" name="pMode" data-in="apply" value="0"' + (!F.apply ? ' checked' : '') + '>자유연재 · 바로 공개</label><label><input type="radio" name="pMode" data-in="apply" value="1"' + (F.apply ? ' checked' : '') + '>요일연재 검토 신청</label></div>')
+          + (F.apply ? fld('days', '연재 요일', '<div class="seg">' + (cfg.days || []).map(function (d) { return '<label><input type="checkbox" data-in="days" value="' + d[0] + '"' + (F.days.indexOf(d[0]) >= 0 ? ' checked' : '') + '>' + d[1] + '</label>'; }).join('') + '</div>') : '');
+      }
+      h += fld('when', '공개 시점', '<div class="seg"><label><input type="radio" name="pWhen" data-in="when" value="now"' + (F.when === 'now' ? ' checked' : '') + '>지금 바로</label><label><input type="radio" name="pWhen" data-in="when" value="later"' + (F.when === 'later' ? ' checked' : '') + '>예약</label></div>' + (F.when === 'later' ? '<input type="datetime-local" data-in="at" value="' + escH(F.at) + '" style="margin-top:6px;max-width:260px">' : ''), false)
+        + fld('ai', 'AI 활용 표시', '<div class="seg"><label><input type="radio" name="pAi" data-in="ai" value="yes"' + (F.ai === 'yes' ? ' checked' : '') + '>AI 그림 · 글을 썼어요</label><label><input type="radio" name="pAi" data-in="ai" value="no"' + (F.ai === 'no' ? ' checked' : '') + '>직접 그렸어요</label></div>');
+      h += '<h4>올리기 전 확인 <b style="color:var(--danger,#e5484d)">*</b></h4><div class="agree" data-f="agree">'
+        + ['제가 만들었거나 쓸 권리가 있는 그림과 글만 올려요.', '선정적 · 폭력적인 내용은 이용 연령에 맞게 표시했어요.', '운영정책을 어기면 신고를 받아 숨김 처리될 수 있다는 걸 알아요. <a href="/read/policy" target="_blank" style="text-decoration:underline">운영정책</a>'].map(function (t, i) { return '<label><input type="checkbox" data-in="agree" value="' + i + '"' + (F.agree[i] ? ' checked' : '') + '><span>' + t + '</span></label>'; }).join('') + '</div>';
+      h += '<div class="pfoot"><div class="left">' + (miss.length ? '남은 항목 <b>' + miss.length + '개</b> · ' + miss.slice(0, 4).map(function (x) { return x[1]; }).join(' · ') + (miss.length > 4 ? ' …' : '') : '모두 채웠어요 · 올릴 준비 끝') + '</div>'
+        + '<button class="btn" data-pa="cancel">취소</button><button class="btn pri" data-pa="go"' + (miss.length ? ' aria-disabled="true" style="opacity:.55"' : '') + '>' + (F.when === 'later' ? '예약하기' : '연재하기') + '</button></div></div>';
+      var sc = m.firstChild ? m.firstChild.scrollTop : 0;
+      m.innerHTML = h;
+      if (m.firstChild) m.firstChild.scrollTop = sc;
+      if (tried) miss.forEach(function (x) { m.querySelectorAll('[data-f="' + x[0] + '"]').forEach(function (n) { n.classList.add('bad'); }); });
+    }
+    function setArt(k, blob) {
+      if (!blob) return;
+      if (F.art[k] && F.art[k].url) URL.revokeObjectURL(F.art[k].url);
+      F.art[k] = { blob: blob, url: URL.createObjectURL(blob) }; render();
+    }
+    function fromCut(k, v) {
+      var c = v.charAt(0) === 'c' ? coverCuts[+v.slice(1)] : cuts[+v];
+      if (!c) return;
+      say('컷을 맞춰 자르는 중');
+      renderCut(c, 1080, null, false).then(function (cv) { return fitArt(cv, ART[k].w, ART[k].h, k !== 'ep'); }).then(function (b) { setArt(k, b); }).catch(function () { say('컷을 가져오지 못했어요'); });
+    }
+    function fromFile(k) {
+      var i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*';
+      i.onchange = function () { var f = i.files && i.files[0]; if (!f) return; blobImg(f).then(function (im) { return fitArt(im, ART[k].w, ART[k].h, false); }).then(function (b) { setArt(k, b); }).catch(function () { say('그림 파일을 열지 못했어요'); }); };
+      i.click();
+    }
+    function fromAi(k) {
+      var title = (isNew() ? F.title : (cur() && cur().title)) || st.workTitle || '';
+      var chars = (st.sbCharList || []).filter(function (ch) { return ch.name; }).slice(0, 3);
+      var refs = chars.map(function (ch) { return (ch.refs || [])[0]; }).filter(Boolean);
+      var what = k === 'ep' ? 'Episode thumbnail for "' + (F.epTitle || e.title || '') + '": one striking moment from this episode, wide banner composition.' + (e.syn ? ' Episode summary: ' + e.syn : '')
+        : 'Cover art for a Korean webtoon series' + (title ? ' titled "' + title + '"' : '') + '. ' + (k === 'vt' ? 'Tall vertical poster composition, main character(s) large and centered, room at the top.' : 'Square key visual, main character(s) close-up, eye-catching.');
+      var prompt = what + ' Story: ' + (F.desc || P.logline || '') + (chars.length ? ' Main characters: ' + chars.map(function (ch) { return ch.name + (ch.desc ? ' (' + ch.desc + ')' : ''); }).join(', ') + '.' : '') + ' Genre: ' + (F.genre || P.genre || '') + '. Art style: ' + style() + '. Do not draw any text, letters, logos or speech bubbles.';
+      var btn = m.querySelector('[data-pa=ai][data-k=' + k + ']'); if (btn) { btn.disabled = true; btn.textContent = '그리는 중…'; }
+      image(prompt, ART[k].w, ART[k].h, refs).then(function (b) {
+        if (!b) { render(); return; }
+        return blobImg(b).then(function (im) { return fitArt(im, ART[k].w, ART[k].h, false); }).then(function (o) { setArt(k, o); say('AI로 만들었어요 · 마음에 안 들면 다시 눌러 주세요'); });
+      });
+    }
+    m.addEventListener('input', function (ev) {
+      var t = ev.target, k = t.dataset && t.dataset.in; if (!k) return;
+      if (k === 'title' || k === 'author' || k === 'desc' || k === 'epTitle' || k === 'note' || k === 'at') {
+        F[k] = t.value;
+        var cn = m.querySelector('[data-cnt="' + k + '"]');
+        if (cn) { var L = t.value.trim().length, need = k === 'desc' ? 20 : 10; cn.textContent = L + ' / ' + (k === 'desc' ? 300 : 500) + '자 · ' + need + '자 이상'; cn.classList.toggle('ok', L >= need); }
+        var left = m.querySelector('.pfoot .left'), miss = missing();
+        if (left) left.innerHTML = miss.length ? '남은 항목 <b>' + miss.length + '개</b> · ' + miss.slice(0, 4).map(function (x) { return x[1]; }).join(' · ') + (miss.length > 4 ? ' …' : '') : '모두 채웠어요 · 올릴 준비 끝';
+        var go = m.querySelector('[data-pa=go]'); if (go) { if (miss.length) { go.setAttribute('aria-disabled', 'true'); go.style.opacity = '.55'; } else { go.removeAttribute('aria-disabled'); go.style.opacity = ''; } }
+        var box = t.closest('.pf'); if (box && tried) box.classList.toggle('bad', miss.some(function (x) { return x[0] === k; }));
+      }
+    });
+    m.addEventListener('change', function (ev) {
+      var t = ev.target, k = t.dataset && t.dataset.in;
+      if (t.dataset && t.dataset.pa === 'cut') { if (t.value) fromCut(t.dataset.k, t.value); return; }
+      if (!k) return;
+      if (k === 'target') F.target = t.value;
+      else if (k === 'genre') F.genre = t.value;
+      else if (k === 'age') F.age = t.value;
+      else if (k === 'apply') F.apply = t.value === '1';
+      else if (k === 'days') F.days = Array.prototype.map.call(m.querySelectorAll('[data-in=days]:checked'), function (x) { return x.value; });
+      else if (k === 'when') F.when = t.value;
+      else if (k === 'ai') F.ai = t.value;
+      else if (k === 'agree') F.agree[+t.value] = t.checked;
+      else return;
+      render();
+    });
+    m.addEventListener('click', function (ev) {
+      if (ev.target === m) return; // 바깥을 눌러도 닫지 않아요 (적은 내용을 지키려고)
+      var b = ev.target.closest('[data-pa]'); if (!b || b.tagName === 'SELECT') return;
+      var a = b.dataset.pa;
+      if (a === 'cancel') { close(); return; }
+      if (a === 'file') { fromFile(b.dataset.k); return; }
+      if (a === 'ai') { fromAi(b.dataset.k); return; }
+      if (a === 'go') {
+        var miss = missing();
+        if (miss.length) { tried = true; render(); var first = m.querySelector('.bad'); if (first) first.scrollIntoView({ block: 'center', behavior: 'smooth' }); say('아직 채울 게 있어요 · ' + miss[0][1]); return; }
+        var form = JSON.parse(JSON.stringify({ target: F.target, title: F.title, author: F.author, genre: F.genre, age: F.age, desc: F.desc, epTitle: F.epTitle, note: F.note, apply: F.apply, days: F.days, when: F.when, at: F.at, ai: F.ai }));
+        var art = {}; Object.keys(F.art).forEach(function (k) { if (F.art[k]) art[k] = F.art[k].blob; });
+        m.remove();
+        doPublish(e, cuts, form, art);
+      }
+    });
+    m.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { ev.stopPropagation(); if (window.confirm('적은 내용이 사라져요. 닫을까요?')) close(); } });
+    render();
+  }
+
+  function doPublish(e, cuts, form, art) {
+    var P = {}; try { P = plan() || {}; } catch (_) {}
     var W = 690, outs = [];
     try { prog('연재 규격으로 만드는 중'); } catch (_) {}
     var step = Promise.resolve();
@@ -371,28 +571,40 @@
     step.then(function () {
       try { progSet(0.5, '연재관에 자리 만드는 중'); } catch (_) {}
       return api(READ_API + 'drafts', { method: 'POST', json: {
-        ai: ai,
+        ai: form.ai === 'yes',
+        art: { sq: !!art.sq, vt: !!art.vt, ep: !!art.ep },
         source: { project: (typeof WID !== 'undefined' && WID) || '', workTitle: (S.settings && S.settings.workTitle) || '', logline: P.logline || '', genre: P.genre || '', ep: { num: e.num, title: e.title || '', syn: e.syn || '' } },
         cuts: outs.map(function (o) { return { w: o.w, h: o.h, type: o.blob.type || 'image/jpeg', bytes: o.blob.size }; }),
       } });
     }).then(function (j) {
       draft = j; var q = Promise.resolve();
+      var put = function (u, blob) {
+        return fetch(u.url, { method: u.method, headers: { 'content-type': blob.type || 'image/jpeg', 'x-upsert': 'true' }, body: blob, credentials: u.method === 'POST' ? 'same-origin' : 'omit' })
+          .then(function (r) { if (!r.ok) throw { code: 'upload', message: '그림을 올리지 못했어요 (' + r.status + ')' }; });
+      };
+      Object.keys(j.art || {}).forEach(function (k) { if (art[k]) q = q.then(function () { return put(j.art[k], art[k]); }); });
       outs.forEach(function (o, i) {
         q = q.then(function () {
-          try { progSet(0.5 + (i + 1) / outs.length * 0.48, (i + 1) + ' / ' + outs.length + ' 컷 올리는 중'); } catch (_) {}
-          var u = j.uploads[i];
-          return fetch(u.url, { method: u.method, headers: { 'content-type': o.blob.type || 'image/jpeg', 'x-upsert': 'true' }, body: o.blob, credentials: u.method === 'POST' ? 'same-origin' : 'omit' })
-            .then(function (r) { if (!r.ok) throw { code: 'upload', message: '그림을 올리지 못했어요 (' + r.status + ')' }; });
+          try { progSet(0.5 + (i + 1) / outs.length * 0.45, (i + 1) + ' / ' + outs.length + ' 컷 올리는 중'); } catch (_) {}
+          return put(j.uploads[i], o.blob);
         });
       });
       return q;
     }).then(function () {
       return api(READ_API + 'drafts/' + encodeURIComponent(draft.id), { method: 'POST', json: {} });
+    }).then(function () {
+      try { progSet(0.97, '연재관에 올리는 중'); } catch (_) {}
+      var isNew = form.target === 'new';
+      return api(READ_API + 'publish', { method: 'POST', json: {
+        draftId: draft.id, agree: true, ai: form.ai === 'yes', seriesId: isNew ? undefined : form.target,
+        series: isNew ? { title: form.title, authorName: form.author, description: form.desc, genre: form.genre, age: form.age, days: form.days, apply: form.apply } : undefined,
+        episode: { title: form.epTitle, authorNote: form.note, publishAt: form.when === 'later' && form.at ? new Date(form.at).toISOString() : null },
+      } });
     }).then(function (j) {
       try { progEnd(); } catch (_) {}
-      say('다 올렸어요 · 연재하기 화면에서 공개 설정을 정해 주세요');
-      var w = window.open(j.next, '_blank');
-      if (!w) location.href = j.next;
+      var msg = form.when === 'later' ? '예약해 두었어요' : '연재관에 올라갔어요';
+      if (typeof confirmBox === 'function') confirmBox({ title: msg, body: (form.apply ? '요일연재 검토를 신청했어요. 그동안은 자유연재로 보여요. ' : '') + '다음 회차도 「연재하기」를 누르면 이어서 올라가요.', ok: '올린 회차 보기', danger: false, cancel: '닫기' }).then(function (y) { if (y) window.open(j.url, '_blank'); });
+      else say(msg);
     }).catch(function (err) {
       try { progEnd(); } catch (_) {}
       if (err && err.code === 'cancel') { say('취소했어요'); return; }

@@ -10,12 +10,18 @@ export async function POST(req: Request) {
     if (!b.draftId) return err('bad', '연재할 회차를 알려 주세요');
     const epTitle = String(b.episode?.title || '').trim().slice(0, 60);
     if (!epTitle) return err('bad', '회차 제목을 적어 주세요');
+    const note = String(b.episode?.authorNote || '').trim();
+    if (note.length < 10) return err('bad', '작가의 말을 10자 이상 적어 주세요');
     let series: PublishIn['series'];
     if (!b.seriesId) {
       const s = b.series;
       const title = String(s?.title || '').trim().slice(0, 40), author = String(s?.authorName || '').trim().slice(0, 20);
       if (!title) return err('bad', '작품 제목을 적어 주세요');
       if (!author) return err('bad', '필명을 적어 주세요');
+      if (String(s?.description || '').trim().length < 20) return err('bad', '작품 소개를 20자 이상 적어 주세요');
+      if (!GENRES.includes(String(s?.genre))) return err('bad', '장르를 골라 주세요');
+      if (!AGES.some((a) => a[0] === s?.age)) return err('bad', '이용 연령을 골라 주세요');
+      if (s?.apply && !(s.days || []).length) return err('bad', '요일연재를 신청하면 연재 요일을 하나 이상 골라 주세요');
       series = {
         title, authorName: author,
         description: String(s?.description || '').trim().slice(0, 300),

@@ -183,22 +183,29 @@ export async function report(uid: string | null, type: Report['target_type'], ta
 }
 
 /* ───────── 연재하기: 편집기 → 초안 → 공개 */
-export type DraftIn = { source: Draft['source']; ai: boolean; cuts: { w: number; h: number; type: string; bytes: number }[] };
+export type DraftIn = { source: Draft['source']; ai: boolean; cuts: { w: number; h: number; type: string; bytes: number }[]; art?: { sq?: boolean; vt?: boolean; ep?: boolean } };
+/** 세로 대표 이미지 경로에서 정사각형 대표 이미지 경로를 찾아요 (같은 폴더 · art-sq.jpg) */
+export const squareOf = (thumb: string | null | undefined) => (thumb && /\/art-vt\.jpg$/.test(thumb) ? thumb.replace(/art-vt\.jpg$/, 'art-sq.jpg') : null);
 const extOf = (t: string) => (t === 'image/png' ? 'png' : t === 'image/gif' ? 'gif' : t === 'image/webp' ? 'webp' : 'jpg');
 
 export async function createDraft(uid: string, d: DraftIn) {
   if (!d.cuts.length || d.cuts.length > MAX_CUTS) throw new Error('bad_cuts');
   const id = newId(12);
   const cuts: Cut[] = d.cuts.map((c, i) => ({ path: `${uid}/${id}/${String(i + 1).padStart(3, '0')}.${extOf(c.type)}`, w: Math.round(c.w) || CUT_WIDTH, h: Math.round(c.h) || 0 }));
-  const draft: Draft = { id, user_id: uid, source: d.source, cuts, ai: !!d.ai, ready: false, used: false, created_at: nowIso() };
+  const keys = (['sq', 'vt', 'ep'] as const).filter((x) => d.art?.[x]);
+  const art: Record<string, string> = {};
+  keys.forEach((x) => { art[x] = `${uid}/${id}/art-${x}.jpg`; });
+  const draft: Draft = { id, user_id: uid, source: { ...d.source, art }, cuts, ai: !!d.ai, ready: false, used: false, created_at: nowIso() };
   if (!live()) {
     demo().drafts.push({ ...draft, cuts: cuts.map((c) => ({ ...c, path: 'mem:' + c.path.replace(/\//g, '_') })) });
-    return { id, uploads: cuts.map((_, i) => ({ url: readHref(`api/drafts/${id}/cut/${i}`), method: 'POST' as const })) };
+    return { id, uploads: cuts.map((_, i) => ({ url: readHref(`api/drafts/${id}/cut/${i}`), method: 'POST' as const })), art: {} as Record<string, { url: string; method: 'PUT' | 'POST' }> };
   }
   const { error } = await db().from('read_drafts').insert(draft);
   if (error) throw error;
   const uploads = await Promise.all(cuts.map(async (c) => ({ url: await signReadUpload(c.path), method: 'PUT' as const })));
-  return { id, uploads };
+  const artUp: Record<string, { url: string; method: 'PUT' | 'POST' }> = {};
+  for (const x of keys) artUp[x] = { url: await signReadUpload(art[x]), method: 'PUT' };
+  return { id, uploads, art: artUp };
 }
 /** 로컬 시연: 그림을 서버 메모리에 */
 export function putMemImage(uid: string, draftId: string, i: number, type: string, data: Buffer) {
@@ -245,6 +252,13 @@ export async function publish(uid: string, p: PublishIn): Promise<{ seriesId: st
   }
   const base = s ? null : p.series;
   if (!s && !base) throw new Error('series_required');
+  const art = d.source.art || {};
+  if (live()) {
+    if (!art.ep) throw new Error('art_ep_required');
+    if ((!s || !squareOf(s.thumb_path)) && !(art.sq && art.vt)) throw new Error('art_cover_required');
+  }
+  const epThumb = art.ep || d.cuts[0]?.path || null;
+  const cover = art.vt || null;
 
   if (!live()) {
     const M = demo();
@@ -260,17 +274,17 @@ export async function publish(uid: string, p: PublishIn): Promise<{ seriesId: st
 
   const sb = db();
   if (!s) {
-    const row = { id: newId(), author_id: uid, author_name: base!.authorName, title: base!.title, description: base!.description, genre: base!.genre, age: base!.age, ai: p.ai, kind: 'free', days: base!.days, review: base!.apply ? 'pending' : 'none', thumb_path: d.cuts[0]?.path || null, source_project: d.source.project || null };
+    const row = { id: newId(), author_id: uid, author_name: base!.authorName, title: base!.title, description: base!.description, genre: base!.genre, age: base!.age, ai: p.ai, kind: 'free', days: base!.days, review: base!.apply ? 'pending' : 'none', thumb_path: cover || d.cuts[0]?.path || null, source_project: d.source.project || null };
     const { data, error } = await sb.from('read_series').insert(row).select('*').single();
     if (error) throw error;
     s = data as Series;
   }
   const { data: last } = await sb.from('read_episodes').select('no').eq('series_id', s.id).order('no', { ascending: false }).limit(1).maybeSingle();
   const no = ((last as { no: number } | null)?.no || 0) + 1;
-  const { error: e2 } = await sb.from('read_episodes').insert({ series_id: s.id, no, title: p.episode.title, author_note: p.episode.authorNote || null, cuts: d.cuts, thumb_path: d.cuts[0]?.path || null, ai: p.ai, status, publish_at: when });
+  const { error: e2 } = await sb.from('read_episodes').insert({ series_id: s.id, no, title: p.episode.title, author_note: p.episode.authorNote || null, cuts: d.cuts, thumb_path: epThumb, ai: p.ai, status, publish_at: when });
   if (e2) throw e2;
   await Promise.all([
-    sb.from('read_series').update({ episodes: no, last_episode_at: when, ai: s.ai || p.ai, updated_at: nowIso() }).eq('id', s.id),
+    sb.from('read_series').update({ episodes: no, last_episode_at: when, ai: s.ai || p.ai, updated_at: nowIso(), ...(cover ? { thumb_path: cover } : {}) }).eq('id', s.id),
     sb.from('read_drafts').update({ used: true }).eq('id', d.id),
   ]);
   return { seriesId: s.id, no };

@@ -1,3 +1,6 @@
+/** 연재 이미지 (네이버 · WEBTOON 양식) — sq 정사각형 대표 1080×1080 · vt 세로 대표 1080×1920 · ep 회차 썸네일 404×180(202×90의 2배) */
+export type Art = { sq?: string; vt?: string; ep?: string };
+export const ART_SIZE = { sq: [1080, 1080], vt: [1080, 1920], ep: [404, 180] } as const;
 export type Art = { pal: [string, string, string]; motif: string };
 
 export type Series = {
@@ -53,7 +56,7 @@ export type Comment = { id: number; episode_id: number; user_id: string; nicknam
 export type Draft = {
   id: string;
   user_id: string;
-  source: { project?: string; workTitle?: string; logline?: string; genre?: string; ep?: { num?: number; title?: string; syn?: string } };
+  source: { project?: string; workTitle?: string; logline?: string; genre?: string; ep?: { num?: number; title?: string; syn?: string }; art?: Art };
   cuts: Cut[];
   ai: boolean;
   ready: boolean;

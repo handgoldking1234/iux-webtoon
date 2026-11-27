@@ -14,8 +14,10 @@ export async function POST(req: Request) {
     if (cuts.some((c) => !['image/jpeg', 'image/png', 'image/webp', 'image/gif'].includes(String(c.type)))) return err('bad_type', 'JPG · PNG · WEBP · GIF만 올릴 수 있어요');
     const src = (b.source || {}) as DraftIn['source'];
     const clean = (s: unknown, n: number) => String(s ?? '').slice(0, n);
+    const a = (b.art || {}) as NonNullable<DraftIn['art']>;
     const out = await createDraft(me.profile.id, {
       ai: !!b.ai,
+      art: { sq: !!a.sq, vt: !!a.vt, ep: !!a.ep },
       source: { project: clean(src.project, 80), workTitle: clean(src.workTitle, 60), logline: clean(src.logline, 300), genre: clean(src.genre, 40), ep: { num: Number(src.ep?.num) || undefined, title: clean(src.ep?.title, 60), syn: clean(src.ep?.syn, 600) } },
       cuts: cuts.map((c) => ({ w: Number(c.w) || CUT_WIDTH, h: Number(c.h) || 0, type: String(c.type), bytes: Number(c.bytes) || 0 })),
     });
