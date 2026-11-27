@@ -584,7 +584,8 @@
       var charKeys = chars.map(function (ch) { return (ch.refs || [])[0]; }).filter(function (key) { return key && blobs.has(key); });
       var styleKeys = (st.sbStyleRefs || []).filter(function (key) { return blobs.has(key); });
       var pickCuts = cutKeys.length > 2 ? [cutKeys[0], cutKeys[Math.floor(cutKeys.length / 2)]] : cutKeys;
-      var refs = [pickCuts[0], charKeys[0], pickCuts[1], charKeys[1], styleKeys[0]].filter(Boolean).filter(function (key, i, A) { return A.indexOf(key) === i; }).slice(0, 3);
+      var sheetKeys = (st.sbSheet || []).filter(function (key) { return blobs.has(key); });
+      var refs = [pickCuts[0], charKeys[0] || sheetKeys[0], pickCuts[1], sheetKeys[0], charKeys[1], styleKeys[0]].filter(Boolean).filter(function (key, i, A) { return A.indexOf(key) === i; }).slice(0, 3);
       var what = k === 'ep' ? 'Episode thumbnail for "' + (F.epTitle || e.title || '') + '": one striking moment from this episode, wide banner composition.' + (e.syn ? ' Episode summary: ' + e.syn : '')
         : 'Cover art for a Korean webtoon series' + (title ? ' titled "' + title + '"' : '') + '. ' + (k === 'vt' ? 'Tall vertical poster composition, main character(s) large and centered, room at the top.' : 'Square key visual, main character(s) close-up, eye-catching.');
       var prompt = what + ' Story: ' + (F.desc || P.logline || '') + (chars.length ? ' Main characters: ' + chars.map(function (ch) { return ch.name + (ch.desc ? ' (' + ch.desc + ')' : ''); }).join(', ') + '.' : '') + ' Genre: ' + (F.genre || P.genre || '') + '. Art style: ' + style() + '.' + (refs.length ? ' IMPORTANT: the attached images are panels and character sheets from this same webtoon. Match them exactly — same drawing style, line work, coloring, faces, hair, costumes and color palette. The characters must look like the same people.' : '') + ' Do not draw any text, letters, logos or speech bubbles.';

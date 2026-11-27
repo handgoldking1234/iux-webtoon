@@ -60,10 +60,10 @@ function I({ n, s = 20 }: { n: string; s?: number }) {
 // 첫 화면 그림 위에 차례로 떠오르는 말풍선 (x · y는 % 위치, m = 휴대폰에서도 보임, tr = 꼬리가 오른쪽)
 const HERO_TALK: { k: 'say' | 'nar' | 'oval'; s: string; x: number; y: number; mx?: number; my?: number; tr?: boolean; m?: boolean }[] = [
   { k: 'oval', s: '어떻게 시작하지…', x: 68, y: -12, mx: 61, my: -24, m: true },
-  { k: 'say', s: '그림과 말풍선은 따로예요!', x: 35, y: 8, mx: 13, m: true },
-  { k: 'say', s: '대사만 고치면 AI 비용 0원', x: 3, y: 9, tr: true },
-  { k: 'say', s: '마음에 안 드는 컷만 다시 그려요', x: 58, y: 62, mx: 52, m: true },
-  { k: 'say', s: '기획부터 말풍선까지 한곳에서', x: 29, y: 62 },
+  { k: 'say', s: '그림과 말풍선은\n따로예요!', x: 34, y: 2, mx: 13, m: true },
+  { k: 'say', s: '대사만 고치면\nAI 비용 0원', x: 3, y: 2, tr: true },
+  { k: 'say', s: '마음에 안 드는\n컷만 다시 그려요', x: 60, y: 53, mx: 54, my: 50, m: true },
+  { k: 'say', s: '기획부터 말풍선까지\n한곳에서', x: 30, y: 52 },
   { k: 'nar', s: '상상한 이야기를, 바로 웹툰으로.', x: 3, y: 86, m: true },
 ];
 
