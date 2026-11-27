@@ -37,8 +37,19 @@
 .authform input:hover{border-color:var(--ctl)!important}
 .authform input:focus{border-color:var(--acc)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
 .authform input::placeholder{color:var(--faint)}
-.authform input.otp{font-size:24px;font-weight:800;letter-spacing:.35em;text-align:center;font-variant-numeric:tabular-nums}
-.authform input.otp::placeholder{font-size:15px;font-weight:600;letter-spacing:0}
+/* 로그인 코드 6칸: 실제 입력은 투명한 칸 하나(붙여넣기·자동 채우기가 한 번에 됨) */
+.otpwrap{position:relative;display:block;margin-top:4px}
+.otpbox{display:flex;gap:8px;justify-content:center}
+.otpbox>span{flex:1 1 0;max-width:52px;height:58px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);display:grid;place-items:center;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--ink);transition:border-color .15s,box-shadow .15s}
+.otpbox>span.fill{border-color:var(--ctl)}
+.otpbox>span.on{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
+.otpbox b{display:block;font-weight:inherit}
+@keyframes otpPop{0%{transform:translateY(6px) scale(.6);opacity:0}60%{transform:translateY(-2px) scale(1.12);opacity:1}100%{transform:none;opacity:1}}
+.otpbox b.otpin{animation:otpPop .32s cubic-bezier(.3,1.4,.5,1) both}
+@media (prefers-reduced-motion:reduce){.otpbox b.otpin{animation:none}}
+.authform .otpwrap input.otp{position:absolute;inset:0;width:100%;height:100%!important;opacity:0;font-size:16px;border:0!important;padding:0;cursor:text;caret-color:transparent}
+.authwide.paste{height:48px;margin-top:0;font-size:14.5px}
+.authwide.paste svg{position:static}
 .authnote{margin:0;text-align:center;font-size:12.5px;line-height:1.6;color:var(--mute)}
 .authlinks{display:flex;flex-wrap:wrap;gap:8px 16px;justify-content:center}
 .authlinks .lnk{font-size:13px}

@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase/browser';
 
 type Mode = 'login' | 'signup' | 'magic' | 'reset';
@@ -17,6 +17,24 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
   const [name, setName] = useState('');
   const [sent, setSent] = useState(false);
   const [code, setCode] = useState('');
+  const [codeFrom, setCodeFrom] = useState(0);
+  const [codeOn, setCodeOn] = useState(false);
+  const codeForm = useRef<HTMLFormElement>(null);
+  const canPaste = typeof navigator !== 'undefined' && !!navigator.clipboard?.readText;
+  // 숫자를 넣으면 6칸에 보여 주고, 6자리가 차면 바로 로그인
+  function putCode(v: string) {
+    const d = v.replace(/\D/g, '').slice(0, 8);
+    setCodeFrom(d.startsWith(code) ? code.length : 0);
+    setCode(d);
+    if (d.length === 6 && d !== code) setTimeout(() => codeForm.current?.requestSubmit(), 380);
+  }
+  async function pasteCode() {
+    try {
+      const t = (await navigator.clipboard.readText()).replace(/\D/g, '');
+      if (t.length < 6) { setMsg({ t: 'bad', s: '복사한 내용에 숫자 코드가 없어요 · 메일에서 코드를 복사해 주세요' }); return; }
+      putCode(t);
+    } catch { setMsg({ t: 'bad', s: '코드 칸을 길게 눌러 붙여넣어 주세요' }); }
+  }
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(initialMode === 'signup' && !social);
   const [msg, setMsg] = useState<{ t: 'ok' | 'bad'; s: string } | null>(error ? { t: 'bad', s: '로그인하지 못했어요 · 다시 시도해 주세요' } : null);
@@ -87,8 +105,20 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
         </button>
       )}
       {useEmail && open && mode === 'magic' && sent && (
-      <form onSubmit={verify} className="authform">
-        <label className="fld">로그인 코드<input className="otp" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9 ]*" maxLength={9} required value={code} onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))} placeholder="메일의 숫자" autoFocus /></label>
+      <form ref={codeForm} onSubmit={verify} className="authform">
+        <label className="fld">메일의 숫자 코드
+          <span className="otpwrap">
+            <span className="otpbox" aria-hidden="true">
+              {Array.from({ length: Math.max(6, code.length) }, (_, k) => (
+                <span key={k} className={(code[k] ? 'fill' : '') + (codeOn && k === code.length ? ' on' : '')}>
+                  {code[k] && <b key={k + code[k]} className={k >= codeFrom ? 'otpin' : ''} style={k >= codeFrom ? { animationDelay: `${(k - codeFrom) * 60}ms` } : undefined}>{code[k]}</b>}
+                </span>
+              ))}
+            </span>
+            <input className="otp" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]*" maxLength={8} required value={code} onChange={(e) => putCode(e.target.value)} onFocus={() => setCodeOn(true)} onBlur={() => setCodeOn(false)} autoFocus />
+          </span>
+        </label>
+        {canPaste && <button className="authwide email paste" type="button" onClick={pasteCode}><PasteIc /><span>복사한 코드 붙여넣기</span></button>}
         {msg && <div className={`msg ${msg.t}`} role={msg.t === 'bad' ? 'alert' : 'status'}>{msg.s}</div>}
         <button className="authwide pri" type="submit" disabled={busy}>{busy ? '확인 중…' : '로그인'}</button>
         <p className="authnote">메일의 <b>로그인하기</b> 버튼을 눌러도 돼요.<br />다른 기기에서 메일을 봤다면 숫자만 여기에 넣으면 돼요.</p>
@@ -146,6 +176,9 @@ function NaverIc() {
 }
 function GoogleIc() {
   return <svg width="24" height="24" viewBox="0 0 48 48" aria-hidden="true"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z" /><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 7.9 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z" /><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-7.9l-6.5 5C9.5 39.6 16.2 44 24 44z" /><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z" /></svg>;
+}
+function PasteIc() {
+  return <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M11 14h10" /><path d="M16 4h2a2 2 0 0 1 2 2v1.344" /><path d="m17 18 4-4-4-4" /><path d="M8 4H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 1.793-1.113" /><rect x="8" y="2" width="8" height="4" rx="1" /></svg>;
 }
 function MailIc() {
   return <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" /></svg>;
