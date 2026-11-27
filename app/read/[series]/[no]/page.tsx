@@ -51,7 +51,13 @@ export default async function Viewer({ params }: { params: Promise<{ series: str
         </nav>
         <Comments episodeId={e.id} initial={comments} signedIn={!!me} />
         <p className={k('muted')} style={{ fontSize: 12.5, display: 'flex', gap: 8, alignItems: 'center' }}>{e.ai && <span>이 회차는 AI 활용 표시가 있어요 ·</span>}<ReportButton type="episode" id={e.id} label="이 회차 신고" /></p>
+        <nav className={k('epbar')} aria-label="회차 이동 버튼">
+          {prev !== null ? <Link className={k('btn big')} href={readHref(`${s.id}/${prev}`)}><Ic n="left" />이전</Link> : <span className={k('btn big off')} aria-disabled="true"><Ic n="left" />이전</span>}
+          <Link className={k('btn big')} href={readHref(s.id)}>목록</Link>
+          {next !== null ? <Link className={k('btn big go')} href={readHref(`${s.id}/${next}`)}>다음<Ic n="right" /></Link> : <span className={k('btn big off')} aria-disabled="true">다음<Ic n="right" /></span>}
+        </nav>
       </div>
+      <a className={k('topbtn')} href="#" aria-label="맨 위로" title="맨 위로"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M12 19V5" /><path d="m5 12 7-7 7 7" /></svg></a>
     </>
   );
 }

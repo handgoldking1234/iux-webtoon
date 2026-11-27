@@ -400,3 +400,6 @@
 .rd .r-page-h h1,.rd .r-thead h1{font-weight:900;letter-spacing:-.04em}
 
 .rd .r-sk{border-radius:10px;background:linear-gradient(90deg,var(--surface-2,#1e1e1e) 25%,color-mix(in srgb,var(--surface-2,#1e1e1e) 70%,#888) 50%,var(--surface-2,#1e1e1e) 75%);background-size:200% 100%;animation:r-sk 1.2s linear infinite}@keyframes r-sk{to{background-position:-200% 0}}
+.rd .r-epbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px}.rd .r-epbar .r-btn{justify-content:center}.rd .r-epbar .r-off{opacity:.35;pointer-events:none}
+.rd .r-topbtn{position:fixed;right:max(16px,calc(50vw - 440px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:15;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--ink);box-shadow:0 6px 18px rgba(0,0,0,.35)}.rd .r-topbtn:hover{border-color:var(--green);color:var(--green)}
+html:has(.rd){scroll-behavior:smooth}
