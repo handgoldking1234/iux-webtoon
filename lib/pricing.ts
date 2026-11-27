@@ -18,8 +18,10 @@ export const TEXT_PRICE: Record<string, [number, number]> = {
   'gpt-5': [1.25, 10],
 };
 
-/** 그림 1장 값 (달러) — 나노바나나 2(Flash) · 나노바나나 Pro */
+/** 그림 1장 값 (달러) — 나노바나나 2.1 · 나노바나나 2(Flash, 예전) · 나노바나나 Pro
+ *  2.1은 1K $0.0336이 공개 가격 · 0.5K · 2K · 4K는 2의 절반으로 잡은 추정값 */
 const IMAGE_PRICE: { test: RegExp; by: Record<string, number> }[] = [
+  { test: /nano-banana-2\.1/i, by: { '0.5K': 0.0225, '1K': 0.0336, '2K': 0.0505, '4K': 0.0755 } },
   { test: /pro-image/i, by: { '1K': 0.134, '2K': 0.134, '4K': 0.24 } },
   { test: /flash-image/i, by: { '0.5K': 0.045, '1K': 0.067, '2K': 0.101, '4K': 0.151 } },
 ];

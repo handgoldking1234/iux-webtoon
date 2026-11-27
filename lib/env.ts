@@ -21,7 +21,7 @@ export const env = {
   claudeModelPrompt: process.env.CLAUDE_MODEL_PROMPT || 'claude-sonnet-5-5',
   // 이름을 다르게 넣는 경우가 많아서 흔한 이름도 같이 읽어요
   geminiKey: (process.env.GEMINI_API_KEY || process.env.GOOGLE_API_KEY || process.env.GOOGLE_GENERATIVE_AI_API_KEY || process.env.GOOGLE_AI_API_KEY || process.env.GEMINI_KEY || '').trim(),
-  geminiModel: process.env.GEMINI_IMAGE_MODEL || 'gemini-3.1-flash-image',
+  geminiModel: process.env.GEMINI_IMAGE_MODEL || 'gemini-nano-banana-2.1',
   geminiModelPro: process.env.GEMINI_IMAGE_MODEL_PRO || 'gemini-3-pro-image',
   openaiKey: process.env.OPENAI_API_KEY || '',
   openaiTextModel: process.env.OPENAI_TEXT_MODEL || 'gpt-5',
@@ -49,7 +49,7 @@ export const env = {
   budgetKrw: n(process.env.AI_MONTHLY_BUDGET_KRW, 500000),
   cost: {
     text: n(process.env.COST_TEXT_KRW, 80), // 글 AI 1회 어림값: Opus 5.5 · 입력 3~4천 + 출력 2~3천 토큰 ≈ $0.06 (실제 기록은 토큰으로 계산)
-    image: n(process.env.COST_IMAGE_KRW, 135), // 나노바나나 2 · 2K 한 장 ($0.101)
+    image: n(process.env.COST_IMAGE_KRW, 45), // 나노바나나 2.1 · 1K 한 장 ($0.0336)
     imagePro: n(process.env.COST_IMAGE_PRO_KRW, 180), // 나노바나나 Pro · 1K~2K 한 장 ($0.134)
   },
 };
