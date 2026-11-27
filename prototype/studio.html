@@ -4811,7 +4811,9 @@ async function edOpen(c){
  const{W0:W,H0:H}=dims(c);const a={...zeroAdj(),...c.adj};
  ED={on:true,cut:c,W,H,items:JSON.parse(JSON.stringify(c.items)),adj:a,bgHide:!!c.bgHide,tool:'move',sel:null,selPath:null,active:'bg',zoom:1,px:0,py:0,color:'#111111',color2:'#ffffff',brush:{size:24,hard:80,op:100},tol:32,contig:true,allL:true,hist:[],fut:[],rasters:new Map(),dirty:new Set(),bgDirty:false,bgAdj:null,stroke:null,drag:null,space:false,gradType:'linear',gradTo:'bg',gradOp:100,anchor:[.5,.5],cvFill:'none',crop:null};
  const bg=mkCv(W,H),x=bg.getContext('2d');
- if(c.kind==='blank'){x.fillStyle=c.sb?sbBg(c):(c.color||'#fff');x.fillRect(0,0,W,H);}
+ if(c.kind==='blank'){x.fillStyle=c.sb?sbBg(c):(c.color||'#fff');x.fillRect(0,0,W,H);
+  /* 콘티 컷에 넣은 그림(AI · 올린 그림)도 배경으로 보여 줘요 — 빈 화면이 아니라 그 그림을 보정 · 편집해요 */
+  if(c.sb&&c.sb.img){try{await drawSb(x,c,W,H,true);}catch(_){}}}
  else{try{const im=await loadImg(c.blob);const nh=im.naturalHeight,pt=c.padT||0,pb=c.padB||0;if(pt||pb){x.fillStyle=c.padColor||'#ffffff';x.fillRect(0,0,W,H);}if(a.flip){x.translate(W,0);x.scale(-1,1);}x.drawImage(im,0,a.cropT*nh,im.naturalWidth,Math.max(1,nh*(1-a.cropT-a.cropB)),0,pt,W,Math.max(1,H-pt-pb));x.setTransform(1,0,0,1,0,0);}catch(_){x.fillStyle='#333';x.fillRect(0,0,W,H);}}
  ED.rasters.set('bg',bg);ED.flipBaked=!!a.flip;
  await preloadItems(ED.items);
@@ -5062,6 +5064,8 @@ async function edDone(){
  edBakeSelAdj();
  const c=ED.cut;const items=ED.items;
  for(const it of items)if(it.type==='paint'&&(ED.dirty.has(it.id)||!it.blob)){const r=ED.rasters.get(it.id);const b=await toBlob(r,'image/png');const k=uid();blobs.set(k,b);putBlob(k,b);it.blob=k;loadedImgs.set(k,cloneCv(r));}
+ /* 콘티 컷의 그림에 보정을 걸었으면 그 그림을 컷 이미지로 굳혀서 보정이 먹게 해요 */
+ if(!ED.bgDirty&&c.kind==='blank'&&c.sb&&c.sb.img&&JSON.stringify(ED.adj)!==JSON.stringify({...zeroAdj(),...c.adj}))ED.bgDirty=true;
  let bgKey=null;if(ED.bgDirty){const b=await toBlob(ED.rasters.get('bg'),'image/png');bgKey=uid();blobs.set(bgKey,b);putBlob(bgKey,b);}
  mutate(()=>{c.items=items;const a={...ED.adj};if(bgKey){c.blob=bgKey;c.w=ED.W;c.h=ED.H;c.padT=0;c.padB=0;a.cropT=0;a.cropB=0;a.flip=false;if(c.kind==='blank')c.kind='img';c.name=c.name||'편집한 이미지.png';}c.adj=a;c.bgHide=ED.bgHide;});
  baseCache.delete(c.id);edClose();toast('편집한 내용을 컷에 적용했어요 · Ctrl+Z로 되돌릴 수 있어요');
