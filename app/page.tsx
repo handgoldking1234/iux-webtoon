@@ -6,6 +6,7 @@ import { dbReady } from '@/lib/env';
 import { Logo } from '@/components';
 import { activeNotices } from '@/lib/notices';
 import LandingFx from './LandingFx';
+import TypeBubble from './TypeBubble';
 import type { Metadata } from 'next';
 import { SITE_DESC, SITE_NAME, SITE_URL } from '@/lib/site';
 
@@ -265,7 +266,7 @@ export default async function Home() {
           <div className="lp-split">
             <div className="lp-layer" data-r aria-hidden="true">
               <div className="ly img"><span className="tag">그림 레이어</span><span className="pic" aria-hidden="true" style={{ ['--p1' as string]: 'url(/lp/edit-a.webp)', ['--p2' as string]: 'url(/lp/edit-b.webp)' }} /><span className="re"><I n="spark" s={13} /> 이 컷만 다시 그리기</span></div>
-              <div className="ly txt"><span className="tag">말풍선 레이어</span><span className="bub"><OvalBubble /><span className="t">오늘도 우산<br />안 가져왔지<b>?</b><i className="caret" /></span></span></div>
+              <div className="ly txt"><span className="tag">말풍선 레이어</span><span className="bub"><OvalBubble /><TypeBubble /></span></div>
             </div>
             <div className="lp-pts">
               <article data-r>

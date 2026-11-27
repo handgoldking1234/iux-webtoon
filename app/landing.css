@@ -162,6 +162,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-layer .bub b{color:var(--accText)}
 .lp-layer .caret{display:inline-block;width:2px;height:17px;margin-left:2px;vertical-align:-3px;background:var(--acc);animation:lp-blink 1s steps(1) infinite}
 @keyframes lp-blink{50%{opacity:0}}
+.lp-layer .caret.on{animation:none;opacity:1}
 .lp.fx .lp-layer:not(.on) .img{transform:translate(-14px,14px)}
 .lp.fx .lp-layer:not(.on) .txt{transform:translate(14px,-14px)}
 .lp-layer:hover .txt{transform:translate(10px,-10px)}
