@@ -65,3 +65,12 @@
 .authfoot nav b{color:var(--ink2)}
 .authfoot p{margin:0}
 @media (max-width:420px){.authpage .authcard{margin-top:40px}.authtitle{font-size:26px!important}.authbox div{font-size:12.5px}}
+
+/* 메일 숫자 코드 6칸 (입력은 투명한 칸 하나: 붙여넣기·자동 채우기가 한 번에 됨) */
+.otp{position:relative;display:block;margin-top:6px}
+.otp-box{display:flex;gap:8px;justify-content:center}
+.otp-box span{flex:1 1 0;max-width:52px;height:58px;border-radius:12px;border:1.5px solid var(--line);background:var(--panel);display:grid;place-items:center;font-size:26px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+.otp-box span.fill{border-color:var(--ink2)}
+.otp-box span.on{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 18%,transparent)}
+.authform .otp input{position:absolute!important;inset:0;width:100%;height:100%!important;opacity:0;padding:0;border:0!important;font-size:16px}
+.authwide.email{display:flex;align-items:center;justify-content:center;gap:8px}
