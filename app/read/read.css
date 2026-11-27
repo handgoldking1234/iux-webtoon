@@ -23,6 +23,7 @@
 .rd::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--surface)}
 .rd .r-gnb{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--surface);border-bottom:1px solid var(--line)}
 .rd .r-gnb .r-wrap{display:flex;align-items:center;gap:18px;height:58px}
+@media (min-width:761px){.rd .r-gnb .r-wrap{display:grid;grid-template-columns:1fr auto 1fr}.rd .r-gnb .r-menu{justify-self:center}.rd .r-gnb .r-right{justify-self:end}}
 .rd .r-logo{display:flex;align-items:center;gap:8px;font-weight:800;font-size:21px;letter-spacing:-.01em;white-space:nowrap}
 .rd .r-logo i{width:28px;height:28px;border-radius:50%;background:var(--green);display:grid;place-items:center}
 .rd .r-logo svg{width:15px;height:15px;stroke:var(--on-green)}
