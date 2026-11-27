@@ -15,6 +15,8 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [name, setName] = useState('');
+  const [sent, setSent] = useState(false);
+  const [code, setCode] = useState('');
   const [busy, setBusy] = useState(false);
   const [open, setOpen] = useState(initialMode === 'signup' && !social);
   const [msg, setMsg] = useState<{ t: 'ok' | 'bad'; s: string } | null>(error ? { t: 'bad', s: '로그인하지 못했어요 · 다시 시도해 주세요' } : null);
@@ -48,7 +50,8 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
       if (mode === 'magic') {
         const { error } = await sb.auth.signInWithOtp({ email, options: { emailRedirectTo: cb(), data: { signup_source: src() } } });
         if (error) throw error;
-        setMsg({ t: 'ok', s: `${email}로 로그인 링크를 보냈어요 · 메일함에서 링크를 눌러 주세요 (안 보이면 스팸함도 확인해 주세요)` });
+        setSent(true); setCode('');
+        setMsg({ t: 'ok', s: `${email}로 로그인 코드를 보냈어요 · 메일의 숫자를 아래에 넣어 주세요 (안 보이면 스팸함도 확인해 주세요)` });
       }
       if (mode === 'reset') {
         const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: `${location.origin}/auth/callback?next=/account?reset=1` });
@@ -62,6 +65,16 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
     setBusy(false);
   }
 
+  async function verify(e: React.FormEvent) {
+    e.preventDefault();
+    const token = code.replace(/\D/g, '');
+    if (token.length < 6) { setMsg({ t: 'bad', s: '메일로 받은 숫자 코드를 모두 넣어 주세요' }); return; }
+    setBusy(true); setMsg(null);
+    const { error } = await sb.auth.verifyOtp({ email, token, type: 'email' });
+    if (error) { setMsg({ t: 'bad', s: /expired|invalid/i.test(error.message) ? '코드가 맞지 않거나 시간이 지났어요 · 코드를 다시 받아 주세요' : error.message }); setBusy(false); return; }
+    location.href = next;
+  }
+
   const title = useEmail ? { login: '비밀번호로 로그인', signup: '비밀번호로 가입하기', magic: '이메일로 시작하기', reset: '비밀번호 찾기' }[mode] : '로그인 · 가입';
   const ok = (p: string) => has(p) && !busy;
   return (
@@ -73,7 +86,18 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
           <MailIc /><span>이메일로 시작하기</span>
         </button>
       )}
-      {useEmail && open && (<>
+      {useEmail && open && mode === 'magic' && sent && (
+      <form onSubmit={verify} className="authform">
+        <label className="fld">로그인 코드<input className="otp" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9 ]*" maxLength={9} required value={code} onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))} placeholder="메일의 숫자" autoFocus /></label>
+        {msg && <div className={`msg ${msg.t}`} role={msg.t === 'bad' ? 'alert' : 'status'}>{msg.s}</div>}
+        <button className="authwide pri" type="submit" disabled={busy}>{busy ? '확인 중…' : '로그인'}</button>
+        <p className="authnote">메일의 <b>로그인하기</b> 버튼을 눌러도 돼요.<br />다른 기기에서 메일을 봤다면 숫자만 여기에 넣으면 돼요.</p>
+        <div className="authlinks">
+          <button className="lnk" type="button" onClick={() => { setSent(false); setMsg(null); }}>코드 다시 받기 · 이메일 바꾸기</button>
+        </div>
+      </form>
+      )}
+      {useEmail && open && !(mode === 'magic' && sent) && (<>
       <form onSubmit={submit} className="authform">
         {mode === 'signup' && <label className="fld">이름(필명)<input value={name} onChange={(e) => setName(e.target.value)} placeholder="작가 이름" autoComplete="nickname" /></label>}
         <label className="fld">이메일<input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" autoFocus /></label>
@@ -81,15 +105,15 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
           <label className="fld">비밀번호<input type="password" required minLength={mode === 'signup' ? 8 : 1} value={pw} onChange={(e) => setPw(e.target.value)} autoComplete={mode === 'signup' ? 'new-password' : 'current-password'} placeholder={mode === 'signup' ? '8자 이상' : ''} /></label>
         )}
         {msg && <div className={`msg ${msg.t}`} role={msg.t === 'bad' ? 'alert' : 'status'}>{msg.s}</div>}
-        <button className="authwide pri" type="submit" disabled={busy}>{busy ? '잠시만요…' : mode === 'signup' ? '가입하기' : mode === 'login' ? '로그인' : mode === 'magic' ? '로그인 링크 받기' : '메일 보내기'}</button>
-        {mode === 'magic' && !msg && <p className="authnote">메일로 받은 링크를 누르면 바로 로그인돼요. 처음이면 그대로 가입돼요.<br />링크는 이 브라우저에서 열어 주세요.</p>}
+        <button className="authwide pri" type="submit" disabled={busy}>{busy ? '잠시만요…' : mode === 'signup' ? '가입하기' : mode === 'login' ? '로그인' : mode === 'magic' ? '로그인 코드 받기' : '메일 보내기'}</button>
+        {mode === 'magic' && !msg && <p className="authnote">메일로 받은 숫자 코드를 넣으면 로그인돼요. 처음이면 그대로 가입돼요.</p>}
       </form>
       <div className="authlinks">
         {mode === 'magic' && <button className="lnk" type="button" onClick={() => { setMode('login'); setMsg(null); }}>비밀번호로 로그인</button>}
-        {mode === 'login' && <button className="lnk" type="button" onClick={() => { setMode('magic'); setMsg(null); }}>이메일 링크로 로그인</button>}
+        {mode === 'login' && <button className="lnk" type="button" onClick={() => { setMode('magic'); setMsg(null); }}>이메일 코드로 로그인</button>}
         {mode === 'login' && <button className="lnk" type="button" onClick={() => { setMode('reset'); setMsg(null); }}>비밀번호 찾기</button>}
         {mode === 'login' && <button className="lnk" type="button" onClick={() => { setMode('signup'); setMsg(null); }}>비밀번호로 가입하기</button>}
-        {(mode === 'signup' || mode === 'reset') && <button className="lnk" type="button" onClick={() => { setMode('magic'); setMsg(null); }}>이메일 링크로 시작하기</button>}
+        {(mode === 'signup' || mode === 'reset') && <button className="lnk" type="button" onClick={() => { setMode('magic'); setMsg(null); }}>이메일 코드로 시작하기</button>}
       </div>
       </>)}
       {social && (
