@@ -22,7 +22,7 @@ P('제목', /<title>[^<]*<\/title>/, '<title>웹툰 만들기 · 바로웹툰</t
 P('IDB 이름', "indexedDB.open('webtoon-cut-studio',1)", "indexedDB.open('webtoon-cut-studio'+(window.__WB?__WB.dbSuffix:''),1)");
 P('시작 동기화', "try{db=await idbOpen();const w=await idb('kv','readonly',s=>s.get('works'));", "try{db=await idbOpen();if(window.__WB)await __WB.sync(db);const w=await idb('kv','readonly',s=>s.get('works'));");
 P('그림 올리기', "function putBlob(k,b){if(db)idb('blobs','readwrite',s=>s.put(b,k)).catch(()=>{});}", "function putBlob(k,b){if(db)idb('blobs','readwrite',s=>s.put(b,k)).catch(()=>{});if(window.__WB)__WB.putBlob(k,b);}");
-P('그림 받아오기', "const b=await idb('blobs','readonly',s=>s.get(k));if(b)blobs.set(k,b);", "let b=await idb('blobs','readonly',s=>s.get(k));if(!b&&window.__WB)b=await __WB.getBlob(k,db);if(b)blobs.set(k,b);");
+// 그림 받아오기: 편집기 원본(applyProject)이 이 기기에 없는 그림을 __WB.getBlob으로 6장씩 나란히 받아요
 P('작품 목록 저장', "const worksSave=()=>db?", "const worksSave=()=>(window.__WB&&__WB.pushWorks(WI,db),0)||db?");
 P('작품 삭제', "WI=WI.filter(x=>x.id!==id);await worksSave();", "WI=WI.filter(x=>x.id!==id);if(window.__WB)__WB.deleteProject(id);await worksSave();");
 

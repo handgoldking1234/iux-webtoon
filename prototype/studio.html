@@ -7200,7 +7200,18 @@ async function applyProject(loaded){
  if(loaded&&loaded.episodes&&loaded.episodes.length){
   S.episodes=loaded.episodes;S.cur=loaded.cur;S.settings={...DEF,...(loaded.settings||{})};
   S.episodes.forEach(e=>e.cuts.forEach(c=>{c.adj={...zeroAdj(),...(c.adj||{})};c.items=c.items||[];}));
-  if(db){try{for(const k of projKeys(S)){const b=await idb('blobs','readonly',s=>s.get(k));if(b)blobs.set(k,b);}}catch(_){}}
+  if(db){try{
+   // 그림은 한꺼번에 꺼내요 (하나씩 기다리면 컷이 많을수록 열리는 게 느려져요)
+   const ks=[...projKeys(S)];
+   await Promise.all(ks.map(k=>idb('blobs','readonly',s=>s.get(k)).then(b=>{if(b)blobs.set(k,b);}).catch(()=>{})));
+   // 이 기기에 없는 그림은 클라우드에서 6장씩 나란히 받아요
+   const miss=ks.filter(k=>!blobs.has(k));
+   if(miss.length&&window.__WB&&__WB.getBlob){
+    let i=0,done=0;if(miss.length>3)toast(`다른 기기에서 만든 그림 ${miss.length}장을 받는 중이에요`);
+    const run=async()=>{while(i<miss.length){const k=miss[i++];const b=await __WB.getBlob(k,db).catch(()=>null);if(b)blobs.set(k,b);done++;}};
+    await Promise.all(Array.from({length:Math.min(6,miss.length)},run));
+   }
+  }catch(_){}}
  }else{
   S.episodes=[{id:uid(),num:1,title:'1화',cuts:[]}];S.cur=null;S.settings={...DEF,...((loaded&&loaded.settings)||{})};
  }
