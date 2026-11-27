@@ -1,10 +1,12 @@
 /** 환경 변수 — 비어 있으면 "로컬 시연 모드"로 돌아가요 (DB 연동 전 개발용) */
 const n = (v: string | undefined, d: number) => (v && !isNaN(+v) ? +v : d);
 
+/** 키 값 정리 — 'SUPABASE_SERVICE_ROLE_KEY=값'처럼 이름째 붙여 넣거나 따옴표 · 빈칸이 섞여도 값만 써요 */
+const key = (v?: string) => (v || '').trim().replace(/^[A-Z][A-Z0-9_]*\s*=\s*/, '').replace(/^["']|["']$/g, '').trim();
 export const env = {
   supabaseUrl: (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim(),
   supabaseAnon: (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim(),
-  serviceRole: process.env.SUPABASE_SERVICE_ROLE_KEY || '',
+  serviceRole: key(process.env.SUPABASE_SERVICE_ROLE_KEY),
   siteUrl: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
   /** 바로웹툰 테이블이 사는 DB 구역 — 공용 Supabase(iux-cloud)에 얹어도 다른 서비스와 안 섞이게 */
   dbSchema: process.env.NEXT_PUBLIC_SUPABASE_DB_SCHEMA || 'webtoon',
@@ -30,10 +32,10 @@ export const env = {
   imageEngine: (process.env.AI_IMAGE_ENGINE === 'openai' ? 'openai' : 'gemini') as 'gemini' | 'openai',
   r2: {
     // 계정 ID만 넣어도, S3 API 주소(https://<ID>.r2.cloudflarestorage.com/…)를 통째로 넣어도 돼요
-    accountId: (process.env.R2_ACCOUNT_ID || '').trim().replace(/^https?:\/\//, '').split(/[./]/)[0],
-    accessKey: process.env.R2_ACCESS_KEY_ID || '',
-    secret: process.env.R2_SECRET_ACCESS_KEY || '',
-    bucket: process.env.R2_BUCKET || '',
+    accountId: key(process.env.R2_ACCOUNT_ID).replace(/^https?:\/\//, '').split(/[./]/)[0],
+    accessKey: key(process.env.R2_ACCESS_KEY_ID),
+    secret: key(process.env.R2_SECRET_ACCESS_KEY),
+    bucket: key(process.env.R2_BUCKET),
     /** 연재 그림을 바로 보여 줄 공개 주소 (R2 공개 버킷 · 커스텀 도메인), 예: https://img.webtoon.iux.kr */
     /** 연재 그림 전용 공개 버킷 (작품 원본 버킷과 따로) */
     readBucket: process.env.R2_READ_BUCKET || '',
