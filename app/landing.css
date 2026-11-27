@@ -21,6 +21,7 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-nav nav a:hover{color:var(--ink);background:var(--soft2)}
 .lp-nav nav a.cur{color:var(--accText)}
 .lp-nav nav{position:relative}
+@media (min-width:1000px){.lp-nav .lp-w{position:relative}.lp-nav nav{position:absolute;left:50%;transform:translateX(-50%)}}
 .lp-nav nav .ind{position:absolute;left:0;bottom:2px;height:2px;width:0;border-radius:2px;background:var(--acc);opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.22,.8,.2,1),width .45s cubic-bezier(.22,.8,.2,1),opacity .25s}
 .lp-nav nav .ind.on{opacity:1}
 .lp-nav .sp{flex:1}
