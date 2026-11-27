@@ -537,10 +537,18 @@
     function fromAi(k) {
       var title = (isNew() ? F.title : (cur() && cur().title)) || st.workTitle || '';
       var chars = (st.sbCharList || []).filter(function (ch) { return ch.name; }).slice(0, 3);
-      var refs = chars.map(function (ch) { return (ch.refs || [])[0]; }).filter(Boolean);
+      // 참고 그림: 이번 회차에 실제로 그린 컷(그림체 · 얼굴 · 옷) → 캐릭터 시트 → 그림체 참고 순서로 3장까지
+      var cutKeys = [];
+      cuts.concat(coverCuts).forEach(function (c) {
+        [c.blob, c.sb && c.sb.img].concat((c.items || []).map(function (it) { return it.blob; })).forEach(function (key) { if (key && blobs.has(key) && cutKeys.indexOf(key) < 0 && blobs.get(key).type !== 'image/gif') cutKeys.push(key); });
+      });
+      var charKeys = chars.map(function (ch) { return (ch.refs || [])[0]; }).filter(function (key) { return key && blobs.has(key); });
+      var styleKeys = (st.sbStyleRefs || []).filter(function (key) { return blobs.has(key); });
+      var pickCuts = cutKeys.length > 2 ? [cutKeys[0], cutKeys[Math.floor(cutKeys.length / 2)]] : cutKeys;
+      var refs = [pickCuts[0], charKeys[0], pickCuts[1], charKeys[1], styleKeys[0]].filter(Boolean).filter(function (key, i, A) { return A.indexOf(key) === i; }).slice(0, 3);
       var what = k === 'ep' ? 'Episode thumbnail for "' + (F.epTitle || e.title || '') + '": one striking moment from this episode, wide banner composition.' + (e.syn ? ' Episode summary: ' + e.syn : '')
         : 'Cover art for a Korean webtoon series' + (title ? ' titled "' + title + '"' : '') + '. ' + (k === 'vt' ? 'Tall vertical poster composition, main character(s) large and centered, room at the top.' : 'Square key visual, main character(s) close-up, eye-catching.');
-      var prompt = what + ' Story: ' + (F.desc || P.logline || '') + (chars.length ? ' Main characters: ' + chars.map(function (ch) { return ch.name + (ch.desc ? ' (' + ch.desc + ')' : ''); }).join(', ') + '.' : '') + ' Genre: ' + (F.genre || P.genre || '') + '. Art style: ' + style() + '. Do not draw any text, letters, logos or speech bubbles.';
+      var prompt = what + ' Story: ' + (F.desc || P.logline || '') + (chars.length ? ' Main characters: ' + chars.map(function (ch) { return ch.name + (ch.desc ? ' (' + ch.desc + ')' : ''); }).join(', ') + '.' : '') + ' Genre: ' + (F.genre || P.genre || '') + '. Art style: ' + style() + '.' + (refs.length ? ' IMPORTANT: the attached images are panels and character sheets from this same webtoon. Match them exactly — same drawing style, line work, coloring, faces, hair, costumes and color palette. The characters must look like the same people.' : '') + ' Do not draw any text, letters, logos or speech bubbles.';
       var btn = m.querySelector('[data-pa=ai][data-k=' + k + ']'); if (btn) { btn.disabled = true; btn.textContent = '그리는 중…'; }
       image(prompt, ART[k].w, ART[k].h, refs).then(function (b) {
         if (!b) { render(); return; }
