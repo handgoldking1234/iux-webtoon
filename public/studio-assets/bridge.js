@@ -361,17 +361,17 @@
   function pubCss() {
     if (document.getElementById('wbPubCss')) return;
     var st = document.createElement('style'); st.id = 'wbPubCss';
-    st.textContent = '.pubsheet{width:min(760px,100%)}.pubsheet h4{margin:20px 0 8px;font-size:14px;font-weight:800;display:flex;align-items:center;gap:6px}.pubsheet h4 small{font-weight:500;color:var(--muted);font-size:12px}'
+    st.textContent = '.pubsheet{width:min(760px,100%)}.pubsheet h4{margin:20px 0 8px;font-size:14px;font-weight:800;display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 8px}.pubsheet h4 small{font-weight:500;color:var(--muted);font-size:12px}'
       + '.pubsheet .pf{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;align-items:start;margin:8px 0;font-size:13px}.pubsheet .pf>span{color:var(--muted);padding-top:9px;font-weight:600}.pubsheet .pf>span b{color:var(--danger,#e5484d);margin-left:2px}'
       + '.pubsheet input[type=text],.pubsheet input[type=datetime-local],.pubsheet select,.pubsheet textarea{width:100%;min-height:36px;border:1px solid transparent;border-radius:6px;background:var(--panel2);padding:7px 10px;font:inherit;font-size:13px;color:var(--ink)}.pubsheet textarea{min-height:76px;resize:vertical;line-height:1.55}'
       + '.pubsheet .bad input,.pubsheet .bad textarea,.pubsheet .bad select,.pubsheet .bad .artbox{border-color:var(--danger,#e5484d)!important}.pubsheet .cnt{font-size:11.5px;color:var(--muted);margin-top:3px}.pubsheet .cnt.ok{color:#13863c}'
-      + '.pubsheet .seg{display:flex;flex-wrap:wrap;gap:6px}.pubsheet .seg label{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:var(--panel2);cursor:pointer;font-size:12.5px}.pubsheet .seg label:has(input:checked){background:color-mix(in srgb,var(--accent) 16%,var(--panel));color:#13863c;font-weight:700}'
-      + '.pubsheet .arts{display:grid;grid-template-columns:1fr 0.62fr 1.5fr;gap:12px;align-items:start}.pubsheet .art{display:flex;flex-direction:column;gap:6px;min-width:0}.pubsheet .art b{font-size:12.5px}.pubsheet .art b i{color:var(--danger,#e5484d);font-style:normal}.pubsheet .art small{color:var(--muted);font-size:11px;line-height:1.4}'
-      + '.pubsheet .artbox{position:relative;border:1.5px dashed var(--line);border-radius:8px;background:var(--panel2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;overflow:hidden}.pubsheet .artbox.has{border-style:solid;border-color:var(--line)}'
-      + '.pubsheet .artbtn{display:flex;flex-wrap:wrap;gap:4px}.pubsheet .artbtn button,.pubsheet .artbtn select{height:28px;font-size:11.5px;padding:0 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;max-width:100%}'
+      + '.pubsheet .pseg{display:flex;flex-wrap:wrap;gap:6px}.pubsheet .pseg label{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:var(--panel2);cursor:pointer;font-size:12.5px}.pubsheet .pseg label:has(input:checked){background:color-mix(in srgb,var(--accent) 16%,var(--panel));color:#13863c;font-weight:700}'
+      + '.pubsheet .pas{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}.pubsheet .pa{display:flex;flex-direction:column;gap:6px;min-width:0;text-align:left}.pubsheet .pa-sq{width:170px}.pubsheet .pa-vt{width:110px}.pubsheet .pa-ep{width:300px;max-width:100%}.pubsheet .pa b{font-size:12.5px}.pubsheet .pa b i{color:var(--danger,#e5484d);font-style:normal}.pubsheet .pa small{color:var(--muted);font-size:11px;line-height:1.4}'
+      + '.pubsheet .pabox{position:relative;width:100%;box-sizing:border-box;border:1.5px dashed var(--line);border-radius:8px;background:var(--panel2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;overflow:hidden}.pubsheet .pabox.has{border-style:solid;border-color:var(--line)}'
+      + '.pubsheet .pabtn{display:flex;flex-wrap:wrap;gap:4px}.pubsheet .pabtn button,.pubsheet .pabtn select{height:28px;font-size:11.5px;padding:0 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;max-width:100%}'
       + '.pubsheet .agree label{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:6px 0;cursor:pointer}.pubsheet .agree input{margin-top:3px}'
       + '.pubsheet .pfoot{position:sticky;bottom:-24px;background:var(--panel);margin:18px -24px -24px;padding:12px 24px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pubsheet .pfoot .left{flex:1;min-width:160px;font-size:12.5px;color:var(--muted)}.pubsheet .pfoot .left b{color:var(--danger,#e5484d)}'
-      + '@media (max-width:640px){.pubsheet .pf{grid-template-columns:1fr}.pubsheet .pf>span{padding-top:0}.pubsheet .arts{grid-template-columns:1fr 1fr}.pubsheet .art.ep{grid-column:1/-1}}';
+      + '@media (max-width:640px){.pubsheet .pf{grid-template-columns:1fr}.pubsheet .pf>span{padding-top:0}.pubsheet .pa-ep{width:100%}}';
     document.head.appendChild(st);
   }
 
@@ -432,9 +432,9 @@
     };
     function artBox(k) {
       var a = ART[k], has = F.art[k], ratio = a.w / a.h;
-      return '<div class="art ' + k + '" data-f="' + k + '"><b>' + a.l + ' <i>*</i></b>'
-        + '<div class="artbox' + (has ? ' has' : '') + '" style="aspect-ratio:' + ratio + ';' + (has ? 'background-image:url(' + has.url + ')' : '') + '">' + (has ? '' : '비어 있어요') + '</div>'
-        + '<div class="artbtn"><button type="button" data-pa="file" data-k="' + k + '">파일</button><select data-pa="cut" data-k="' + k + '" aria-label="' + a.l + ' 컷에서 고르기">' + cutOpts() + '</select><button type="button" data-pa="ai" data-k="' + k + '" title="AI 그림 1장을 써요">AI로 만들기</button></div>'
+      return '<div class="pa pa-' + k + '" data-f="' + k + '"><b>' + a.l + ' <i>*</i></b>'
+        + '<div class="pabox' + (has ? ' has' : '') + '" style="aspect-ratio:' + ratio + ';' + (has ? 'background-image:url(' + has.url + ')' : '') + '">' + (has ? '' : '비어 있어요') + '</div>'
+        + '<div class="pabtn"><button type="button" data-pa="file" data-k="' + k + '">파일</button><select data-pa="cut" data-k="' + k + '" aria-label="' + a.l + ' 컷에서 고르기">' + cutOpts() + '</select><button type="button" data-pa="ai" data-k="' + k + '" title="AI 그림 1장을 써요">AI로 만들기</button></div>'
         + '<small>' + a.d + '</small></div>';
     }
     function fld(key, label, inner, req) { return '<div class="pf" data-f="' + key + '"><span>' + label + (req === false ? '' : '<b>*</b>') + '</span><div>' + inner + '</div></div>'; }
@@ -449,10 +449,10 @@
           + fld('title', '작품 제목', '<input type="text" data-in="title" maxlength="40" value="' + escH(F.title) + '" placeholder="예) 우산 같이 쓸래요">')
           + fld('author', '필명', '<input type="text" data-in="author" maxlength="20" value="' + escH(F.author) + '" placeholder="글/그림 작가 이름">')
           + fld('genre', '장르', '<select data-in="genre"><option value="">고르세요</option>' + (cfg.genres || []).map(function (g) { return '<option' + (g === F.genre ? ' selected' : '') + '>' + escH(g) + '</option>'; }).join('') + '</select>')
-          + fld('age', '이용 연령', '<div class="seg">' + (cfg.ages || []).map(function (a) { return '<label><input type="radio" name="pAge" data-in="age" value="' + a[0] + '"' + (F.age === a[0] ? ' checked' : '') + '>' + escH(a[1]) + (a[0] === 'all' ? '' : ' 이상') + '</label>'; }).join('') + '</div>')
+          + fld('age', '이용 연령', '<div class="pseg">' + (cfg.ages || []).map(function (a) { return '<label><input type="radio" name="pAge" data-in="age" value="' + a[0] + '"' + (F.age === a[0] ? ' checked' : '') + '>' + escH(a[1]) + (a[0] === 'all' ? '' : ' 이상') + '</label>'; }).join('') + '</div>')
           + fld('desc', '작품 소개', '<textarea data-in="desc" maxlength="300" placeholder="어떤 이야기인지 2~3문장으로 · 주인공 · 갈등 · 분위기">' + escH(F.desc) + '</textarea><div class="cnt' + (F.desc.trim().length >= 20 ? ' ok' : '') + '" data-cnt="desc">' + F.desc.trim().length + ' / 300자 · 20자 이상</div>');
       }
-      h += '<h4>연재 이미지 <small>네이버 웹툰 · WEBTOON 양식 · 파일 · 컷 · AI 중 골라 넣으면 크기에 맞게 잘라 줘요</small></h4><div class="arts">'
+      h += '<h4>연재 이미지 <small>네이버 웹툰 · WEBTOON 양식 · 파일 · 컷 · AI 중 골라 넣으면 크기에 맞게 잘라 줘요</small></h4><div class="pas">'
         + (needCover() ? artBox('sq') + artBox('vt') : '') + artBox('ep') + '</div>'
         + (needCover() || isNew() ? '' : '<p class="sub" style="margin:6px 0 0">작품 대표 이미지는 이미 있어요 · 회차 썸네일만 넣으면 돼요</p>');
       h += '<h4>이번 회차</h4>'
@@ -460,11 +460,11 @@
         + fld('note', '작가의 말', '<textarea data-in="note" maxlength="500" placeholder="회차 끝에 보여요 · 이번 화 이야기, 다음 화 예고, 독자에게 한마디">' + escH(F.note) + '</textarea><div class="cnt' + (F.note.trim().length >= 10 ? ' ok' : '') + '" data-cnt="note">' + F.note.trim().length + ' / 500자 · 10자 이상</div>');
       h += '<h4>공개 설정</h4>';
       if (isNew()) {
-        h += fld('apply', '연재 방식', '<div class="seg"><label><input type="radio" name="pMode" data-in="apply" value="0"' + (!F.apply ? ' checked' : '') + '>자유연재 · 바로 공개</label><label><input type="radio" name="pMode" data-in="apply" value="1"' + (F.apply ? ' checked' : '') + '>요일연재 검토 신청</label></div>')
-          + (F.apply ? fld('days', '연재 요일', '<div class="seg">' + (cfg.days || []).map(function (d) { return '<label><input type="checkbox" data-in="days" value="' + d[0] + '"' + (F.days.indexOf(d[0]) >= 0 ? ' checked' : '') + '>' + d[1] + '</label>'; }).join('') + '</div>') : '');
+        h += fld('apply', '연재 방식', '<div class="pseg"><label><input type="radio" name="pMode" data-in="apply" value="0"' + (!F.apply ? ' checked' : '') + '>자유연재 · 바로 공개</label><label><input type="radio" name="pMode" data-in="apply" value="1"' + (F.apply ? ' checked' : '') + '>요일연재 검토 신청</label></div>')
+          + (F.apply ? fld('days', '연재 요일', '<div class="pseg">' + (cfg.days || []).map(function (d) { return '<label><input type="checkbox" data-in="days" value="' + d[0] + '"' + (F.days.indexOf(d[0]) >= 0 ? ' checked' : '') + '>' + d[1] + '</label>'; }).join('') + '</div>') : '');
       }
-      h += fld('when', '공개 시점', '<div class="seg"><label><input type="radio" name="pWhen" data-in="when" value="now"' + (F.when === 'now' ? ' checked' : '') + '>지금 바로</label><label><input type="radio" name="pWhen" data-in="when" value="later"' + (F.when === 'later' ? ' checked' : '') + '>예약</label></div>' + (F.when === 'later' ? '<input type="datetime-local" data-in="at" value="' + escH(F.at) + '" style="margin-top:6px;max-width:260px">' : ''), false)
-        + fld('ai', 'AI 활용 표시', '<div class="seg"><label><input type="radio" name="pAi" data-in="ai" value="yes"' + (F.ai === 'yes' ? ' checked' : '') + '>AI 그림 · 글을 썼어요</label><label><input type="radio" name="pAi" data-in="ai" value="no"' + (F.ai === 'no' ? ' checked' : '') + '>직접 그렸어요</label></div>');
+      h += fld('when', '공개 시점', '<div class="pseg"><label><input type="radio" name="pWhen" data-in="when" value="now"' + (F.when === 'now' ? ' checked' : '') + '>지금 바로</label><label><input type="radio" name="pWhen" data-in="when" value="later"' + (F.when === 'later' ? ' checked' : '') + '>예약</label></div>' + (F.when === 'later' ? '<input type="datetime-local" data-in="at" value="' + escH(F.at) + '" style="margin-top:6px;max-width:260px">' : ''), false)
+        + fld('ai', 'AI 활용 표시', '<div class="pseg"><label><input type="radio" name="pAi" data-in="ai" value="yes"' + (F.ai === 'yes' ? ' checked' : '') + '>AI 그림 · 글을 썼어요</label><label><input type="radio" name="pAi" data-in="ai" value="no"' + (F.ai === 'no' ? ' checked' : '') + '>직접 그렸어요</label></div>');
       h += '<h4>올리기 전 확인 <b style="color:var(--danger,#e5484d)">*</b></h4><div class="agree" data-f="agree">'
         + ['제가 만들었거나 쓸 권리가 있는 그림과 글만 올려요.', '선정적 · 폭력적인 내용은 이용 연령에 맞게 표시했어요.', '운영정책을 어기면 신고를 받아 숨김 처리될 수 있다는 걸 알아요. <a href="/read/policy" target="_blank" style="text-decoration:underline">운영정책</a>'].map(function (t, i) { return '<label><input type="checkbox" data-in="agree" value="' + i + '"' + (F.agree[i] ? ' checked' : '') + '><span>' + t + '</span></label>'; }).join('') + '</div>';
       h += '<div class="pfoot"><div class="left">' + (miss.length ? '남은 항목 <b>' + miss.length + '개</b> · ' + miss.slice(0, 4).map(function (x) { return x[1]; }).join(' · ') + (miss.length > 4 ? ' …' : '') : '모두 채웠어요 · 올릴 준비 끝') + '</div>'
