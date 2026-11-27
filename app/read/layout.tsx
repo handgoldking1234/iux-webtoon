@@ -20,7 +20,8 @@ export default async function ReadLayout({ children }: { children: React.ReactNo
         <div className={k('wrap')}>
           <span>바로웹툰 연재 · webtoon.iux.kr</span>
           <a href="/read/policy">운영정책</a>
-          <a href="/">웹툰 만들기</a>
+          <a href="/studio">웹툰 만들기</a>
+          <a href="/">바로웹툰 소개</a>
         </div>
       </footer>
     </div>

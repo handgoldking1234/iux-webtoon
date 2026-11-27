@@ -19,9 +19,10 @@ export default function Gnb({ signedIn }: { signedIn: boolean }) {
         <Link className={k('logo')} href={readHref()}><i><Ic n="book" /></i>바로웹툰<small>연재</small></Link>
         <nav className={k('menu')} aria-label="연재관 메뉴">
           {MENU.map(([h, l]) => <Link key={h} href={readHref(h)} className={cur === h ? k('on') : undefined} aria-current={cur === h ? 'page' : undefined}>{l}</Link>)}
+          <a className={k('out')} href="/">바로웹툰 소개</a>
         </nav>
         <div className={k('right')}>
-          <a className={k('btn only-wide')} href="/studio"><Ic n="pen" />만들기</a>
+          <a className={k('btn mk')} href="/studio" title="웹툰 만들기 (작업실)"><Ic n="pen" />만들기</a>
           {!signedIn && <a className={k('btn only-wide')} href={`/login?next=${encodeURIComponent(p)}`}>로그인</a>}
           <Link className={k('btn go')} href={readHref('publish')}><Ic n="up" />연재하기</Link>
         </div>

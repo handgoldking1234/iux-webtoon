@@ -30,6 +30,7 @@
 .rd .r-menu{display:flex;gap:2px;height:100%}
 .rd .r-menu a{display:flex;align-items:center;padding:0 12px;font-weight:700;color:var(--ink-2);border-bottom:3px solid transparent;margin-bottom:-1px}
 .rd .r-menu a.r-on{color:var(--ink);border-bottom-color:var(--green)}
+.rd .r-menu a.r-out{color:var(--ink-3,var(--ink-2));font-weight:600;font-size:13px;margin-left:8px;opacity:.8;white-space:nowrap}
 .rd .r-gnb .r-right{margin-left:auto;display:flex;gap:8px;align-items:center}
 .rd .r-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:999px;padding:9px 16px;font-weight:700;font-size:14px;border:1px solid var(--line);background:var(--surface);white-space:nowrap}
 .rd .r-btn.r-go{background:var(--green);border-color:var(--green);color:var(--on-green)}
@@ -41,6 +42,8 @@
 .rd .r-menu{order:3;width:100%;height:44px;overflow-x:auto}
 .rd .r-menu a{padding:0 10px}
 .rd .r-only-wide{display:none}
+.rd .r-gnb .r-btn{padding:8px 12px;font-size:13px}
+.rd .r-menu a{white-space:nowrap}
 
 }
 /* 홈 */

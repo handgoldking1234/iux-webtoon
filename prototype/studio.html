@@ -1448,6 +1448,9 @@ body.home-on .app{visibility:hidden}
 @media (max-width:980px){.wtitle{width:120px}}
 @media (max-width:760px){#home{grid-template-columns:minmax(0,1fr)}.hside{display:none}.hmain{padding:16px}.hgrid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}.wtitle{display:none}.hmob{display:inline-flex!important}}
 .hmob{display:none}
+.hgo{margin-top:auto;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:2px}
+a.hnav{text-decoration:none}
+.hlink{align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);color:var(--ink);font-size:13px;font-weight:700;text-decoration:none;margin-right:8px}
 
 /* ===== v2: 피그마식 구조 — 맨 왼쪽 아이콘 줄(패널 전환) · 아래 도구 막대(넣기) ===== */
 .main{grid-template-columns:60px 256px minmax(0,1fr) 280px}
@@ -1838,9 +1841,10 @@ body.reader .coach{display:none}
   <div id="hSts"></div>
   <div class="hsub">즐겨찾기</div>
   <div id="hStars"></div>
+  <div class="hgo"><div class="hsub">바로웹툰</div><a class="hnav" href="/read"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>연재관 둘러보기</a><a class="hnav" href="/"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>소개 · 요금제</a></div>
  </aside>
  <main class="hmain">
-  <div class="hhead"><span class="hbrand hmob" style="padding:0"><i class="mark" data-ic="logo"></i></span><h1 id="hTitle">모든 작품</h1><span style="flex:1"></span><span class="acctslot"></span></div>
+  <div class="hhead"><span class="hbrand hmob" style="padding:0"><i class="mark" data-ic="logo"></i></span><h1 id="hTitle">모든 작품</h1><span style="flex:1"></span><a class="hlink hmob" href="/read" title="연재관 둘러보기"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>연재</a><span class="acctslot"></span></div>
   <div class="hbar"><span class="cnt" id="hCnt"></span><span style="flex:1"></span>
    <label class="hsearch"><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><input type="search" id="hQ" placeholder="작품 검색" aria-label="작품 검색"></label>
    <select class="hsel" id="hSort" aria-label="정렬"><option value="upd">최근 수정순</option><option value="new">만든 날짜순</option><option value="name">이름순</option></select>
@@ -7032,10 +7036,13 @@ function acctOpen(btn){const m=$('#acctMenu');if(!m.hidden){m.hidden=true;return
  <button class="tbmi" data-am="home"><i>${ic('book',15)}</i><span><b>내 작품</b></span></button>
  <button class="tbmi" data-am="export"><i>${ic('dl',15)}</i><span><b>내보내기</b></span></button>
  <span class="tbsep"></span>
+ <button class="tbmi" data-am="read"><i><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg></i><span><b>연재관 둘러보기</b></span></button>
+ <button class="tbmi" data-am="site"><i><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg></i><span><b>바로웹툰 소개 · 요금제</b></span></button>
+ <span class="tbsep"></span>
  <button class="tbmi" data-am="logout"><i><svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><path d="m16 17 5-5-5-5"/><path d="M21 12H9"/></svg></i><span><b>로그아웃</b></span></button>`;
  m.hidden=false;const r=btn.getBoundingClientRect();m.style.top=(r.bottom+6)+'px';m.style.left=clamp(r.left,8,innerWidth-m.offsetWidth-8)+'px';}
 $('#acctMenu').addEventListener('click',ev=>{const b=ev.target.closest('[data-am]');if(!b)return;const a=b.dataset.am;$('#acctMenu').hidden=true;
- if(a==='home'){if($('#home').hidden)goHome();}else if(a==='export'){if($('#home').hidden)openExp();else toast('작품을 열고 내보내기를 눌러 주세요');}
+ if(a==='home'){if($('#home').hidden)goHome();}else if(a==='export'){if($('#home').hidden)openExp();else toast('작품을 열고 내보내기를 눌러 주세요');}else if(a==='read'){location.href='/read';}else if(a==='site'){location.href='/';}
  else if(a==='logout'){USER=null;try{localStorage.removeItem('wcs-user');}catch(_){}renderAcct();toast('로그아웃했어요');}});
 function doLogin(provider,email){const nm=provider==='email'?(email.split('@')[0]||'작가'):{kakao:'카카오 사용자',naver:'네이버 사용자',google:'Google 사용자'}[provider];
  USER={name:nm,email:provider==='email'?email:'',provider};try{localStorage.setItem('wcs-user',JSON.stringify(USER));}catch(_){}
