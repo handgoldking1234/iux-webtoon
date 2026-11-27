@@ -1,4 +1,5 @@
 import 'server-only';
+import { createHash } from 'node:crypto';
 import { AwsClient } from 'aws4fetch';
 import { env } from '@/lib/env';
 import { supabaseAdmin, supabaseServer } from '@/lib/supabase/server';
@@ -11,7 +12,9 @@ import { supabaseAdmin, supabaseServer } from '@/lib/supabase/server';
 export const r2Ready = () => !!(env.r2.accountId && env.r2.accessKey && env.r2.secret && env.r2.bucket);
 
 let aws: AwsClient | null = null;
-const r2 = () => (aws ||= new AwsClient({ accessKeyId: env.r2.accessKey, secretAccessKey: env.r2.secret, service: 's3', region: 'auto' }));
+// Secret Access Key(64자리)를 넣어도, 일반 API 토큰 값을 넣어도 돼요 — 토큰 값이면 SHA-256으로 바꾼 것이 비밀 키예요 (Cloudflare R2 규칙)
+const r2Secret = () => { const v = env.r2.secret.trim(); return /^[0-9a-f]{64}$/i.test(v) || !v ? v : createHash('sha256').update(v).digest('hex'); };
+const r2 = () => (aws ||= new AwsClient({ accessKeyId: env.r2.accessKey.trim(), secretAccessKey: r2Secret(), service: 's3', region: 'auto' }));
 const r2Url = (path: string, bucket = env.r2.bucket) => `https://${env.r2.accountId}.r2.cloudflarestorage.com/${bucket}/${path.split('/').map(encodeURIComponent).join('/')}`;
 
 async function r2Sign(path: string, method: 'GET' | 'PUT', ttl: number, bucket?: string) {
