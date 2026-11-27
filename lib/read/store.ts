@@ -68,16 +68,14 @@ export async function getSeries(id: string, viewer?: { id: string; isAdmin: bool
     s = M.series.find((x) => x.id === id) || null;
     if (s) { eps = M.episodes.filter((e) => e.series_id === id); followed = !!viewer && M.follows.has(`${id}:${viewer.id}`); }
   } else {
-    const { data } = await db().from('read_series').select('*').eq('id', id).maybeSingle();
-    s = data as Series | null;
-    if (s) {
-      const [{ data: e }, f] = await Promise.all([
+    // 작품 · 회차 목록 · 관심 여부를 한꺼번에 물어요 (차례로 물으면 그만큼 느려요)
+    const [{ data }, { data: e }, f] = await Promise.all([
+        db().from('read_series').select('*').eq('id', id).maybeSingle(),
         db().from('read_episodes').select('id,series_id,no,title,thumb_path,ai,status,publish_at,views,rating_sum,rating_count,comments,created_at,cuts').eq('series_id', id).order('no', { ascending: false }),
         viewer ? db().from('read_follows').select('series_id').eq('series_id', id).eq('user_id', viewer.id).maybeSingle() : Promise.resolve({ data: null }),
       ]);
-      eps = (e || []) as Episode[];
-      followed = !!f.data;
-    }
+    s = data as Series | null;
+    if (s) { eps = (e || []) as Episode[]; followed = !!f.data; }
   }
   if (!s) return null;
   const owner = !!viewer && (viewer.id === s.author_id || viewer.isAdmin);

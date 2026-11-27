@@ -359,6 +359,7 @@
 .rd .r-hero .r-pager span{font-size:12.5px;font-weight:700;color:#fff;background:rgba(0,0,0,.4);border-radius:999px;padding:5px 11px}
 .rd .r-hero .r-pager button{width:32px;height:32px;border-radius:50%;border:0;background:rgba(0,0,0,.4);color:#fff;display:grid;place-items:center}
 .rd .r-hero .r-pager button:hover{background:rgba(0,0,0,.7)}
+@media (min-width:641px){.rd .r-hero{align-items:start}.rd .r-hero .r-cover{grid-row:1/3}.rd .r-hero .r-acts{grid-column:2;align-self:end}}
 @media (max-width:640px){.rd .r-hero{grid-template-columns:1fr;justify-items:start}.rd .r-hero .r-cover{justify-self:center;width:min(48vw,190px)}.rd .r-hero .r-pager button{display:none}}
 .rd .r-sec-h h2{font-size:22px;font-weight:800;letter-spacing:-.03em}
 .rd .r-sec-h a{font-weight:700}
@@ -398,3 +399,4 @@
 .rd .r-rank .r-r{color:var(--ink-2);font-weight:500}
 .rd .r-page-h h1,.rd .r-thead h1{font-weight:900;letter-spacing:-.04em}
 
+.rd .r-sk{border-radius:10px;background:linear-gradient(90deg,var(--surface-2,#1e1e1e) 25%,color-mix(in srgb,var(--surface-2,#1e1e1e) 70%,#888) 50%,var(--surface-2,#1e1e1e) 75%);background-size:200% 100%;animation:r-sk 1.2s linear infinite}@keyframes r-sk{to{background-position:-200% 0}}

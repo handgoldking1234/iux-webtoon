@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -13,17 +14,18 @@ import { k } from '../_ui/k';
 
 export const dynamic = 'force-dynamic';
 const viewer = async () => { const me = await getMe(); return me ? { id: me.profile.id, isAdmin: me.isAdmin } : null; };
+const load = cache(async (id: string) => getSeries(id, await viewer()));
 const date = (iso: string) => { const d = new Date(iso); return `${String(d.getFullYear()).slice(2)}.${String(d.getMonth() + 1).padStart(2, '0')}.${String(d.getDate()).padStart(2, '0')}`; };
 
 export async function generateMetadata({ params }: { params: Promise<{ series: string }> }): Promise<Metadata> {
-  const got = await getSeries((await params).series, await viewer());
+  const got = await load((await params).series);
   if (!got) return { title: '작품을 찾을 수 없어요' };
   const s = got.series, t = img(s.thumb_path);
   return { title: s.title, description: s.description.slice(0, 120), openGraph: { title: s.title, description: s.description.slice(0, 120), images: t ? [t] : undefined } };
 }
 
 export default async function SeriesPage({ params }: { params: Promise<{ series: string }> }) {
-  const got = await getSeries((await params).series, await viewer());
+  const got = await load((await params).series);
   if (!got) notFound();
   const { series: s, episodes, followed, owner } = got, v = sv(s);
   const when = s.kind === 'done' ? '완결' : s.kind === 'daily' ? `${s.days.map(dayLabel).join(' · ')}요일 연재` : '자유연재';

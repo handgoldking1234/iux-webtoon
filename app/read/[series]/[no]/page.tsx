@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getMe } from '@/lib/auth';
@@ -13,17 +14,18 @@ import { k } from '../../_ui/k';
 
 export const dynamic = 'force-dynamic';
 const viewer = async () => { const me = await getMe(); return me ? { id: me.profile.id, isAdmin: me.isAdmin, mode: me.mode } : null; };
+/** 제목(메타)과 본문이 같은 회차를 두 번 읽지 않게 */
+const load = cache(async (series: string, no: number) => { const me = await viewer(); return { me, got: await getEpisode(series, no, me) }; });
 
 export async function generateMetadata({ params }: { params: Promise<{ series: string; no: string }> }): Promise<Metadata> {
-  const p = await params, got = await getEpisode(p.series, +p.no, await viewer());
+  const p = await params, { got } = await load(p.series, +p.no);
   if (!got) return { title: '회차를 찾을 수 없어요' };
   const t = img(got.episode.thumb_path) || img(got.series.thumb_path);
   return { title: `${got.series.title} ${got.episode.no}화 ${got.episode.title}`, description: got.series.description.slice(0, 120), openGraph: { images: t ? [t] : undefined } };
 }
 
 export default async function Viewer({ params }: { params: Promise<{ series: string; no: string }> }) {
-  const p = await params, me = await viewer();
-  const got = await getEpisode(p.series, +p.no, me);
+  const p = await params, { me, got } = await load(p.series, +p.no);
   if (!got) notFound();
   const { series: s, episode: e, prev, next, myRating, comments } = got;
   const cuts: CutV[] = e.cuts.map((c, i) => ({ url: img(c.path), w: c.w, h: c.h, demo: c.path.startsWith('demo:') && s.art ? { art: s.art, seed: `${s.id}${e.no}-${i}`, lines: e.demoLines?.[i] || [] } : undefined }));

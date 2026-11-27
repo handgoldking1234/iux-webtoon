@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { adminReady, dbReady, env } from '@/lib/env';
@@ -38,7 +39,9 @@ export const LOCAL_PROFILE: Profile = {
 };
 
 /** 지금 로그인한 회원 — 없으면 null */
-export async function getMe(): Promise<Me | null> {
+/** 한 화면을 그리는 동안은 한 번만 확인해요 (제목 · 본문이 따로 물어도 서버 왕복은 1번) */
+export const getMe = cache(getMeRaw);
+async function getMeRaw(): Promise<Me | null> {
   if (!dbReady()) {
     // 시험 계정을 정해 두었으면: 로그인한 사람만 회원(그 밖에는 손님)
     if (testReady()) {
