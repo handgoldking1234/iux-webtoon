@@ -29,7 +29,8 @@ export const env = {
   textEngine: (process.env.AI_TEXT_ENGINE === 'openai' ? 'openai' : 'claude') as 'claude' | 'openai',
   imageEngine: (process.env.AI_IMAGE_ENGINE === 'openai' ? 'openai' : 'gemini') as 'gemini' | 'openai',
   r2: {
-    accountId: process.env.R2_ACCOUNT_ID || '',
+    // 계정 ID만 넣어도, S3 API 주소(https://<ID>.r2.cloudflarestorage.com/…)를 통째로 넣어도 돼요
+    accountId: (process.env.R2_ACCOUNT_ID || '').trim().replace(/^https?:\/\//, '').split(/[./]/)[0],
     accessKey: process.env.R2_ACCESS_KEY_ID || '',
     secret: process.env.R2_SECRET_ACCESS_KEY || '',
     bucket: process.env.R2_BUCKET || '',
