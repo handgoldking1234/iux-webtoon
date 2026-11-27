@@ -287,8 +287,8 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
 .lp-ideas b{font-size:var(--fs-card);font-weight:800;letter-spacing:var(--ls-head)}
 .lp-ideas em{margin-top:4px}
 .lp-ideas p{margin-top:12px;font-size:var(--fs-desc);line-height:1.75;color:var(--ink2)}
-.lp-ideas .tg{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap}
-.lp-ideas .tg span{font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;background:var(--soft);color:var(--mute)}
+.lp-ideas .tg{display:flex;gap:6px;margin-top:16px;flex-wrap:wrap;align-items:flex-start;padding:0;border:0;cursor:auto}
+.lp-ideas .tg span{flex:none;font-size:12px;font-weight:700;padding:3px 10px;border-radius:6px;background:var(--soft);color:var(--mute)}
 
 /* 10. 만드는 순서 (어두운 구역) */
 .lp-sec.dark{background:#0f1512;color:#eef1ef}
@@ -391,6 +391,9 @@ html:has(.lp){scroll-behavior:smooth;scroll-padding-top:64px}
   .lp-feat{grid-template-columns:1fr}
       .lp-feat .art{height:112px}
   .lp-val .art,.lp-who .art{height:160px}
+  .lp-who,.lp-ideas{grid-template-columns:1fr}
+  .lp-ideas article:last-child{grid-column:auto}
+  .lp-ideas .art{height:200px}
   .lp-price article{padding:24px}
     .lp-last{padding:80px 0}
   .lp-foot .top{flex-direction:column;align-items:flex-start}
