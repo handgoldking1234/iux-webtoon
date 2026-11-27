@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { supabaseBrowser } from '@/lib/supabase/browser';
 
 type Mode = 'login' | 'signup' | 'magic' | 'reset';
@@ -65,9 +65,10 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
     setBusy(false);
   }
 
-  async function verify(e: React.FormEvent) {
-    e.preventDefault();
-    const token = code.replace(/\D/g, '');
+  async function verify(e?: React.FormEvent, given?: string) {
+    e?.preventDefault();
+    if (busy) return;
+    const token = (given ?? code).replace(/\D/g, '');
     if (token.length < 6) { setMsg({ t: 'bad', s: '메일로 받은 숫자 코드를 모두 넣어 주세요' }); return; }
     setBusy(true); setMsg(null);
     const { error } = await sb.auth.verifyOtp({ email, token, type: 'email' });
@@ -88,10 +89,13 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
       )}
       {useEmail && open && mode === 'magic' && sent && (
       <form onSubmit={verify} className="authform">
-        <label className="fld">로그인 코드<input className="otp" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9 ]*" maxLength={9} required value={code} onChange={(e) => setCode(e.target.value.replace(/[^0-9]/g, ''))} placeholder="메일의 숫자" autoFocus /></label>
+        <div className="fld">로그인 코드 6자리
+          <OtpBoxes value={code} onChange={setCode} onFull={(v) => verify(undefined, v)} />
+          <button type="button" className="otppaste" onClick={async () => { try { const t = (await navigator.clipboard.readText()).replace(/\D/g, '').slice(0, 6); if (t) { setCode(t); if (t.length === 6) verify(undefined, t); } else setMsg({ t: 'bad', s: '복사한 내용에 숫자가 없어요' }); } catch { setMsg({ t: 'bad', s: '붙여넣기를 허용해 주세요 · 첫 칸을 누르고 Ctrl+V 해도 돼요' }); } }}>📋 복사한 코드 붙여넣기</button>
+        </div>
         {msg && <div className={`msg ${msg.t}`} role={msg.t === 'bad' ? 'alert' : 'status'}>{msg.s}</div>}
         <button className="authwide pri" type="submit" disabled={busy}>{busy ? '확인 중…' : '로그인'}</button>
-        <p className="authnote">메일의 <b>로그인하기</b> 버튼을 눌러도 돼요.<br />다른 기기에서 메일을 봤다면 숫자만 여기에 넣으면 돼요.</p>
+        <p className="authnote">메일의 인증 코드를 복사해 오면 붙여넣기 한 번으로 끝나요.<br />다른 기기에서 메일을 봤다면 숫자 6자리만 넣으면 돼요.</p>
         <div className="authlinks">
           <button className="lnk" type="button" onClick={() => { setSent(false); setMsg(null); }}>코드 다시 받기 · 이메일 바꾸기</button>
         </div>
@@ -135,6 +139,39 @@ export default function LoginForm({ next, initialMode, error, providers = ['goog
       <p className="authhelp">로그인에 어려움이 있나요? <a href="mailto:help@iux.kr?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%EB%A1%9C%EA%B7%B8%EC%9D%B8%20%EB%AC%B8%EC%9D%98">문의하기</a></p>
       <p className="authlegal">계속하면 <a href="/terms" target="_blank">이용약관</a>과 <a href="/privacy" target="_blank">개인정보처리방침</a>에 동의하는 것으로 봐요.</p>
     </>
+  );
+}
+
+/** 인증 코드 6칸 — 한 칸씩 넘어가고, 붙여넣으면 한 번에 채워요 */
+function OtpBoxes({ value, onChange, onFull }: { value: string; onChange: (v: string) => void; onFull: (v: string) => void }) {
+  const N = 6, refs = useRef<(HTMLInputElement | null)[]>([]);
+  const set = (v: string, focus?: number) => {
+    const d = v.replace(/\D/g, '').slice(0, N);
+    onChange(d);
+    if (focus != null) refs.current[Math.min(focus, N - 1)]?.focus();
+    if (d.length === N) onFull(d);
+  };
+  return (
+    <div className="otpbox" role="group" aria-label="인증 코드 6자리">
+      {Array.from({ length: N }, (_, i) => (
+        <input key={i} ref={(el) => { refs.current[i] = el; }} inputMode="numeric" autoComplete={i === 0 ? 'one-time-code' : 'off'} maxLength={N} aria-label={`${i + 1}번째 숫자`} autoFocus={i === 0}
+          value={value[i] || ''}
+          onChange={(e) => {
+            const t = e.target.value.replace(/\D/g, '');
+            if (!t) { set(value.slice(0, i) + value.slice(i + 1)); return; }
+            if (t.length > 1) { set(value.slice(0, i) + t, i + t.length); return; }
+            set(value.slice(0, i) + t + value.slice(i + 1), i + 1);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Backspace' && !value[i] && i > 0) { e.preventDefault(); set(value.slice(0, i - 1) + value.slice(i), i - 1); }
+            if (e.key === 'ArrowLeft' && i > 0) refs.current[i - 1]?.focus();
+            if (e.key === 'ArrowRight' && i < N - 1) refs.current[i + 1]?.focus();
+          }}
+          onPaste={(e) => { const t = e.clipboardData.getData('text').replace(/\D/g, ''); if (t) { e.preventDefault(); set(t, t.length); } }}
+          onFocus={(e) => e.target.select()}
+        />
+      ))}
+    </div>
   );
 }
 
