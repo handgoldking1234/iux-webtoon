@@ -371,6 +371,7 @@
       + '.pubsheet .pabtn{display:flex;flex-wrap:wrap;gap:4px}.pubsheet .pabtn button,.pubsheet .pabtn select{height:28px;font-size:11.5px;padding:0 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;max-width:100%}'
       + '.pubsheet .agree label{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:6px 0;cursor:pointer}.pubsheet .agree input{margin-top:3px}'
       + '.pubsheet .pfoot{position:sticky;bottom:-24px;background:var(--panel);margin:18px -24px -24px;padding:12px 24px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pubsheet .pfoot .left{flex:1;min-width:160px;font-size:12.5px;color:var(--muted)}.pubsheet .pfoot .left b{color:var(--danger,#e5484d)}'
+      + '.pick .pkgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:8px;max-height:56vh;overflow:auto;padding:2px}.pick .pkgrid button{position:relative;border:2px solid transparent;border-radius:8px;padding:0;background:#000;cursor:pointer;aspect-ratio:3/4;overflow:hidden}.pick .pkgrid button:hover{border-color:var(--accent)}.pick .pkgrid img,.pick .pkgrid canvas{width:100%;height:100%;object-fit:cover;display:block}.pick .pkgrid span{position:absolute;left:4px;bottom:4px;font-size:11px;font-weight:800;background:rgba(0,0,0,.7);color:#fff;padding:2px 5px;border-radius:4px}'
       + '@media (max-width:640px){.pubsheet .pf{grid-template-columns:1fr}.pubsheet .pf>span{padding-top:0}.pubsheet .pa-ep{width:100%}}';
     document.head.appendChild(st);
   }
@@ -424,17 +425,11 @@
       if (!F.agree.every(Boolean)) out.push(['agree', '확인 3가지']);
       return out;
     }
-    var cutOpts = function () {
-      var o = '<option value="">컷에서 고르기</option>';
-      coverCuts.forEach(function (c, i) { o += '<option value="c' + i + '">표지 · ' + (i + 1) + '번째</option>'; });
-      cuts.forEach(function (c, i) { o += '<option value="' + i + '">' + (i + 1) + '번째 컷</option>'; });
-      return o;
-    };
     function artBox(k) {
       var a = ART[k], has = F.art[k], ratio = a.w / a.h;
       return '<div class="pa pa-' + k + '" data-f="' + k + '"><b>' + a.l + ' <i>*</i></b>'
         + '<div class="pabox' + (has ? ' has' : '') + '" style="aspect-ratio:' + ratio + ';' + (has ? 'background-image:url(' + has.url + ')' : '') + '">' + (has ? '' : '비어 있어요') + '</div>'
-        + '<div class="pabtn"><button type="button" data-pa="file" data-k="' + k + '">파일</button><select data-pa="cut" data-k="' + k + '" aria-label="' + a.l + ' 컷에서 고르기">' + cutOpts() + '</select><button type="button" data-pa="ai" data-k="' + k + '" title="AI 그림 1장을 써요">AI로 만들기</button></div>'
+        + '<div class="pabtn"><button type="button" data-pa="pick" data-k="' + k + '">컷 · 라이브러리</button><button type="button" data-pa="file" data-k="' + k + '">파일</button><button type="button" data-pa="ai" data-k="' + k + '" title="AI 그림 1장을 써요">AI로 만들기</button></div>'
         + '<small>' + a.d + '</small></div>';
     }
     function fld(key, label, inner, req) { return '<div class="pf" data-f="' + key + '"><span>' + label + (req === false ? '' : '<b>*</b>') + '</span><div>' + inner + '</div></div>'; }
@@ -484,6 +479,55 @@
       if (!c) return;
       say('컷을 맞춰 자르는 중');
       renderCut(c, 1080, null, false).then(function (cv) { return fitArt(cv, ART[k].w, ART[k].h, k !== 'ep'); }).then(function (b) { setArt(k, b); }).catch(function () { say('컷을 가져오지 못했어요'); });
+    }
+    function libKeys() {
+      var L = []; try { L = (S.settings.lib || []).slice().reverse(); } catch (_) {}
+      return L.map(function (x) { return x.k; }).filter(function (k) { return k && blobs.has(k); });
+    }
+    function fromKey(k, key) {
+      var b = blobs.get(key); if (!b) return;
+      blobImg(b).then(function (im) { return fitArt(im, ART[k].w, ART[k].h, k !== 'ep'); }).then(function (o) { setArt(k, o); }).catch(function () { say('그림을 열지 못했어요'); });
+    }
+    function pick(k) {
+      var tabs = [['cut', '이번 회차 컷', cuts.length], ['cover', '표지 · 썸네일', coverCuts.length], ['lib', '라이브러리', libKeys().length]];
+      var tab = tabs.filter(function (t) { return t[2]; })[0]; tab = tab ? tab[0] : 'cut';
+      var ov = document.createElement('div'); ov.className = 'modal'; ov.style.zIndex = 80;
+      document.body.appendChild(ov);
+      var urls = [];
+      var shut = function () { urls.forEach(function (u) { URL.revokeObjectURL(u); }); ov.remove(); };
+      function draw() {
+        urls.forEach(function (u) { URL.revokeObjectURL(u); }); urls = [];
+        var h = '<div class="sheet pubsheet pick" role="dialog" aria-modal="true" aria-label="' + ART[k].l + ' 고르기"><h3>' + ART[k].l + ' 고르기</h3><p class="sub">고른 그림을 ' + ART[k].d.split(' · ')[0] + ' 크기에 맞게 가운데를 잘라 넣어요</p>'
+          + '<div class="pseg" style="margin-bottom:12px">' + tabs.map(function (t) { return '<label><input type="radio" name="pkT" data-pt="' + t[0] + '"' + (t[0] === tab ? ' checked' : '') + '>' + t[1] + ' ' + t[2] + '</label>'; }).join('') + '</div><div class="pkgrid">';
+        if (tab === 'lib') {
+          var ks = libKeys();
+          if (!ks.length) h += '<p class="sub">라이브러리에 그림이 없어요 · 왼쪽 「라이브러리」에 그림을 올려 두면 여기서 골라요</p>';
+          ks.forEach(function (key) { var u = URL.createObjectURL(blobs.get(key)); urls.push(u); h += '<button type="button" data-pk="lib" data-v="' + escH(key) + '"><img src="' + u + '" alt=""></button>'; });
+        } else {
+          var L = tab === 'cover' ? coverCuts : cuts;
+          if (!L.length) h += '<p class="sub">' + (tab === 'cover' ? '표지 · 썸네일 회차에 만든 그림이 없어요' : '컷이 없어요') + '</p>';
+          L.forEach(function (c, i) { h += '<button type="button" data-pk="' + tab + '" data-v="' + i + '"><canvas data-ci="' + i + '"></canvas><span>' + (i + 1) + '</span></button>'; });
+        }
+        h += '</div><div class="pfoot"><div class="left"></div><button class="btn" data-pk="x">닫기</button></div></div>';
+        ov.innerHTML = h;
+        if (tab !== 'lib') {
+          var L2 = tab === 'cover' ? coverCuts : cuts;
+          Array.prototype.forEach.call(ov.querySelectorAll('canvas[data-ci]'), function (cv) {
+            renderCut(L2[+cv.dataset.ci], 240, null, true).then(function (r) { cv.width = r.width; cv.height = r.height; cv.getContext('2d').drawImage(r, 0, 0); }).catch(function () {});
+          });
+        }
+      }
+      ov.addEventListener('change', function (ev) { var t = ev.target; if (t.dataset && t.dataset.pt) { tab = t.dataset.pt; draw(); } });
+      ov.addEventListener('click', function (ev) {
+        if (ev.target === ov) { shut(); return; }
+        var b = ev.target.closest('[data-pk]'); if (!b) return;
+        var w = b.dataset.pk, v = b.dataset.v;
+        shut();
+        if (w === 'x') return;
+        if (w === 'lib') fromKey(k, v); else fromCut(k, w === 'cover' ? 'c' + v : v);
+      });
+      ov.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { ev.stopPropagation(); shut(); } });
+      draw();
     }
     function fromFile(k) {
       var i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*';
@@ -536,6 +580,7 @@
       var a = b.dataset.pa;
       if (a === 'cancel') { close(); return; }
       if (a === 'file') { fromFile(b.dataset.k); return; }
+      if (a === 'pick') { pick(b.dataset.k); return; }
       if (a === 'ai') { fromAi(b.dataset.k); return; }
       if (a === 'go') {
         var miss = missing();

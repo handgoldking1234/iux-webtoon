@@ -2,7 +2,13 @@
 const n = (v: string | undefined, d: number) => (v && !isNaN(+v) ? +v : d);
 
 /** 키 값 정리 — 'SUPABASE_SERVICE_ROLE_KEY=값'처럼 이름째 붙여 넣거나 따옴표 · 빈칸이 섞여도 값만 써요 */
-const key = (v?: string) => (v || '').trim().replace(/^[A-Z][A-Z0-9_]*\s*=\s*/, '').replace(/^["']|["']$/g, '').trim();
+const key = (v?: string) => {
+  const t = (v || '').trim();
+  // 서비스 키(sb_secret_… 또는 eyJ….….…)가 글 속 어딘가에 있으면 그것만 골라 써요
+  const hit = t.match(/sb_secret_[A-Za-z0-9_-]+|eyJ[\w-]+\.[\w-]+\.[\w-]+/);
+  if (hit && /^SUPABASE|sb_secret_|^eyJ/.test(t)) return hit[0];
+  return t.replace(/^[A-Z][A-Z0-9_]*\s*[=:]\s*/, '').replace(/^["']|["']$/g, '').trim();
+};
 export const env = {
   supabaseUrl: (process.env.NEXT_PUBLIC_SUPABASE_URL || '').trim(),
   supabaseAnon: (process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '').trim(),
