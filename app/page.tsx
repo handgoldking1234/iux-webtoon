@@ -18,7 +18,7 @@ const LD = {
   '@graph': [
     { '@type': 'WebSite', name: SITE_NAME, alternateName: ['바로 웹툰', 'BaroWebtoon'], url: SITE_URL, inLanguage: 'ko-KR' },
     { '@type': 'WebApplication', name: SITE_NAME, url: SITE_URL, applicationCategory: 'DesignApplication', operatingSystem: 'Web', inLanguage: 'ko-KR', description: SITE_DESC, offers: { '@type': 'Offer', price: '0', priceCurrency: 'KRW' } },
-    { '@type': 'Organization', name: 'IUX', url: 'https://iux.kr', email: 'handgoldking@gmail.com' },
+    { '@type': 'Organization', name: 'IUX', url: 'https://iux.kr', email: 'help@iux.kr' },
   ],
 };
 
@@ -431,7 +431,7 @@ export default async function Home() {
                 <li><I n="check" s={15} />고화질 내보내기</li>
                 <li><I n="check" s={15} />새 기능 먼저 써 보기</li>
               </ul>
-              <a className="lp-btn out sm" href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%ED%94%84%EB%A1%9C%20%EC%86%8C%EC%8B%9D%20%EB%B0%9B%EA%B8%B0">소식 받기</a>
+              <a className="lp-btn out sm" href="mailto:help@iux.kr?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%ED%94%84%EB%A1%9C%20%EC%86%8C%EC%8B%9D%20%EB%B0%9B%EA%B8%B0">소식 받기</a>
             </article>
             <article className="prem" data-r style={{ ['--d' as string]: 2 }}>
               <span className="badge">COMING SOON</span>
@@ -445,10 +445,10 @@ export default async function Home() {
                 <li><I n="check" s={15} />여러 작품 · 회차 연재 관리</li>
                 <li><I n="check" s={15} />먼저 답하는 1:1 문의</li>
               </ul>
-              <a className="lp-btn out sm" href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84%20%EC%86%8C%EC%8B%9D%20%EB%B0%9B%EA%B8%B0">소식 받기</a>
+              <a className="lp-btn out sm" href="mailto:help@iux.kr?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%ED%94%84%EB%A6%AC%EB%AF%B8%EC%97%84%20%EC%86%8C%EC%8B%9D%20%EB%B0%9B%EA%B8%B0">소식 받기</a>
             </article>
           </div>
-          <p className="lp-extra" data-r>구독 없이 필요한 만큼 쓰는 AI 이미지 충전팩도 준비 중이에요 · 학교 · 학원 · 팀 단체 요금은 <a href="mailto:handgoldking@gmail.com?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%EB%8B%A8%EC%B2%B4%20%EC%9A%94%EA%B8%88%20%EB%AC%B8%EC%9D%98">문의하기</a></p>
+          <p className="lp-extra" data-r>구독 없이 필요한 만큼 쓰는 AI 이미지 충전팩도 준비 중이에요 · 학교 · 학원 · 팀 단체 요금은 <a href="mailto:help@iux.kr?subject=%5B%EB%B0%94%EB%A1%9C%EC%9B%B9%ED%88%B0%5D%20%EB%8B%A8%EC%B2%B4%20%EC%9A%94%EA%B8%88%20%EB%AC%B8%EC%9D%98">문의하기</a></p>
         </div>
       </section>
 
@@ -531,7 +531,7 @@ export default async function Home() {
           </div>
           <div className="info">
             <b>바로웹툰 · AI로 바로 만드는 나만의 웹툰</b>
-            <span>문의 <a href="mailto:handgoldking@gmail.com">handgoldking@gmail.com</a></span>
+            <span>문의 <a href="mailto:help@iux.kr">help@iux.kr</a></span>
           </div>
           <div className="bottom">
             <span><Link href="/terms">이용약관</Link><Link href="/privacy"><b>개인정보처리방침</b></Link></span>

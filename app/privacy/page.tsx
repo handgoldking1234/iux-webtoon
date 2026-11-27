@@ -4,7 +4,7 @@ import '../legal.css';
 
 export const metadata = { title: '개인정보처리방침' };
 
-const CONTACT = 'handgoldking@gmail.com';
+const CONTACT = 'help@iux.kr';
 
 export default function PrivacyPage() {
   return (

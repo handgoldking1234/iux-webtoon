@@ -43,7 +43,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
       </div>
       <footer className="authfoot">
         <nav><Link href="/">서비스 소개</Link><Link href="/terms">이용약관</Link><Link href="/privacy"><b>개인정보처리방침</b></Link></nav>
-        <p>문의 handgoldking@gmail.com</p>
+        <p>문의 help@iux.kr</p>
         <p>© 2026 바로웹툰 · webtoon.iux.kr</p>
       </footer>
     </div>

@@ -4,7 +4,7 @@ import '../legal.css';
 
 export const metadata = { title: '이용약관' };
 
-const CONTACT = 'handgoldking@gmail.com';
+const CONTACT = 'help@iux.kr';
 
 export default function TermsPage() {
   return (
