@@ -150,7 +150,7 @@ export default async function Home() {
   const [me, notices] = await Promise.all([getMe(), activeNotices()]);
   // 로그인 없이도 바로 편집기로 — 편집기 안에서 '저장하려면 로그인' 안내를 보여 줘요
   const start = '/studio';
-  const startLbl = me ? '작업실 열기' : '무료로 시작하기';
+  const startLbl = me ? '웹툰 만들기' : '무료로 시작하기';
   return (
     <div className="lp">
       <LandingFx />
@@ -159,8 +159,6 @@ export default async function Home() {
         <div className="lp-w">
           <a href="#top" className="lp-logo"><i><Logo /></i><b>바로웹툰</b></a>
           <nav>
-            <a href="/studio" title="작품 제작 시작">웹툰 만들기</a>
-            <a href={me ? '/studio' : '/login?next=%2Fstudio'} title="작품 및 작업 관리">내 작품</a>
             <a href="/read" title="바로웹툰으로 만든 웹툰 읽기">연재관</a>
             <a href="#how" title="사용 방법 안내">제작 가이드</a>
             <a href="#price" title="무료 및 유료 플랜">요금제</a>
@@ -171,7 +169,7 @@ export default async function Home() {
               <a className="lp-txt mob" href="/read">연재관</a>
               {me.isAdmin && <Link className="lp-txt" href="/admin">관리자</Link>}
               {me.mode === 'cloud' && <Link className="lp-txt wide" href="/account">내 계정</Link>}
-              <a className="lp-pill" href="/studio">작업실 열기</a>
+              <a className="lp-pill" href="/studio" title="내 작품 목록이 열려요 · 새 작품도 여기서 시작해요">웹툰 만들기</a>
             </>
           ) : (
             <>
