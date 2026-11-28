@@ -9,6 +9,21 @@ import { k } from './k';
 type S = { id: string; title: string; authorName: string; genre: string; age: string; description: string };
 type E = { no: number; title: string; authorNote: string; hidden: boolean };
 
+/** 그림 파일을 정해진 크기로 잘라요 (가운데 · 세로 대표 이미지는 위쪽 기준) */
+async function cropTo(file: File, W: number, H: number, top = false): Promise<Blob> {
+  const im = await createImageBitmap(file);
+  const c = document.createElement('canvas'); c.width = W; c.height = H;
+  const x = c.getContext('2d')!, z = Math.max(W / im.width, H / im.height), dw = im.width * z, dh = im.height * z;
+  x.fillStyle = '#fff'; x.fillRect(0, 0, W, H); x.imageSmoothingQuality = 'high';
+  x.drawImage(im, (W - dw) / 2, top ? 0 : (H - dh) / 2, dw, dh);
+  return new Promise((res, rej) => c.toBlob((b) => (b ? res(b) : rej(new Error('img'))), 'image/jpeg', 0.9));
+}
+const putUp = async (u: { url: string; method: string }, b: Blob) => {
+  const r = await fetch(u.url, { method: u.method, headers: { 'content-type': 'image/jpeg', 'x-upsert': 'true' }, body: b, credentials: 'omit' });
+  if (!r.ok) throw new Error('upload');
+};
+type Up = { dir: string; up: Record<string, { url: string; method: string }> };
+
 function Sheet({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
   return (
     <div className={k('ovl')} role="dialog" aria-modal="true" aria-label={title} onClick={(ev) => { if (ev.target === ev.currentTarget) onClose(); }}>
@@ -31,6 +46,19 @@ export function SeriesEdit({ s, eps }: { s: S; eps: E[] }) {
     if (!j) return false;
     toast(done); router.refresh(); return true;
   };
+  /** 이미지 다시 올리기 — 대표 이미지(세로 · 정사각형을 한 번에) 또는 회차 썸네일 */
+  const reArt = async (file: File | undefined, epNo?: number) => {
+    if (!file) return;
+    if (!/^image\//.test(file.type)) { toast('그림 파일을 골라 주세요'); return; }
+    setBusy(true);
+    try {
+      const j = await call<Up>(`series/${s.id}`, { kind: epNo ? 'ep' : 'cover' });
+      if (!j) return;
+      if (epNo) await putUp(j.up.ep, await cropTo(file, 404, 180));
+      else { await putUp(j.up.vt, await cropTo(file, 1080, 1920, true)); await putUp(j.up.sq, await cropTo(file, 1080, 1080)); }
+      if (await call(`series/${s.id}`, { art: { dir: j.dir, epNo } }, 'PATCH')) { toast(epNo ? `${epNo}화 썸네일을 바꿨어요` : '대표 이미지를 바꿨어요'); router.refresh(); }
+    } catch { toast('이미지를 올리지 못했어요 · 잠시 뒤 다시 해 주세요'); } finally { setBusy(false); }
+  };
   return (
     <>
       <button className={k('editic')} aria-label="연재 수정" title="연재 수정" onClick={() => { setF(s); setOpen(true); }}><Ic n="pen" /></button>
@@ -44,14 +72,20 @@ export function SeriesEdit({ s, eps }: { s: S; eps: E[] }) {
           </div>
           <label className={k('field')}><span>작품 소개 <small>{f.description.trim().length} / 300자 · 20자 이상</small></span><textarea maxLength={300} value={f.description} onChange={(e) => set('description', e.target.value)} /></label>
           <div className={k('obtn')}><button className={k('btn')} onClick={() => setOpen(false)}>닫기</button><button className={k('btn go')} disabled={busy || !okS} onClick={async () => { if (await save({ series: f }, '작품 정보를 고쳤어요')) setOpen(false); }}>저장</button></div>
+          <h3>대표 이미지</h3>
+          <div className={k('oart')}>
+            <label className={k('btn')} aria-disabled={busy}>{busy ? '올리는 중…' : '이미지 다시 올리기'}<input type="file" accept="image/*" hidden disabled={busy} onChange={(e) => { const f = e.target.files?.[0]; e.target.value = ''; reArt(f); }} /></label>
+            <small>세로로 긴 그림이 좋아요 · 세로(1080×1920)와 정사각형(1080×1080)으로 알아서 잘라 넣어요</small>
+          </div>
           <h3>회차</h3>
           {!eps.length && <p className={k('muted')}>아직 올린 회차가 없어요</p>}
           <ul className={k('oeps')}>{eps.map((e) => (
             <li key={e.no}><span><b>{e.no}화</b> {e.title}{e.hidden ? ' · 숨김' : ''}</span>
               <button className={k('btn')} onClick={() => setEp(e)}>고치기</button>
+              <label className={k('btn')} title="회차 목록에 보이는 작은 그림 (404×180)">썸네일<input type="file" accept="image/*" hidden disabled={busy} onChange={(ev) => { const f = ev.target.files?.[0]; ev.target.value = ''; reArt(f, e.no); }} /></label>
               <button className={k('btn')} disabled={busy} onClick={() => save({ episode: { no: e.no, hidden: !e.hidden } }, e.hidden ? '다시 공개했어요' : '숨겼어요 · 독자에게 안 보여요')}>{e.hidden ? '다시 공개' : '숨기기'}</button></li>
           ))}</ul>
-          <p className={k('muted')} style={{ fontSize: 12.5 }}>그림(컷 · 대표 이미지)을 바꾸려면 편집기에서 고친 뒤 새로 올려 주세요.</p>
+          <p className={k('muted')} style={{ fontSize: 12.5 }}>본문 컷을 바꾸려면 편집기에서 고친 뒤 새 회차로 올리고, 예전 회차는 숨겨 주세요.</p>
         </Sheet>
       )}
       {open && ep && (

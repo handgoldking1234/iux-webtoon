@@ -1,12 +1,12 @@
 import { AGES, GENRES } from '@/lib/read/config';
-import { updateEpisode, updateSeries, type EpisodePatch, type SeriesPatch } from '@/lib/read/store';
+import { setArt, signArt, updateEpisode, updateSeries, type EpisodePatch, type SeriesPatch } from '@/lib/read/store';
 import { body, err, ok, withMe } from '../../_h';
 
 /** 작가가 자기 작품 · 회차 정보를 고쳐요 (제목 · 필명 · 장르 · 연령 · 소개 / 회차 제목 · 작가의 말 · 숨김) */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   return withMe(async (me) => {
     const { id } = await params;
-    const b = await body<{ series?: Record<string, unknown>; episode?: Record<string, unknown> }>(req);
+    const b = await body<{ series?: Record<string, unknown>; episode?: Record<string, unknown>; art?: { dir?: string; epNo?: number } }>(req);
     const uid = me.profile.id, adm = me.isAdmin;
     if (b.series) {
       const s = b.series, p: SeriesPatch = {};
@@ -28,6 +28,21 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       if (e.hidden !== undefined) p.hidden = !!e.hidden;
       await updateEpisode(uid, adm, id, no, p);
     }
+    if (b.art) {
+      const epNo = b.art.epNo === undefined ? undefined : Number(b.art.epNo);
+      if (epNo !== undefined && (!Number.isInteger(epNo) || epNo < 1)) return err('bad', '회차를 알려 주세요');
+      await setArt(uid, adm, id, String(b.art.dir || ''), epNo);
+    }
     return ok({ ok: true });
+  });
+}
+
+/** 이미지 다시 올리기 — 올릴 주소 받기 (kind: cover = 대표 이미지 두 장, ep = 회차 썸네일) */
+export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  return withMe(async (me) => {
+    const { id } = await params;
+    const b = await body<{ kind?: string }>(req);
+    try { return ok(await signArt(me.profile.id, me.isAdmin, id, b.kind === 'ep' ? 'ep' : 'cover')); }
+    catch (e) { if ((e as Error).message === 'art_demo') return err('bad', '시연 화면에서는 이미지를 바꿀 수 없어요'); throw e; }
   });
 }

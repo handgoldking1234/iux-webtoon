@@ -416,3 +416,8 @@ html:has(.rd){scroll-behavior:smooth}
 .rd .r-editic{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;margin-left:10px;vertical-align:middle;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink-2)}
 .rd .r-editic:hover{color:var(--ink);border-color:var(--ink-2)}.rd .r-editic svg{width:16px;height:16px}
 .rd .r-osheet{font-size:15px;font-weight:400;letter-spacing:0;line-height:1.6;text-align:left}
+.rd .r-osheet .r-field input[type=text],.rd .r-osheet .r-field textarea,.rd .r-osheet .r-field select{font-weight:500;font-size:14px;line-height:1.5}
+.rd .r-osheet .r-field select{height:44px;padding:0 12px}
+.rd .r-oart{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rd .r-oart small{color:var(--ink-2);font-size:12.5px;flex:1;min-width:180px}
+.rd .r-osheet label.r-btn{cursor:pointer}.rd .r-osheet label.r-btn[aria-disabled=true]{opacity:.5;pointer-events:none}
+.rd .r-oeps li{flex-wrap:wrap}

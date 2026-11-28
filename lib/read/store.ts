@@ -324,6 +324,26 @@ export async function updateEpisode(uid: string, isAdmin: boolean, id: string, n
   if (error) throw error;
 }
 
+/** 이미지 다시 올리기 — 올릴 주소 받기 (새 폴더에 올려서 예전 그림이 남아 보이지 않게) */
+export async function signArt(uid: string, isAdmin: boolean, id: string, kind: 'cover' | 'ep') {
+  const s = await ownSeries(uid, isAdmin, id);
+  if (!live()) throw new Error('art_demo');
+  const dir = `${s.author_id}/e${newId(10)}`;
+  const names = kind === 'cover' ? (['vt', 'sq'] as const) : (['ep'] as const);
+  const up: Record<string, { url: string; method: 'PUT' }> = {};
+  for (const n of names) up[n] = { url: await signReadUpload(`${dir}/art-${n}.jpg`), method: 'PUT' };
+  return { dir, up };
+}
+/** 올린 이미지를 작품 · 회차에 걸기 */
+export async function setArt(uid: string, isAdmin: boolean, id: string, dir: string, epNo?: number) {
+  const s = await ownSeries(uid, isAdmin, id);
+  if (!live()) throw new Error('art_demo');
+  if (!new RegExp(`^${s.author_id}/e[a-z0-9]{6,16}$`, 'i').test(dir)) throw new Error('not_found');
+  if (epNo) { const { error } = await db().from('read_episodes').update({ thumb_path: `${dir}/art-ep.jpg` }).eq('series_id', id).eq('no', epNo); if (error) throw error; return; }
+  const { error } = await db().from('read_series').update({ thumb_path: `${dir}/art-vt.jpg`, updated_at: nowIso() }).eq('id', id);
+  if (error) throw error;
+}
+
 /* ───────── 관리자 */
 export async function adminRead() {
   if (!live()) {
