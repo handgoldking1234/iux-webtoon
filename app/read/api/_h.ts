@@ -11,7 +11,7 @@ export async function withMe(fn: (me: Me) => Promise<NextResponse>) {
 export async function body<T>(req: Request): Promise<T> { try { return (await req.json()) as T; } catch { return {} as T; } }
 const MSG: Record<string, [string, number]> = {
   not_found: ['찾을 수 없어요', 404], draft_not_found: ['연재할 회차를 찾을 수 없어요 · 편집기에서 다시 눌러 주세요', 404], draft_used: ['이미 올린 회차예요', 409],
-  draft_not_ready: ['그림이 아직 다 올라가지 않았어요', 409], art_ep_required: ['회차 썸네일을 넣어 주세요', 400], art_cover_required: ['작품 대표 이미지(정사각형 · 세로)를 넣어 주세요', 400], series_not_found: ['이어서 올릴 작품을 찾을 수 없어요', 404], series_required: ['작품 정보를 채워 주세요', 400], bad_cuts: ['컷이 없거나 너무 많아요', 400],
+  draft_not_ready: ['그림이 아직 다 올라가지 않았어요', 409], art_ep_required: ['회차 썸네일을 넣어 주세요', 400], episode_not_found: ['다시 올릴 회차를 찾지 못했어요', 404], art_cover_required: ['작품 대표 이미지(정사각형 · 세로)를 넣어 주세요', 400], series_not_found: ['이어서 올릴 작품을 찾을 수 없어요', 404], series_required: ['작품 정보를 채워 주세요', 400], bad_cuts: ['컷이 없거나 너무 많아요', 400],
 };
 export function fail(e: unknown) {
   const m = e instanceof Error ? e.message : String(e);

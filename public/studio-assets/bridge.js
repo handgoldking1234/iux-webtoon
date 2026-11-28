@@ -376,7 +376,7 @@
       + '.pubsheet .bad input,.pubsheet .bad textarea,.pubsheet .bad select,.pubsheet .bad .artbox{border-color:var(--danger,#e5484d)!important}.pubsheet .cnt{font-size:11.5px;color:var(--muted);margin-top:3px}.pubsheet .cnt.ok{color:#13863c}'
       + '.pubsheet .pseg{display:flex;flex-wrap:wrap;gap:6px}.pubsheet .pseg label{display:inline-flex;align-items:center;gap:5px;padding:6px 10px;border-radius:999px;background:var(--panel2);cursor:pointer;font-size:12.5px}.pubsheet .pseg label:has(input:checked){background:color-mix(in srgb,var(--accent) 16%,var(--panel));color:#13863c;font-weight:700}'
       + '.pubsheet .pas{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}.pubsheet .pa{display:flex;flex-direction:column;gap:6px;min-width:0;text-align:left}.pubsheet .pa-sq{width:170px}.pubsheet .pa-vt{width:110px}.pubsheet .pa-ep{width:300px;max-width:100%}.pubsheet .pa b{font-size:12.5px}.pubsheet .pa b i{color:var(--danger,#e5484d);font-style:normal}.pubsheet .pa small{color:var(--muted);font-size:11px;line-height:1.4}'
-      + '.pubsheet .pabox{position:relative;width:100%;box-sizing:border-box;border:1.5px dashed var(--line);border-radius:8px;background:var(--panel2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;overflow:hidden}.pubsheet .pabox.has{border-style:solid;border-color:var(--line)}.pubsheet .pabox.has[data-pa]{cursor:pointer}.pubsheet .pacrop{margin-top:6px;width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);font-size:12px;font-weight:700;cursor:pointer}.pubsheet .pacrop:hover{border-color:var(--accent)}'
+      + '.pubsheet .pabox{position:relative;width:100%;box-sizing:border-box;border:1.5px dashed var(--line);border-radius:8px;background:var(--panel2) center/cover no-repeat;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:12px;overflow:hidden}.pubsheet .pabox.has{border-style:solid;border-color:var(--line)}.pubsheet .pabox.has[data-pa]{cursor:pointer}.pubsheet .pacrop{margin-top:6px;width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:8px;background:var(--panel);color:var(--text);font-size:12px;font-weight:700;cursor:pointer}.pubsheet .precover{display:flex;align-items:center;gap:6px;margin-top:10px;font-size:13px;font-weight:700;cursor:pointer}.pubsheet .pacrop:hover{border-color:var(--accent)}'
       + '.pubsheet .pabtn{display:flex;flex-wrap:wrap;gap:4px}.pubsheet .pabtn button,.pubsheet .pabtn select{height:28px;font-size:11.5px;padding:0 8px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);cursor:pointer;max-width:100%}'
       + '.pubsheet .agree label{display:flex;gap:8px;align-items:flex-start;font-size:13px;margin:6px 0;cursor:pointer}.pubsheet .agree input{margin-top:3px}'
       + '.pubsheet .pfoot{position:sticky;bottom:-24px;background:var(--panel);margin:18px -24px -24px;padding:12px 24px 16px;border-top:1px solid var(--line);display:flex;align-items:center;gap:8px;flex-wrap:wrap}.pubsheet .pfoot .left{flex:1;min-width:160px;font-size:12.5px;color:var(--muted)}.pubsheet .pfoot .left b{color:var(--danger,#e5484d)}'
@@ -408,6 +408,7 @@
       epTitle: e.title && !/^\d+화$/.test(e.title) && e.title !== '새 회차' ? e.title : '', note: '',
       apply: false, days: [], when: 'now', at: '', ai: cuts.some(function (c) { return c.sb && c.sb.aiModel; }) ? 'yes' : '',
       art: { sq: null, vt: null, ep: null }, agree: [false, false, false],
+      rep: 0, recover: false,
     };
     var tried = false;
     var m = document.createElement('div'); m.className = 'modal'; m.id = 'mPub';
@@ -415,7 +416,11 @@
     var close = function () { Object.keys(F.art).forEach(function (k) { if (F.art[k] && F.art[k].url) URL.revokeObjectURL(F.art[k].url); }); m.remove(); };
     function cur() { return series.filter(function (s) { return s.id === F.target; })[0]; }
     function isNew() { return F.target === 'new'; }
-    function needCover() { return isNew() || !(cur() && cur().hasCover); }
+    function hasCover() { return !isNew() && !!(cur() && cur().hasCover); }
+    function needCover() { return !hasCover(); }
+    function showCover() { return needCover() || F.recover; }
+    /** 이미 올린 회차의 그림만 다시 올리는지 (0 = 새 회차) */
+    function repEp() { if (isNew() || !F.rep) return null; return ((cur() || {}).eps || []).filter(function (x) { return x.no === F.rep; })[0] || null; }
     function missing() {
       var out = [];
       if (isNew()) {
@@ -426,18 +431,21 @@
         if (F.desc.trim().length < 20) out.push(['desc', '작품 소개 20자 이상']);
         if (F.apply && !F.days.length) out.push(['days', '연재 요일']);
       }
+      var R = repEp();
       if (needCover()) { if (!F.art.sq) out.push(['sq', '정사각형 대표 이미지']); if (!F.art.vt) out.push(['vt', '세로 대표 이미지']); }
-      if (!F.art.ep) out.push(['ep', '회차 썸네일']);
+      else if (F.recover && !!F.art.sq !== !!F.art.vt) out.push([F.art.sq ? 'vt' : 'sq', '대표 이미지 두 장 모두']);
+      if (!R && !F.art.ep) out.push(['ep', '회차 썸네일']);
       if (!F.epTitle.trim()) out.push(['epTitle', '회차 제목']);
-      if (F.note.trim().length < 10) out.push(['note', '작가의 말 10자 이상']);
+      if (!R && F.note.trim().length < 10) out.push(['note', '작가의 말 10자 이상']);
       if (!F.ai) out.push(['ai', 'AI 활용 표시']);
-      if (F.when === 'later' && !F.at) out.push(['at', '공개 일시']);
+      if (!R && F.when === 'later' && !F.at) out.push(['at', '공개 일시']);
       if (!F.agree.every(Boolean)) out.push(['agree', '확인 3가지']);
       return out;
     }
     function artBox(k) {
       var a = ART[k], has = F.art[k], ratio = a.w / a.h;
-      return '<div class="pa pa-' + k + '" data-f="' + k + '"><b>' + a.l + ' <i>*</i></b>'
+      var must = k === 'ep' ? !repEp() : needCover();
+      return '<div class="pa pa-' + k + '" data-f="' + k + '"><b>' + a.l + (must ? ' <i>*</i>' : '') + '</b>'
         + '<div class="pabox' + (has ? ' has' : '') + '"' + (has && has.src ? ' data-pa="crop" data-k="' + k + '" title="눌러서 자르는 자리 고치기"' : '') + ' style="aspect-ratio:' + ratio + ';' + (has ? 'background-image:url(' + has.url + ')' : '') + '">' + (has ? '' : '비어 있어요') + '</div>'
         + (has && has.src ? '<button type="button" class="pacrop" data-pa="crop" data-k="' + k + '">자르는 자리 고치기 · 끌어서 옮기기</button>' : '')
         + '<div class="pabtn"><button type="button" data-pa="pick" data-k="' + k + '">컷 · 라이브러리</button><button type="button" data-pa="file" data-k="' + k + '">파일</button><button type="button" data-pa="ai" data-k="' + k + '" title="AI 그림 1장을 써요">AI로 만들기</button></div>'
@@ -450,6 +458,8 @@
       var h = '<div class="sheet pubsheet" role="dialog" aria-modal="true" aria-labelledby="pubT"><h3 id="pubT">연재하기</h3>'
         + '<p class="sub">' + escH(st.workTitle || '') + ' ' + (e.num ? e.num + '화' : '') + ' · 컷 ' + cuts.length + '개 · <b>*</b> 표시는 모두 채워야 올라가요. 독자가 처음 보는 정보라 꼼꼼히 적어 주세요.</p>'
         + fld('target', '올릴 작품', '<select data-in="target">' + sOpts + '</select>');
+      var R = repEp(), eps = (!isNew() && cur() && cur().eps) || [];
+      if (eps.length) h += fld('rep', '올리는 방식', '<select data-in="rep"><option value="0"' + (R ? '' : ' selected') + '>새 회차로 올리기 · ' + (cur().episodes + 1) + '화</option>' + eps.map(function (x) { return '<option value="' + x.no + '"' + (R && R.no === x.no ? ' selected' : '') + '>' + x.no + '화 그림만 다시 올리기 · ' + escH(x.title) + '</option>'; }).join('') + '</select>' + (R ? '<div class="cnt ok">조회수 · 별점 · 댓글은 그대로 두고 ' + R.no + '화의 컷 그림만 지금 편집기 그림으로 바꿔요</div>' : ''), false);
       if (isNew()) {
         h += '<h4>작가 · 작품 <small>작품 페이지 맨 위에 보여요</small></h4>'
           + fld('title', '작품 제목', '<input type="text" data-in="title" maxlength="40" value="' + escH(F.title) + '" placeholder="예) 우산 같이 쓸래요">')
@@ -459,9 +469,10 @@
           + fld('desc', '작품 소개', '<textarea data-in="desc" maxlength="300" placeholder="어떤 이야기인지 2~3문장으로 · 주인공 · 갈등 · 분위기">' + escH(F.desc) + '</textarea><div class="cnt' + (F.desc.trim().length >= 20 ? ' ok' : '') + '" data-cnt="desc">' + F.desc.trim().length + ' / 300자 · 20자 이상</div>');
       }
       h += '<h4>연재 이미지 <small>네이버 웹툰 · WEBTOON 양식 · 파일 · 컷 · AI 중 골라 넣으면 크기에 맞게 잘라 줘요</small></h4><div class="pas">'
-        + (needCover() ? artBox('sq') + artBox('vt') : '') + artBox('ep') + '</div>'
-        + (needCover() || isNew() ? '' : '<p class="sub" style="margin:6px 0 0">작품 대표 이미지는 이미 있어요 · 회차 썸네일만 넣으면 돼요</p>');
-      h += '<h4>이번 회차</h4>'
+        + (showCover() ? artBox('sq') + artBox('vt') : '') + artBox('ep') + '</div>'
+        + (hasCover() ? '<label class="precover"><input type="checkbox" data-in="recover"' + (F.recover ? ' checked' : '') + '> 작품 대표 이미지도 다시 올리기</label>' : '')
+        + (R ? '<p class="sub" style="margin:6px 0 0">회차 썸네일은 비워 두면 지금 것을 그대로 써요</p>' : '');
+      h += '<h4>' + (R ? R.no + '화' : '이번 회차') + '</h4>'
         + fld('epTitle', '회차 제목', '<input type="text" data-in="epTitle" maxlength="60" value="' + escH(F.epTitle) + '" placeholder="예) 붉은 등 아래">')
         + fld('note', '작가의 말', '<textarea data-in="note" maxlength="500" placeholder="회차 끝에 보여요 · 이번 화 이야기, 다음 화 예고, 독자에게 한마디">' + escH(F.note) + '</textarea><div class="cnt' + (F.note.trim().length >= 10 ? ' ok' : '') + '" data-cnt="note">' + F.note.trim().length + ' / 500자 · 10자 이상</div>');
       h += '<h4>공개 설정</h4>';
@@ -469,12 +480,12 @@
         h += fld('apply', '연재 방식', '<div class="pseg"><label><input type="radio" name="pMode" data-in="apply" value="0"' + (!F.apply ? ' checked' : '') + '>자유연재 · 바로 공개</label><label><input type="radio" name="pMode" data-in="apply" value="1"' + (F.apply ? ' checked' : '') + '>요일연재 검토 신청</label></div>')
           + (F.apply ? fld('days', '연재 요일', '<div class="pseg">' + (cfg.days || []).map(function (d) { return '<label><input type="checkbox" data-in="days" value="' + d[0] + '"' + (F.days.indexOf(d[0]) >= 0 ? ' checked' : '') + '>' + d[1] + '</label>'; }).join('') + '</div>') : '');
       }
-      h += fld('when', '공개 시점', '<div class="pseg"><label><input type="radio" name="pWhen" data-in="when" value="now"' + (F.when === 'now' ? ' checked' : '') + '>지금 바로</label><label><input type="radio" name="pWhen" data-in="when" value="later"' + (F.when === 'later' ? ' checked' : '') + '>예약</label></div>' + (F.when === 'later' ? '<input type="datetime-local" data-in="at" value="' + escH(F.at) + '" style="margin-top:6px;max-width:260px">' : ''), false)
-        + fld('ai', 'AI 활용 표시', '<div class="pseg"><label><input type="radio" name="pAi" data-in="ai" value="yes"' + (F.ai === 'yes' ? ' checked' : '') + '>AI 그림 · 글을 썼어요</label><label><input type="radio" name="pAi" data-in="ai" value="no"' + (F.ai === 'no' ? ' checked' : '') + '>직접 그렸어요</label></div>');
+      if (!R) h += fld('when', '공개 시점', '<div class="pseg"><label><input type="radio" name="pWhen" data-in="when" value="now"' + (F.when === 'now' ? ' checked' : '') + '>지금 바로</label><label><input type="radio" name="pWhen" data-in="when" value="later"' + (F.when === 'later' ? ' checked' : '') + '>예약</label></div>' + (F.when === 'later' ? '<input type="datetime-local" data-in="at" value="' + escH(F.at) + '" style="margin-top:6px;max-width:260px">' : ''), false);
+      h += fld('ai', 'AI 활용 표시', '<div class="pseg"><label><input type="radio" name="pAi" data-in="ai" value="yes"' + (F.ai === 'yes' ? ' checked' : '') + '>AI 그림 · 글을 썼어요</label><label><input type="radio" name="pAi" data-in="ai" value="no"' + (F.ai === 'no' ? ' checked' : '') + '>직접 그렸어요</label></div>');
       h += '<h4>올리기 전 확인 <b style="color:var(--danger,#e5484d)">*</b></h4><div class="agree" data-f="agree">'
         + ['제가 만들었거나 쓸 권리가 있는 그림과 글만 올려요.', '선정적 · 폭력적인 내용은 이용 연령에 맞게 표시했어요.', '운영정책을 어기면 신고를 받아 숨김 처리될 수 있다는 걸 알아요. <a href="/read/policy" target="_blank" style="text-decoration:underline">운영정책</a>'].map(function (t, i) { return '<label><input type="checkbox" data-in="agree" value="' + i + '"' + (F.agree[i] ? ' checked' : '') + '><span>' + t + '</span></label>'; }).join('') + '</div>';
       h += '<div class="pfoot"><div class="left">' + (miss.length ? '남은 항목 <b>' + miss.length + '개</b> · ' + miss.slice(0, 4).map(function (x) { return x[1]; }).join(' · ') + (miss.length > 4 ? ' …' : '') : '모두 채웠어요 · 올릴 준비 끝') + '</div>'
-        + '<button class="btn" data-pa="cancel">취소</button><button class="btn pri" data-pa="go"' + (miss.length ? ' aria-disabled="true" style="opacity:.55"' : '') + '>' + (F.when === 'later' ? '예약하기' : '연재하기') + '</button></div></div>';
+        + '<button class="btn" data-pa="cancel">취소</button><button class="btn pri" data-pa="go"' + (miss.length ? ' aria-disabled="true" style="opacity:.55"' : '') + '>' + (R ? '그림 다시 올리기' : F.when === 'later' ? '예약하기' : '연재하기') + '</button></div></div>';
       var sc = m.firstChild ? m.firstChild.scrollTop : 0;
       m.innerHTML = h;
       if (m.firstChild) m.firstChild.scrollTop = sc;
@@ -658,7 +669,9 @@
       var t = ev.target, k = t.dataset && t.dataset.in;
       if (t.dataset && t.dataset.pa === 'cut') { if (t.value) fromCut(t.dataset.k, t.value); return; }
       if (!k) return;
-      if (k === 'target') F.target = t.value;
+      if (k === 'target') { F.target = t.value; F.rep = 0; F.recover = false; }
+      else if (k === 'rep') { F.rep = +t.value || 0; var R2 = repEp(); if (R2) { F.epTitle = R2.title || F.epTitle; F.note = R2.note || ''; F.when = 'now'; } }
+      else if (k === 'recover') F.recover = t.checked;
       else if (k === 'genre') F.genre = t.value;
       else if (k === 'age') F.age = t.value;
       else if (k === 'apply') F.apply = t.value === '1';
@@ -681,8 +694,8 @@
       if (a === 'go') {
         var miss = missing();
         if (miss.length) { tried = true; render(); var first = m.querySelector('.bad'); if (first) first.scrollIntoView({ block: 'center', behavior: 'smooth' }); say('아직 채울 게 있어요 · ' + miss[0][1]); return; }
-        var form = JSON.parse(JSON.stringify({ target: F.target, title: F.title, author: F.author, genre: F.genre, age: F.age, desc: F.desc, epTitle: F.epTitle, note: F.note, apply: F.apply, days: F.days, when: F.when, at: F.at, ai: F.ai }));
-        var art = {}; Object.keys(F.art).forEach(function (k) { if (F.art[k]) art[k] = F.art[k].blob; });
+        var form = JSON.parse(JSON.stringify({ target: F.target, title: F.title, author: F.author, genre: F.genre, age: F.age, desc: F.desc, epTitle: F.epTitle, note: F.note, apply: F.apply, days: F.days, when: F.when, at: F.at, ai: F.ai, rep: repEp() ? F.rep : 0 }));
+        var art = {}; Object.keys(F.art).forEach(function (k) { if (F.art[k] && (k === 'ep' || showCover())) art[k] = F.art[k].blob; });
         m.remove();
         doPublish(e, cuts, form, art);
       }
@@ -737,13 +750,13 @@
       try { progSet(0.97, '연재관에 올리는 중'); } catch (_) {}
       var isNew = form.target === 'new';
       return api(READ_API + 'publish', { method: 'POST', json: {
-        draftId: draft.id, agree: true, ai: form.ai === 'yes', seriesId: isNew ? undefined : form.target,
+        draftId: draft.id, agree: true, ai: form.ai === 'yes', seriesId: isNew ? undefined : form.target, replaceNo: form.rep || undefined,
         series: isNew ? { title: form.title, authorName: form.author, description: form.desc, genre: form.genre, age: form.age, days: form.days, apply: form.apply } : undefined,
         episode: { title: form.epTitle, authorNote: form.note, publishAt: form.when === 'later' && form.at ? new Date(form.at).toISOString() : null },
       } });
     }).then(function (j) {
       try { progEnd(); } catch (_) {}
-      var msg = form.when === 'later' ? '예약해 두었어요' : '연재관에 올라갔어요';
+      var msg = form.rep ? form.rep + '화 그림을 다시 올렸어요' : form.when === 'later' ? '예약해 두었어요' : '연재관에 올라갔어요';
       if (typeof confirmBox === 'function') confirmBox({ title: msg, body: (form.apply ? '요일연재 검토를 신청했어요. 그동안은 자유연재로 보여요. ' : '') + '다음 회차도 「연재하기」를 누르면 이어서 올라가요.', ok: '올린 회차 보기', danger: false, cancel: '닫기' }).then(function (y) { if (y) window.open(j.url, '_blank'); });
       else say(msg);
     }).catch(function (err) {

@@ -11,7 +11,8 @@ export async function POST(req: Request) {
     const epTitle = String(b.episode?.title || '').trim().slice(0, 60);
     if (!epTitle) return err('bad', '회차 제목을 적어 주세요');
     const note = String(b.episode?.authorNote || '').trim();
-    if (note.length < 10) return err('bad', '작가의 말을 10자 이상 적어 주세요');
+    const rep = b.seriesId && Number.isInteger(Number(b.replaceNo)) && Number(b.replaceNo) > 0 ? Number(b.replaceNo) : undefined;
+    if (!rep && note.length < 10) return err('bad', '작가의 말을 10자 이상 적어 주세요');
     let series: PublishIn['series'];
     if (!b.seriesId) {
       const s = b.series;
@@ -31,7 +32,7 @@ export async function POST(req: Request) {
         apply: !!s?.apply,
       };
     }
-    const r = await publish(me.profile.id, { draftId: String(b.draftId), seriesId: b.seriesId ? String(b.seriesId) : undefined, series, ai: !!b.ai, episode: { title: epTitle, authorNote: String(b.episode?.authorNote || '').trim().slice(0, 500), publishAt: b.episode?.publishAt || null } });
+    const r = await publish(me.profile.id, { draftId: String(b.draftId), seriesId: b.seriesId ? String(b.seriesId) : undefined, series, ai: !!b.ai, replaceNo: rep, episode: { title: epTitle, authorNote: String(b.episode?.authorNote || '').trim().slice(0, 500), publishAt: b.episode?.publishAt || null } });
     return ok({ ...r, url: `/read/${r.seriesId}/${r.no}`, seriesUrl: `/read/${r.seriesId}` });
   });
 }

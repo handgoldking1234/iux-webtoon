@@ -235,7 +235,15 @@ export type PublishIn = {
   series?: { title: string; description: string; genre: string; age: Series['age']; authorName: string; days: string[]; apply: boolean };
   episode: { title: string; authorNote: string; publishAt?: string | null };
   ai: boolean;
+  replaceNo?: number; // 이미 올린 회차의 그림만 다시 올리기
 };
+/** 내 작품들의 회차 (연재하기 팝업 — 그림만 다시 올릴 회차 고르기) */
+export async function myEpisodes(ids: string[]): Promise<Pick<Episode, 'series_id' | 'no' | 'title' | 'author_note'>[]> {
+  if (!ids.length) return [];
+  if (!live()) return demo().episodes.filter((e) => ids.includes(e.series_id));
+  const { data } = await db().from('read_episodes').select('series_id,no,title,author_note').in('series_id', ids).order('no', { ascending: true });
+  return (data || []) as Pick<Episode, 'series_id' | 'no' | 'title' | 'author_note'>[];
+}
 export async function publish(uid: string, p: PublishIn): Promise<{ seriesId: string; no: number }> {
   const d = await getDraft(uid, p.draftId);
   if (!d) throw new Error('draft_not_found');
@@ -252,11 +260,29 @@ export async function publish(uid: string, p: PublishIn): Promise<{ seriesId: st
   if (!s && !base) throw new Error('series_required');
   const art = d.source.art || {};
   if (live()) {
-    if (!art.ep) throw new Error('art_ep_required');
+    if (!art.ep && !p.replaceNo) throw new Error('art_ep_required');
     if ((!s || !squareOf(s.thumb_path)) && !(art.sq && art.vt)) throw new Error('art_cover_required');
   }
   const epThumb = art.ep || d.cuts[0]?.path || null;
   const cover = art.vt || null;
+  if (p.replaceNo) {
+    if (!s) throw new Error('series_not_found');
+    const patch = { cuts: d.cuts, title: p.episode.title, author_note: p.episode.authorNote || null, ...(art.ep ? { thumb_path: art.ep } : {}) };
+    if (!live()) {
+      const e = demo().episodes.find((x) => x.series_id === s!.id && x.no === p.replaceNo);
+      if (!e) throw new Error('episode_not_found');
+      Object.assign(e, patch); d.used = true;
+      return { seriesId: s.id, no: p.replaceNo };
+    }
+    const { data: hit, error: e0 } = await db().from('read_episodes').update(patch).eq('series_id', s.id).eq('no', p.replaceNo).select('no');
+    if (e0) throw e0;
+    if (!hit?.length) throw new Error('episode_not_found');
+    await Promise.all([
+      db().from('read_series').update({ ai: s.ai || p.ai, updated_at: nowIso(), ...(cover ? { thumb_path: cover } : {}) }).eq('id', s.id),
+      db().from('read_drafts').update({ used: true }).eq('id', d.id),
+    ]);
+    return { seriesId: s.id, no: p.replaceNo };
+  }
 
   if (!live()) {
     const M = demo();
