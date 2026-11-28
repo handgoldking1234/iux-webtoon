@@ -567,7 +567,7 @@
     }
     function libKeys() { return imgKeysOf(S).filter(function (k2) { return blobs.has(k2); }); }
     function pick(k) {
-      var tabs = [['cut', '이번 회차 컷', cuts.length], ['cover', '표지 · 썸네일', coverCuts.length], ['lib', '내 그림 · 라이브러리', libKeys().length]];
+      var tabs = [['cover', '표지 · 썸네일', coverCuts.length], ['lib', '내 그림 · 라이브러리', libKeys().length], ['cut', '이번 회차 컷', cuts.length]];
       var works = []; try { works = (WI || []).filter(function (w) { return w.id !== WID; }); } catch (_) {}
       var from = 'here', seq = 0;
       var tab = tabs.filter(function (t) { return t[2]; })[0]; tab = tab ? tab[0] : 'cut';
