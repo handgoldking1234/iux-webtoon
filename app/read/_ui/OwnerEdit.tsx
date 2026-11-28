@@ -37,10 +37,15 @@ const putUp = async (u: Up, b: Blob) => {
 const localDT = (iso: string) => { const d = new Date(iso), p = (n: number) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; };
 const whenText = (iso: string) => new Date(iso).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
 
-function Sheet({ title, children, onClose }: { title: string; children: React.ReactNode; onClose: () => void }) {
+/** 창 — 위(제목 · 닫기)와 아래(단추)는 그대로 있고, 가운데만 스크롤돼요 */
+function Sheet({ title, children, foot, onClose }: { title: string; children: React.ReactNode; foot?: React.ReactNode; onClose: () => void }) {
   return (
     <div className={k('ovl')} role="dialog" aria-modal="true" aria-label={title} onClick={(ev) => { if (ev.target === ev.currentTarget) onClose(); }}>
-      <div className={k('osheet')}><h2>{title}</h2>{children}</div>
+      <div className={k('osheet')}>
+        <div className={k('ohd')}><h2>{title}</h2><button type="button" className={k('ox')} aria-label="닫기" title="닫기" onClick={onClose}><Ic n="x" /></button></div>
+        <div className={k('obody')}>{children}</div>
+        {foot && <div className={k('ofoot')}>{foot}</div>}
+      </div>
     </div>
   );
 }
@@ -78,14 +83,13 @@ export function SeriesEdit({ s, eps }: { s: S; eps: E[] }) {
       <button className={k('editic')} aria-label="연재 수정" title="연재 수정" onClick={() => { setF(s); setOpen('edit'); }}><Ic n="pen" /></button>
       <button className={k('editic')} aria-label="작품 삭제" title="작품 삭제 · 휴지통으로" onClick={() => setOpen('del')}><Ic n="trash" /></button>
       {open === 'del' && (
-        <Sheet title="작품을 휴지통에 넣을까요?" onClose={() => setOpen('')}>
+        <Sheet title="작품을 휴지통에 넣을까요?" onClose={() => setOpen('')} foot={<><button className={k('btn')} onClick={() => setOpen('')}>취소</button><button className={k('btn danger')} disabled={busy} onClick={async () => { if (await save({ trash: { on: true } }, '휴지통에 넣었어요 · 내 연재에서 되살릴 수 있어요')) router.push('/read/publish'); }}>휴지통에 넣기</button></>}>
           <p>「{s.title}」과 회차가 모두 독자에게 안 보이게 돼요. <b>30일 안에는</b> 「내 연재 › 휴지통」에서 되살릴 수 있고, 30일이 지나면 완전히 지워져요.</p>
           <p className={k('muted')} style={{ fontSize: 13 }}>잠깐만 내리고 싶다면 삭제 대신 연재 수정의 「작품 잠깐 숨기기」를 쓰세요.</p>
-          <div className={k('obtn')}><button className={k('btn')} onClick={() => setOpen('')}>취소</button><button className={k('btn danger')} disabled={busy} onClick={async () => { if (await save({ trash: { on: true } }, '휴지통에 넣었어요 · 내 연재에서 되살릴 수 있어요')) router.push('/read/publish'); }}>휴지통에 넣기</button></div>
         </Sheet>
       )}
       {open === 'edit' && !ep && (
-        <Sheet title="연재 수정" onClose={() => setOpen('')}>
+        <Sheet title="연재 수정" onClose={() => setOpen('')} foot={<><small className={k('muted')} style={{ marginRight: 'auto', alignSelf: 'center' }}>작품 정보는 「저장」을 눌러야 바뀌어요 · 이미지 · 숨기기 · 회차는 누르는 즉시 바뀌어요</small><button className={k('btn go')} disabled={busy || !okS} onClick={async () => { if (await save({ series: { title: f.title, authorName: f.authorName, genre: f.genre, age: f.age, description: f.description } }, '작품 정보를 고쳤어요')) setOpen(''); }}>저장</button></>}>
           <label className={k('field')}><span>작품 제목</span><input type="text" maxLength={40} value={f.title} onChange={(e) => set('title', e.target.value)} /></label>
           <label className={k('field')}><span>필명</span><input type="text" maxLength={20} value={f.authorName} onChange={(e) => set('authorName', e.target.value)} /></label>
           <div className={k('two')}>
@@ -93,7 +97,6 @@ export function SeriesEdit({ s, eps }: { s: S; eps: E[] }) {
             <label className={k('field')}><span>이용 연령</span><select value={f.age} onChange={(e) => set('age', e.target.value)}>{AGES.map((a) => <option key={a[0]} value={a[0]}>{a[1]}{a[0] === 'all' ? '' : ' 이상'}</option>)}</select></label>
           </div>
           <label className={k('field')}><span>작품 소개 <small>{f.description.trim().length} / 300자 · 20자 이상</small></span><textarea maxLength={300} value={f.description} onChange={(e) => set('description', e.target.value)} /></label>
-          <div className={k('obtn')}><button className={k('btn')} onClick={() => setOpen('')}>닫기</button><button className={k('btn go')} disabled={busy || !okS} onClick={async () => { if (await save({ series: { title: f.title, authorName: f.authorName, genre: f.genre, age: f.age, description: f.description } }, '작품 정보를 고쳤어요')) setOpen(''); }}>저장</button></div>
           <h3>대표 이미지</h3>
           <div className={k('oart')}>
             <label className={k('btn')} aria-disabled={busy}>{busy ? '올리는 중…' : '이미지 다시 올리기'}<input type="file" accept="image/*" hidden disabled={busy} onChange={(e) => { const x = e.target.files?.[0]; e.target.value = ''; reArt(x); }} /></label>
@@ -117,7 +120,12 @@ export function SeriesEdit({ s, eps }: { s: S; eps: E[] }) {
         </Sheet>
       )}
       {open === 'edit' && ep && (
-        <Sheet title={`${ep.no}화 고치기`} onClose={() => setEp(null)}>
+        <Sheet title={`${ep.no}화 고치기`} onClose={() => setEp(null)} foot={<><button className={k('btn')} onClick={() => setEp(null)}>뒤로</button><button className={k('btn go')} disabled={busy || !ep.title.trim() || (ep.later && !ep.at)} onClick={async () => {
+            const was = Date.parse(ep.publishAt) > Date.now();
+            const publishAt = ep.later ? new Date(ep.at).toISOString() : was ? new Date().toISOString() : undefined;
+            if (ep.later && Date.parse(publishAt!) <= Date.now()) { toast('예약은 지금보다 뒤 시각으로 골라 주세요'); return; }
+            if (await save({ episode: { no: ep.no, title: ep.title, authorNote: ep.authorNote, publishAt } }, ep.later ? '예약해 두었어요' : '회차를 고쳤어요')) setEp(null);
+          }}>저장</button></>}>
           <label className={k('field')}><span>회차 제목</span><input type="text" maxLength={60} value={ep.title} onChange={(e) => setEp({ ...ep, title: e.target.value })} /></label>
           <label className={k('field')}><span>작가의 말 <small>{ep.authorNote.trim().length} / 500자</small></span><textarea maxLength={500} value={ep.authorNote} onChange={(e) => setEp({ ...ep, authorNote: e.target.value })} /></label>
           <div className={k('field')}><span>공개 시점</span>
@@ -128,12 +136,6 @@ export function SeriesEdit({ s, eps }: { s: S; eps: E[] }) {
             {ep.later && <input type="datetime-local" value={ep.at} onChange={(e) => setEp({ ...ep, at: e.target.value })} />}
             {ep.later && <small style={{ marginLeft: 0 }}>예약한 시각이 되면 저절로 공개돼요 · 그때까지는 나만 볼 수 있어요</small>}
           </div>
-          <div className={k('obtn')}><button className={k('btn')} onClick={() => setEp(null)}>뒤로</button><button className={k('btn go')} disabled={busy || !ep.title.trim() || (ep.later && !ep.at)} onClick={async () => {
-            const was = Date.parse(ep.publishAt) > Date.now();
-            const publishAt = ep.later ? new Date(ep.at).toISOString() : was ? new Date().toISOString() : undefined;
-            if (ep.later && Date.parse(publishAt!) <= Date.now()) { toast('예약은 지금보다 뒤 시각으로 골라 주세요'); return; }
-            if (await save({ episode: { no: ep.no, title: ep.title, authorNote: ep.authorNote, publishAt } }, ep.later ? '예약해 두었어요' : '회차를 고쳤어요')) setEp(null);
-          }}>저장</button></div>
         </Sheet>
       )}
     </>
@@ -178,7 +180,7 @@ export function NextEpisode({ seriesId, nextNo }: { seriesId: string; nextNo: nu
     <>
       <button className={k('btn big')} onClick={() => setOpen(true)}>다음 화 올리기</button>
       {open && (
-        <Sheet title={`${nextNo}화 올리기`} onClose={() => { if (!busy) setOpen(false); }}>
+        <Sheet title={`${nextNo}화 올리기`} onClose={() => { if (!busy) setOpen(false); }} foot={<><small className={k('muted')} style={{ marginRight: 'auto', alignSelf: 'center' }}>{busy || (miss ? `남은 항목 · ${miss}` : '올릴 준비 끝')}</small><button className={k('btn')} disabled={!!busy} onClick={() => setOpen(false)}>취소</button><button className={k('btn go')} disabled={!!busy} style={miss ? { opacity: 0.55 } : undefined} onClick={go}>{later ? '예약하기' : '올리기'}</button></>}>
           <div className={k('oway')}>
             <a className={k('btn')} href="/studio"><Ic n="pen" />편집기에서 만들어 올리기</a>
             <small>말풍선 · 콘티 · AI 그림까지 편집기에서 만들고 「연재하기」로 올려요</small>
@@ -204,7 +206,6 @@ export function NextEpisode({ seriesId, nextNo }: { seriesId: string; nextNo: nu
             <div className={k('oseg')}><label><input type="radio" name="nAi" checked={ai === 'yes'} onChange={() => setAi('yes')} /> AI 그림 · 글을 썼어요</label><label><input type="radio" name="nAi" checked={ai === 'no'} onChange={() => setAi('no')} /> 직접 그렸어요</label></div>
           </div>
           <label className={k('oagree')}><input type="checkbox" checked={agree} onChange={(e) => setAgree(e.target.checked)} /><span>제가 만들었거나 쓸 권리가 있는 그림만 올리고, 이용 연령에 맞게 표시했어요. <a href="/read/policy" target="_blank">운영정책</a>을 어기면 숨김 처리될 수 있어요.</span></label>
-          <div className={k('obtn')}><small className={k('muted')} style={{ marginRight: 'auto', alignSelf: 'center' }}>{busy || (miss ? `남은 항목 · ${miss}` : '올릴 준비 끝')}</small><button className={k('btn')} disabled={!!busy} onClick={() => setOpen(false)}>취소</button><button className={k('btn go')} disabled={!!busy} style={miss ? { opacity: 0.55 } : undefined} onClick={go}>{later ? '예약하기' : '올리기'}</button></div>
         </Sheet>
       )}
     </>
