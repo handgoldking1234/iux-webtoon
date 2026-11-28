@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { readHref, todayKey } from '@/lib/read/config';
+import { readHref, todayKey, genresOf } from '@/lib/read/config';
 import { homeData } from '@/lib/read/store';
 import { sv, type SV } from '@/lib/read/view';
 import Card, { TopCard } from './_ui/Card';
@@ -14,7 +14,7 @@ export default async function ReadHome() {
   const d = await homeData();
   const all = d.all.map(sv), rank = d.ranking.map(sv);
   const byRate = (L: SV[]) => L.slice().sort((a, b) => b.rating - a.rating);
-  const G = (...g: string[]) => byRate(all.filter((s) => g.includes(s.genre)));
+  const G = (...g: string[]) => byRate(all.filter((s) => genresOf(s.genre).some((x) => g.includes(x))));
   const hero = rank.filter((s) => s.kind !== 'done').slice(0, 3);
   // 주제별 줄은 작품이 4편 넘게 모였을 때만 보여요 (작품이 적을 때 같은 작품이 줄마다 되풀이되지 않게)
   const themed: [string, string, SV[]][] = ([

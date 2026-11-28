@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
-import { AGES, GENRES } from '@/lib/read/config';
+import { AGES, GENRES, MAX_GENRES, genresOf } from '@/lib/read/config';
 import { call, toast } from './client';
 import { Ic } from './Icons';
 import { k } from './k';
@@ -37,6 +37,19 @@ const putUp = async (u: Up, b: Blob) => {
 /** datetime-local 칸에 넣을 값 (내 시간대) */
 const localDT = (iso: string) => { const d = new Date(iso), p = (n: number) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}`; };
 const whenText = (iso: string) => new Date(iso).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+
+/** 장르 고르기 — 여러 개(3개까지) */
+function GenrePick({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const on = genresOf(value);
+  return (
+    <div className={k('field')}><span>장르 <small>{on.length} / {MAX_GENRES}개 · 여러 개 고를 수 있어요</small></span>
+      <div className={k('ogen')}>{GENRES.map((g) => {
+        const sel = on.includes(g);
+        return <button type="button" key={g} aria-pressed={sel} className={sel ? k('on') : undefined} onClick={() => { if (!sel && on.length >= MAX_GENRES) { toast(`장르는 ${MAX_GENRES}개까지 고를 수 있어요`); return; } onChange((sel ? on.filter((x) => x !== g) : [...on, g]).join(',')); }}>{g}</button>;
+      })}</div>
+    </div>
+  );
+}
 
 /** 창 — 위(제목 · 닫기)와 아래(단추)는 그대로 있고, 가운데만 스크롤돼요 */
 function Sheet({ title, children, foot, onClose }: { title: string; children: React.ReactNode; foot?: React.ReactNode; onClose: () => void }) {
@@ -198,7 +211,7 @@ export function SeriesEdit({ s, eps }: { s: S; eps: E[] }) {
   const [open, setOpen] = useState<'' | 'edit' | 'del'>(''), [busy, setBusy] = useState(false);
   const [f, setF] = useState(s), [ep, setEp] = useState<E | null>(null);
   const set = (key: 'title' | 'authorName' | 'genre' | 'age' | 'description', v: string) => setF((x) => ({ ...x, [key]: v }));
-  const okS = f.title.trim() && f.authorName.trim() && f.description.trim().length >= 20;
+  const okS = f.title.trim() && f.authorName.trim() && f.description.trim().length >= 20 && genresOf(f.genre).length > 0;
   const save = async (payload: unknown, done: string) => {
     setBusy(true);
     const j = await call(`series/${s.id}`, payload, 'PATCH');
@@ -232,8 +245,8 @@ export function SeriesEdit({ s, eps }: { s: S; eps: E[] }) {
         <Sheet title="연재 수정" onClose={() => setOpen('')} foot={<><small className={k('muted')}>작품 정보는 「저장」을 눌러야 바뀌어요 · 이미지 · 숨기기 · 회차는 누르는 즉시 바뀌어요</small><button className={k('btn go')} disabled={busy || !okS} onClick={async () => { if (await save({ series: { title: f.title, authorName: f.authorName, genre: f.genre, age: f.age, description: f.description } }, '작품 정보를 고쳤어요')) setOpen(''); }}>저장</button></>}>
           <label className={k('field')}><span>작품 제목</span><input type="text" maxLength={40} value={f.title} onChange={(e) => set('title', e.target.value)} /></label>
           <label className={k('field')}><span>필명</span><input type="text" maxLength={20} value={f.authorName} onChange={(e) => set('authorName', e.target.value)} /></label>
+          <GenrePick value={f.genre} onChange={(v) => set('genre', v)} />
           <div className={k('two')}>
-            <label className={k('field')}><span>장르</span><select value={f.genre} onChange={(e) => set('genre', e.target.value)}>{GENRES.map((g) => <option key={g}>{g}</option>)}</select></label>
             <label className={k('field')}><span>이용 연령</span><select value={f.age} onChange={(e) => set('age', e.target.value)}>{AGES.map((a) => <option key={a[0]} value={a[0]}>{a[1]}{a[0] === 'all' ? '' : ' 이상'}</option>)}</select></label>
           </div>
           <label className={k('field')}><span>작품 소개 <small>{f.description.trim().length} / 300자 · 20자 이상</small></span><textarea maxLength={300} value={f.description} onChange={(e) => set('description', e.target.value)} /></label>
@@ -298,8 +311,8 @@ export function UploadEpisode({ fixed, list = [], label, cls = 'btn big', author
           {isNew && <>
             <label className={k('field')}><span>작품 제목</span><input type="text" maxLength={40} value={w.title} onChange={(e) => setW({ ...w, title: e.target.value })} /></label>
             <label className={k('field')}><span>필명</span><input type="text" maxLength={20} value={w.authorName} onChange={(e) => setW({ ...w, authorName: e.target.value })} /></label>
+            <GenrePick value={w.genre} onChange={(v) => setW({ ...w, genre: v })} />
             <div className={k('two')}>
-              <label className={k('field')}><span>장르</span><select value={w.genre} onChange={(e) => setW({ ...w, genre: e.target.value })}><option value="">고르기</option>{GENRES.map((g) => <option key={g}>{g}</option>)}</select></label>
               <label className={k('field')}><span>이용 연령</span><select value={w.age} onChange={(e) => setW({ ...w, age: e.target.value })}><option value="">고르기</option>{AGES.map((a) => <option key={a[0]} value={a[0]}>{a[1]}{a[0] === 'all' ? '' : ' 이상'}</option>)}</select></label>
             </div>
             <label className={k('field')}><span>작품 소개 <small>{w.description.trim().length} / 300자 · 20자 이상</small></span><textarea maxLength={300} value={w.description} onChange={(e) => setW({ ...w, description: e.target.value })} /></label>

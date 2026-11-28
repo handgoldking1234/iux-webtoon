@@ -1,4 +1,4 @@
-import { AGES, GENRES } from '@/lib/read/config';
+import { AGES, genresOf } from '@/lib/read/config';
 import { reorderEpisodes, purgeEpisode, purgeSeries, setArt, signArt, trashEpisode, trashSeries, updateEpisode, updateSeries, type EpisodePatch, type SeriesPatch } from '@/lib/read/store';
 import { body, err, ok, withMe } from '../../_h';
 
@@ -27,10 +27,11 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       if (!title) return err('bad', '작품 제목을 적어 주세요');
       if (!author) return err('bad', '필명을 적어 주세요');
       if (desc.length < 20) return err('bad', '작품 소개를 20자 이상 적어 주세요');
-      if (!GENRES.includes(String(s.genre))) return err('bad', '장르를 골라 주세요');
+      const genre = genresOf(s.genre).join(',');
+      if (!genre) return err('bad', '장르를 골라 주세요');
       const age = AGES.find((a) => a[0] === s.age)?.[0];
       if (!age) return err('bad', '이용 연령을 골라 주세요');
-      Object.assign(p, { title, author_name: author, description: desc, genre: String(s.genre), age });
+      Object.assign(p, { title, author_name: author, description: desc, genre, age });
       await updateSeries(uid, adm, id, p);
     }
     if (b.episode) {

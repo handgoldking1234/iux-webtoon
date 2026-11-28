@@ -23,7 +23,7 @@ export default function Hero({ list }: { list: SV[] }) {
         <p className={k('desc')}>{f.description}</p>
         <p className={k('meta')}>
           <b>{f.author}</b>{f.rating > 0 && <><i>·</i><span className={k('tnum')}>★ {f.rating.toFixed(2)}</span></>}
-          <i>·</i><span>{f.genre}</span><i>·</i><span>총 {f.episodes}화</span>
+          <i>·</i><span>{f.genre.replace(/,/g, ' · ')}</span><i>·</i><span>총 {f.episodes}화</span>
           <span className={k('age')}>{ageLabel(f.age)}</span>{f.ai && <span className={k('age')}>AI 활용</span>}
         </p>
       </div>

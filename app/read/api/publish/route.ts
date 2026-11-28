@@ -1,4 +1,4 @@
-import { AGES, DAY_KEYS, GENRES } from '@/lib/read/config';
+import { AGES, DAY_KEYS, genresOf } from '@/lib/read/config';
 import { publish, type PublishIn } from '@/lib/read/store';
 import { body, err, ok, withMe } from '../_h';
 
@@ -20,13 +20,13 @@ export async function POST(req: Request) {
       if (!title) return err('bad', '작품 제목을 적어 주세요');
       if (!author) return err('bad', '필명을 적어 주세요');
       if (String(s?.description || '').trim().length < 20) return err('bad', '작품 소개를 20자 이상 적어 주세요');
-      if (!GENRES.includes(String(s?.genre))) return err('bad', '장르를 골라 주세요');
+      if (!genresOf(s?.genre).length) return err('bad', '장르를 골라 주세요');
       if (!AGES.some((a) => a[0] === s?.age)) return err('bad', '이용 연령을 골라 주세요');
       if (s?.apply && !(s.days || []).length) return err('bad', '요일연재를 신청하면 연재 요일을 하나 이상 골라 주세요');
       series = {
         title, authorName: author,
         description: String(s?.description || '').trim().slice(0, 300),
-        genre: GENRES.includes(String(s?.genre)) ? String(s?.genre) : '기타',
+        genre: genresOf(s?.genre).join(',') || '기타',
         age: (AGES.some((a) => a[0] === s?.age) ? s!.age : 'all') as 'all',
         days: (s?.days || []).filter((d) => (DAY_KEYS as string[]).includes(d)),
         apply: !!s?.apply,

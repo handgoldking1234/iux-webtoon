@@ -464,7 +464,7 @@
         h += '<h4>작가 · 작품 <small>작품 페이지 맨 위에 보여요</small></h4>'
           + fld('title', '작품 제목', '<input type="text" data-in="title" maxlength="40" value="' + escH(F.title) + '" placeholder="예) 우산 같이 쓸래요">')
           + fld('author', '필명', '<input type="text" data-in="author" maxlength="20" value="' + escH(F.author) + '" placeholder="글/그림 작가 이름">')
-          + fld('genre', '장르', '<select data-in="genre"><option value="">고르세요</option>' + (cfg.genres || []).map(function (g) { return '<option' + (g === F.genre ? ' selected' : '') + '>' + escH(g) + '</option>'; }).join('') + '</select>')
+          + fld('genre', '장르', '<div class="pseg">' + (cfg.genres || []).map(function (g) { return '<label><input type="checkbox" data-in="genre" value="' + escH(g) + '"' + (F.genre.split(',').indexOf(g) >= 0 ? ' checked' : '') + '>' + escH(g) + '</label>'; }).join('') + '</div><div class="cnt' + (F.genre ? ' ok' : '') + '">' + (F.genre ? F.genre.split(',').length : 0) + ' / 3개 · 여러 개 고를 수 있어요</div>')
           + fld('age', '이용 연령', '<div class="pseg">' + (cfg.ages || []).map(function (a) { return '<label><input type="radio" name="pAge" data-in="age" value="' + a[0] + '"' + (F.age === a[0] ? ' checked' : '') + '>' + escH(a[1]) + (a[0] === 'all' ? '' : ' 이상') + '</label>'; }).join('') + '</div>')
           + fld('desc', '작품 소개', '<textarea data-in="desc" maxlength="300" placeholder="어떤 이야기인지 2~3문장으로 · 주인공 · 갈등 · 분위기">' + escH(F.desc) + '</textarea><div class="cnt' + (F.desc.trim().length >= 20 ? ' ok' : '') + '" data-cnt="desc">' + F.desc.trim().length + ' / 300자 · 20자 이상</div>');
       }
@@ -672,7 +672,11 @@
       if (k === 'target') { F.target = t.value; F.rep = 0; F.recover = false; }
       else if (k === 'rep') { F.rep = +t.value || 0; var R2 = repEp(); if (R2) { F.epTitle = R2.title || F.epTitle; F.note = R2.note || ''; F.when = 'now'; } }
       else if (k === 'recover') F.recover = t.checked;
-      else if (k === 'genre') F.genre = t.value;
+      else if (k === 'genre') {
+        var gs = Array.prototype.map.call(m.querySelectorAll('[data-in=genre]:checked'), function (x) { return x.value; });
+        if (gs.length > 3) { t.checked = false; say('장르는 3개까지 고를 수 있어요'); gs = gs.filter(function (g) { return g !== t.value; }); }
+        F.genre = gs.join(',');
+      }
       else if (k === 'age') F.age = t.value;
       else if (k === 'apply') F.apply = t.value === '1';
       else if (k === 'days') F.days = Array.prototype.map.call(m.querySelectorAll('[data-in=days]:checked'), function (x) { return x.value; });

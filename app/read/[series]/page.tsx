@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getMe } from '@/lib/auth';
-import { ageLabel, dayLabel, readHref } from '@/lib/read/config';
+import { ageLabel, dayLabel, readHref, genresOf } from '@/lib/read/config';
 import { getSeries, img } from '@/lib/read/store';
 import { avg } from '@/lib/read/types';
 import { sv } from '@/lib/read/view';
@@ -40,7 +40,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
           <p className={k('who')}><span>글/그림 {s.author_name}</span><span>{when}</span><span>{ageLabel(s.age)}</span></p>
           <p className={k('desc')}>{s.description}</p>
           <div className={k('chips')}>
-            <span className={k('chip')}>#{s.genre}</span><span className={k('chip')}>총 {episodes.length}화</span>
+            {(genresOf(s.genre).length ? genresOf(s.genre) : [s.genre]).map((g) => <span key={g} className={k('chip')}>#{g}</span>)}<span className={k('chip')}>총 {episodes.length}화</span>
             {s.ai && <span className={k('chip ai')}>AI 활용 작품</span>}
             {avg(s) > 0 && <span className={k('chip')}>★ {avg(s).toFixed(2)}</span>}
             {owner && s.review === 'pending' && <span className={k('chip')}>요일연재 검토 중</span>}

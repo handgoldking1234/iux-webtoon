@@ -12,6 +12,10 @@ export function todayKey(now = new Date()): Day {
   return (['sun', 'mon', 'tue', 'wed', 'thu', 'fri', 'sat'] as Day[])[k];
 }
 
+/** 장르는 3개까지 고를 수 있어요 — 저장은 쉼표로 이어서 한 칸에 ('판타지,액션') */
+export const MAX_GENRES = 3;
+export const genresOf = (g: unknown): string[] => String(Array.isArray(g) ? g.join(',') : g ?? '').split(',').map((x) => x.trim()).filter((x, i, a) => GENRES.includes(x) && a.indexOf(x) === i).slice(0, MAX_GENRES);
+export const genreText = (g: unknown) => genresOf(g).join(' · ') || String(g ?? '');
 export const GENRES = ['드라마', '로맨스', '판타지', '액션', '스릴러', '미스터리', '일상', '개그', '스포츠', '기타'];
 export const AGES = [['all', '전체'], ['12', '12세'], ['15', '15세'], ['19', '19세']] as const;
 export type Age = (typeof AGES)[number][0];

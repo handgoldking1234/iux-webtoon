@@ -490,3 +490,5 @@ html:has(.rd){scroll-behavior:smooth}
 .rd[data-theme=light] .r-hero .r-btn,.rd[data-theme=light] .r-feature .r-btn,.rd[data-theme=light] .r-band .r-btn{border-color:#727272}
 .rd .r-eline:hover .r-ep{background:color-mix(in srgb,var(--bg) 60%,var(--surface))}
 .rd[data-theme=light] .r-eline:hover .r-ep{background:#eeeeee}
+.rd .r-ogen{display:flex;flex-wrap:wrap;gap:6px}.rd .r-ogen button{border:1px solid var(--line);background:var(--surface);color:var(--ink-2);border-radius:999px;padding:6px 13px;font-size:13.5px;font-weight:600}
+.rd .r-ogen button:hover{border-color:var(--ink-2)}.rd .r-ogen button.r-on{background:var(--ink);border-color:var(--ink);color:var(--bg)}
