@@ -136,6 +136,7 @@ export async function geminiImage(prompt: string, w: number, h: number, refs: { 
   if (r.status === 503) throw new AiError('busy', '이미지 AI가 잠시 붐벼요 · 조금 뒤에 다시 해 주세요', 503);
   if (r.status === 401 || r.status === 403) throw new AiError('bad_key', '이미지 AI 키가 맞지 않아요 (관리자: GEMINI_API_KEY 확인)', 502);
   if (r.status === 404) throw new AiError('bad_model', `이미지 모델 이름이 맞지 않아요 (${model})`, 502);
+  if (r.status === 402) throw new AiError('no_credit', '이미지 AI 충전금이 다 떨어졌어요 · 잠시 뒤 다시 해 주세요 (관리자: Google AI Studio에서 충전)', 503);
   if (!r.ok) throw new AiError('upstream_error', `Gemini ${r.status}: ${(await r.text()).slice(0, 200)}`);
   const j = await r.json();
   const ps = j.candidates?.[0]?.content?.parts || [];
