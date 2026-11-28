@@ -456,3 +456,15 @@ html:has(.rd){scroll-behavior:smooth}
 .rd .r-thead .r-acts{align-items:center}.rd .r-actr{display:flex;gap:8px;margin-left:auto}
 .rd .r-btn.r-icn{width:46px;height:46px;padding:0;border-radius:50%}.rd .r-btn.r-icn .r-ico{width:20px;height:20px}
 .rd .r-btn.r-icn.r-fav.r-on,.rd .r-hero .r-btn.r-icn.r-fav.r-on{width:46px;min-height:0;padding:0;background:transparent;border-color:var(--red);color:var(--red)}
+/* 원고 그림: 작은 그림 · 순서 바꾸기 · 이어서 미리보기 */
+.rd .r-othd{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rd .r-othd small{color:var(--ink-2);font-size:12.5px;flex:1;min-width:140px}.rd .r-othd .r-btn{padding:6px 12px;font-size:12.5px}
+.rd .r-othumbs{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px}
+.rd .r-othumbs li{position:relative;aspect-ratio:3/4;border-radius:8px;overflow:hidden;border:1px solid var(--line);background:var(--surface-2);cursor:grab}
+.rd .r-othumbs li.r-drag{opacity:.35}.rd .r-othumbs li.r-over{outline:2px solid var(--green);outline-offset:1px}
+.rd .r-othumbs img{width:100%;height:100%;object-fit:cover;object-position:top;display:block;pointer-events:none}
+.rd .r-othumbs i{position:absolute;left:5px;top:5px;min-width:22px;height:22px;padding:0 5px;border-radius:11px;background:rgba(0,0,0,.72);color:#fff;font-style:normal;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.rd .r-othumbs li>span{position:absolute;left:0;right:0;bottom:0;display:flex;background:rgba(0,0,0,.72)}
+.rd .r-othumbs li>span button{flex:1;height:28px;border:0;background:transparent;color:#fff;font-size:14px}.rd .r-othumbs li>span button:disabled{opacity:.3}.rd .r-othumbs li>span button:hover:not(:disabled){background:rgba(255,255,255,.18)}
+.rd .r-oview{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.92);overflow:auto;padding:56px 0 40px;cursor:zoom-out}
+.rd .r-oview>div{width:min(690px,100%);margin:0 auto;cursor:default;background:#fff}.rd .r-oview img{display:block;width:100%;height:auto}
+.rd .r-oview .r-ox{position:fixed;right:14px;top:12px;color:#fff;background:rgba(255,255,255,.14)}

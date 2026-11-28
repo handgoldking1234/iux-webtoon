@@ -66,21 +66,44 @@ async function sendEpisode(o: { files: File[]; thumb?: Blob | null; cover?: File
   return call<{ url: string; seriesUrl: string }>('publish', { draftId: d.id, agree: true, ai: o.ai, seriesId: o.seriesId, series: o.series, replaceNo: o.replaceNo, episode: { title: o.title, authorNote: o.note, publishAt: o.publishAt || null } });
 }
 
-/** 원고 그림 고르기 — 여러 장 · 순서 바꾸기 */
+/** 고른 파일의 미리보기 주소 (같은 파일은 한 번만 만들어요) */
+const urlCache = new WeakMap<File, string>();
+const urlOf = (f: File) => { let u = urlCache.get(f); if (!u) { u = URL.createObjectURL(f); urlCache.set(f, u); } return u; };
+
+/** 원고 그림 고르기 — 여러 장 · 작은 그림으로 보기 · 끌어서 순서 바꾸기 · 이어 보기 */
 function CutPick({ files, setFiles, busy, label }: { files: File[]; setFiles: (f: (x: File[]) => File[]) => void; busy: boolean; label: string }) {
+  const [drag, setDrag] = useState(-1), [over, setOver] = useState(-1), [view, setView] = useState(false);
   const add = (list: FileList | null) => {
     const L = Array.from(list || []).filter((x) => /^image\/(jpeg|png|webp|gif)$/.test(x.type)).sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true }));
     if (list && L.length < list.length) toast('JPG · PNG · WEBP · GIF만 올릴 수 있어요');
     setFiles((x) => [...x, ...L].slice(0, 120));
   };
-  const move = (i: number, d: number) => setFiles((x) => { const y = x.slice(), j = i + d; if (j < 0 || j >= y.length) return x; [y[i], y[j]] = [y[j], y[i]]; return y; });
+  const put = (from: number, to: number) => setFiles((x) => { if (from === to || from < 0 || to < 0 || to >= x.length) return x; const y = x.slice(), [m] = y.splice(from, 1); y.splice(to, 0, m); return y; });
   return (
     <>
-      <label className={k('odrop')}><Ic n="image" /><b>{label}</b><small>여러 장을 한꺼번에 골라도 돼요 · 파일 이름 순서로 놓이고, 위에서 아래로 이어 보여요</small><input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden disabled={busy} onChange={(e) => { add(e.target.files); e.target.value = ''; }} /></label>
-      {files.length > 0 && <ol className={k('ofiles')}>{files.map((x, i) => (
-        <li key={x.name + x.size + i}><span className={k('tnum')}>{i + 1}</span><span className={k('nm')}>{x.name}</span>
-          <button type="button" aria-label="위로" disabled={i === 0} onClick={() => move(i, -1)}>↑</button><button type="button" aria-label="아래로" disabled={i === files.length - 1} onClick={() => move(i, 1)}>↓</button><button type="button" aria-label="빼기" onClick={() => setFiles((y) => y.filter((_, j) => j !== i))}>×</button></li>
-      ))}</ol>}
+      <label className={k('odrop')}><Ic n="image" /><b>{files.length ? '그림 더 넣기' : label}</b><small>여러 장을 한꺼번에 골라도 돼요 · 파일 이름 순서로 놓이고, 위에서 아래로 이어 보여요</small><input type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple hidden disabled={busy} onChange={(e) => { add(e.target.files); e.target.value = ''; }} /></label>
+      {files.length > 0 && <>
+        <div className={k('othd')}><b>{files.length}장</b><small>끌어서 순서를 바꿔요 · 화살표로도 옮겨져요</small><button type="button" className={k('btn')} onClick={() => setView(true)}>이어서 미리보기</button></div>
+        <ol className={k('othumbs')}>{files.map((x, i) => (
+          <li key={x.name + x.size + x.lastModified} draggable={!busy} className={k(`${drag === i ? 'drag' : ''} ${over === i && drag !== i ? 'over' : ''}`) || undefined}
+            onDragStart={(e) => { setDrag(i); e.dataTransfer.effectAllowed = 'move'; }} onDragOver={(e) => { e.preventDefault(); if (over !== i) setOver(i); }}
+            onDrop={(e) => { e.preventDefault(); put(drag, i); setDrag(-1); setOver(-1); }} onDragEnd={() => { setDrag(-1); setOver(-1); }} title={x.name}>
+            <img src={urlOf(x)} alt="" draggable={false} />
+            <i className={k('tnum')}>{i + 1}</i>
+            <span>
+              <button type="button" aria-label="앞으로" disabled={i === 0} onClick={() => put(i, i - 1)}>←</button>
+              <button type="button" aria-label="뒤로" disabled={i === files.length - 1} onClick={() => put(i, i + 1)}>→</button>
+              <button type="button" aria-label="빼기" onClick={() => setFiles((y) => y.filter((_, n) => n !== i))}>×</button>
+            </span>
+          </li>
+        ))}</ol>
+      </>}
+      {view && (
+        <div className={k('oview')} role="dialog" aria-modal="true" aria-label="이어서 미리보기" onClick={() => setView(false)}>
+          <button type="button" className={k('ox')} aria-label="닫기"><Ic n="x" /></button>
+          <div onClick={(e) => e.stopPropagation()}>{files.map((x, i) => <img key={x.name + x.size + i} src={urlOf(x)} alt={`${i + 1}번째 그림`} />)}</div>
+        </div>
+      )}
     </>
   );
 }
