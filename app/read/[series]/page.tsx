@@ -40,7 +40,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
           <p className={k('who')}><span>글/그림 {s.author_name}</span><span>{when}</span><span>{ageLabel(s.age)}</span></p>
           <p className={k('desc')}>{s.description}</p>
           <div className={k('chips')}>
-            <span className={k('chip')}>#{s.genre}</span><span className={k('chip')}>총 {s.episodes}화</span>
+            <span className={k('chip')}>#{s.genre}</span><span className={k('chip')}>총 {episodes.length}화</span>
             {s.ai && <span className={k('chip ai')}>AI 활용 작품</span>}
             {avg(s) > 0 && <span className={k('chip')}>★ {avg(s).toFixed(2)}</span>}
             {owner && s.review === 'pending' && <span className={k('chip')}>요일연재 검토 중</span>}
@@ -65,7 +65,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
             <span style={{ minWidth: 0 }}><b>{e.no}화 · {e.title}</b><small>{e.rating_count ? <span className={k('star tnum')}>★ {avg(e).toFixed(2)}</span> : '별점 없음'}{e.status === 'hidden' ? ' · 숨김' : Date.parse(e.publish_at) > Date.now() ? ' · 예약 공개' : ''}</small></span>
             <span className={k('d tnum')}>{date(e.publish_at)}</span>
           </Link>
-          {owner && <EpTools seriesId={s.id} e={{ no: e.no, title: e.title, authorNote: e.author_note || '', hidden: e.status === 'hidden', publishAt: e.publish_at }} />}
+          {owner && <EpTools seriesId={s.id} e={{ no: e.no, title: e.title, authorNote: e.author_note || '', hidden: e.status === 'hidden', publishAt: e.publish_at }} nos={episodes.map((x) => x.no)} />}
           </div>
         ))}
       </section>

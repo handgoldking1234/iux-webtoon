@@ -32,7 +32,7 @@ export default async function PublishPage({ searchParams }: { searchParams: Prom
             <h2>휴지통 <small className={k('muted')} style={{ fontWeight: 500, fontSize: 13 }}>넣은 지 {TRASH_DAYS}일이 지나면 완전히 지워져요</small></h2>
             <ul style={{ margin: 0, padding: 0, listStyle: 'none', display: 'grid', gap: 8 }}>
               {trash.series.map((s) => <TrashRow key={s.id} seriesId={s.id} label={`${s.title} (작품 전체 · ${s.episodes}화)`} left={left(s.deleted_at)} />)}
-              {trash.episodes.map((e) => <TrashRow key={e.series_id + e.no} seriesId={e.series_id} epNo={e.no} label={`${e.series_title} ${e.no}화 · ${e.title}`} left={left(e.deleted_at)} />)}
+              {trash.episodes.map((e) => <TrashRow key={e.series_id + e.no} seriesId={e.series_id} epNo={e.no} label={`${e.series_title} · ${e.title} (회차)`} left={left(e.deleted_at)} />)}
             </ul>
           </div>
         )}

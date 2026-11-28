@@ -116,11 +116,12 @@ function CutPick({ files, setFiles, busy, label }: { files: File[]; setFiles: (f
 }
 
 /** 회차 고치기 — 제목 · 작가의 말 · 공개 시점 · 썸네일 · 원고 그림 다시 올리기 */
-function EpEdit({ seriesId, e, onClose }: { seriesId: string; e: E; onClose: () => void }) {
+function EpEdit({ seriesId, e, nos, onClose }: { seriesId: string; e: E; nos: number[]; onClose: () => void }) {
   const router = useRouter();
   const was = Date.parse(e.publishAt) > Date.now();
   const [title, setTitle] = useState(e.title), [note, setNote] = useState(e.authorNote), [later, setLater] = useState(was), [at, setAt] = useState(localDT(e.publishAt));
   const [files, setFiles] = useState<File[]>([]), [thumb, setThumb] = useState<File | null>(null), [busy, setBusy] = useState('');
+  const sorted = nos.slice().sort((a, b) => a - b), [pos, setPos] = useState(sorted.indexOf(e.no) + 1);
   const save = async () => {
     const publishAt = later ? new Date(at).toISOString() : was ? new Date().toISOString() : undefined;
     if (later && Date.parse(publishAt!) <= Date.now()) { toast('예약은 지금보다 뒤 시각으로 골라 주세요'); return; }
@@ -137,13 +138,21 @@ function EpEdit({ seriesId, e, onClose }: { seriesId: string; e: E; onClose: () 
       }
       setBusy('저장 중…');
       if (!(await call(`series/${seriesId}`, { episode: { no: e.no, title, authorNote: note, publishAt } }, 'PATCH'))) return;
+      if (pos !== sorted.indexOf(e.no) + 1) {
+        const order = sorted.filter((n) => n !== e.no); order.splice(pos - 1, 0, e.no);
+        if (!(await call(`series/${seriesId}`, { order }, 'PATCH'))) return;
+      }
       toast(files.length ? `${e.no}화 그림을 다시 올렸어요` : later ? '예약해 두었어요' : '회차를 고쳤어요');
       router.refresh(); onClose();
     } catch { toast('저장하지 못했어요 · 잠시 뒤 다시 해 주세요'); } finally { setBusy(''); }
   };
   return (
     <Sheet title={`${e.no}화 고치기`} onClose={() => { if (!busy) onClose(); }} foot={<><small className={k('muted')}>{busy}</small><button className={k('btn go')} disabled={!!busy || !title.trim() || (later && !at)} onClick={save}>저장</button></>}>
-      <label className={k('field')}><span>회차 제목</span><input type="text" maxLength={60} value={title} onChange={(ev) => setTitle(ev.target.value)} /></label>
+      <div className={k('two')}>
+        <label className={k('field')}><span>몇 화</span><select value={pos} onChange={(ev) => setPos(+ev.target.value)}>{sorted.map((_, n) => <option key={n} value={n + 1}>{n + 1}화{n + 1 === sorted.indexOf(e.no) + 1 ? ' (지금)' : ''}</option>)}</select></label>
+        <label className={k('field')}><span>회차 제목</span><input type="text" maxLength={60} value={title} onChange={(ev) => setTitle(ev.target.value)} /></label>
+      </div>
+      {pos !== sorted.indexOf(e.no) + 1 && <p className={k('muted')} style={{ fontSize: 13 }}>{pos}화 자리로 옮기면 그 사이 회차 번호가 한 칸씩 밀려요.</p>}
       <label className={k('field')}><span>작가의 말 <small>{note.trim().length} / 500자</small></span><textarea maxLength={500} value={note} onChange={(ev) => setNote(ev.target.value)} /></label>
       <div className={k('field')}><span>공개 시점</span>
         <div className={k('oseg')}>
@@ -166,18 +175,18 @@ function EpEdit({ seriesId, e, onClose }: { seriesId: string; e: E; onClose: () 
 }
 
 /** 회차 목록 한 줄의 연필 · 휴지통 — 작가 본인에게만 보여요 */
-export function EpTools({ seriesId, e }: { seriesId: string; e: E }) {
+export function EpTools({ seriesId, e, nos }: { seriesId: string; e: E; nos: number[] }) {
   const router = useRouter();
   const [edit, setEdit] = useState(false), [busy, setBusy] = useState(false);
   return (
     <span className={k('eptools')}>
       <button type="button" aria-label={`${e.no}화 고치기`} title="고치기 · 예약 · 그림 다시 올리기" onClick={() => setEdit(true)}><Ic n="pen" /></button>
       <button type="button" aria-label={`${e.no}화 삭제`} title="휴지통으로 · 30일 안에 되살릴 수 있어요" disabled={busy} onClick={async () => {
-        if (!window.confirm(`${e.no}화를 휴지통에 넣을까요?\n30일 안에는 「연재 올리기 › 휴지통」에서 되살릴 수 있어요.`)) return;
+        if (!window.confirm(`${e.no}화를 휴지통에 넣을까요?\n뒤 회차 번호가 한 칸씩 당겨져요. 30일 안에는 「연재 올리기 › 휴지통」에서 되살릴 수 있어요(맨 뒤 회차로 들어가요).`)) return;
         setBusy(true); const j = await call(`series/${seriesId}`, { trash: { on: true, epNo: e.no } }, 'PATCH'); setBusy(false);
         if (j) { toast(`${e.no}화를 휴지통에 넣었어요`); router.refresh(); }
       }}><Ic n="trash" /></button>
-      {edit && <EpEdit seriesId={seriesId} e={e} onClose={() => setEdit(false)} />}
+      {edit && <EpEdit seriesId={seriesId} e={e} nos={nos} onClose={() => setEdit(false)} />}
     </span>
   );
 }
@@ -239,15 +248,18 @@ export function SeriesEdit({ s, eps }: { s: S; eps: E[] }) {
           </div>
           <h3>회차</h3>
           {!eps.length && <p className={k('muted')}>아직 올린 회차가 없어요</p>}
-          <ul className={k('oeps')}>{eps.map((e) => (
+          {eps.length > 1 && <p className={k('muted')} style={{ fontSize: 12.5 }}>↑ ↓ 로 순서를 바꾸면 회차 번호가 그 순서대로 다시 매겨져요.</p>}
+          <ul className={k('oeps')}>{eps.slice().sort((a, b) => a.no - b.no).map((e, i, L) => (
             <li key={e.no}><span><b>{e.no}화</b> {e.title} <small>· {epState(e)}</small></span>
+              {L.length > 1 && <><button className={k('btn')} disabled={busy || i === 0} aria-label="앞 회차로" title="앞 회차로" onClick={() => { const o = L.map((x) => x.no); [o[i - 1], o[i]] = [o[i], o[i - 1]]; save({ order: o }, '순서를 바꿨어요'); }}>↑</button>
+              <button className={k('btn')} disabled={busy || i === L.length - 1} aria-label="뒤 회차로" title="뒤 회차로" onClick={() => { const o = L.map((x) => x.no); [o[i + 1], o[i]] = [o[i], o[i + 1]]; save({ order: o }, '순서를 바꿨어요'); }}>↓</button></>}
               <button className={k('btn')} onClick={() => setEp(e)}>고치기 · 그림 · 예약</button>
               <button className={k('btn')} disabled={busy} onClick={() => save({ episode: { no: e.no, hidden: !e.hidden } }, e.hidden ? '다시 공개했어요' : '숨겼어요 · 독자에게 안 보여요')}>{e.hidden ? '다시 공개' : '숨기기'}</button>
               <button className={k('btn')} disabled={busy} aria-label={`${e.no}화 삭제`} title="휴지통으로 · 30일 안에 되살릴 수 있어요" onClick={() => { if (window.confirm(`${e.no}화를 휴지통에 넣을까요?\n30일 안에는 「연재 올리기 › 휴지통」에서 되살릴 수 있어요.`)) save({ trash: { on: true, epNo: e.no } }, `${e.no}화를 휴지통에 넣었어요`); }}><Ic n="trash" /></button></li>
           ))}</ul>
         </Sheet>
       )}
-      {open === 'edit' && ep && <EpEdit seriesId={s.id} e={ep} onClose={() => setEp(null)} />}
+      {open === 'edit' && ep && <EpEdit seriesId={s.id} e={ep} nos={eps.map((x) => x.no)} onClose={() => setEp(null)} />}
     </>
   );
 }

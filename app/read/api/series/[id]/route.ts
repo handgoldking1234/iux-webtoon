@@ -1,13 +1,18 @@
 import { AGES, GENRES } from '@/lib/read/config';
-import { purgeEpisode, purgeSeries, setArt, signArt, trashEpisode, trashSeries, updateEpisode, updateSeries, type EpisodePatch, type SeriesPatch } from '@/lib/read/store';
+import { reorderEpisodes, purgeEpisode, purgeSeries, setArt, signArt, trashEpisode, trashSeries, updateEpisode, updateSeries, type EpisodePatch, type SeriesPatch } from '@/lib/read/store';
 import { body, err, ok, withMe } from '../../_h';
 
 /** 작가가 자기 작품 · 회차 정보를 고쳐요 (제목 · 필명 · 장르 · 연령 · 소개 / 회차 제목 · 작가의 말 · 숨김) */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   return withMe(async (me) => {
     const { id } = await params;
-    const b = await body<{ series?: Record<string, unknown>; episode?: Record<string, unknown>; art?: { dir?: string; epNo?: number }; paused?: boolean; trash?: { on?: boolean; epNo?: number; purge?: boolean } }>(req);
+    const b = await body<{ series?: Record<string, unknown>; episode?: Record<string, unknown>; art?: { dir?: string; epNo?: number }; paused?: boolean; order?: number[]; trash?: { on?: boolean; epNo?: number; purge?: boolean } }>(req);
     const uid = me.profile.id, adm = me.isAdmin;
+    if (Array.isArray(b.order)) {
+      const order = b.order.map(Number);
+      if (!order.length || order.some((n) => !Number.isInteger(n) || n < 1) || new Set(order).size !== order.length) return err('bad', '회차 순서를 다시 확인해 주세요');
+      try { await reorderEpisodes(uid, adm, id, order); } catch (e) { if ((e as Error).message === 'bad_order') return err('bad', '그 사이 회차가 바뀌었어요 · 새로고침한 뒤 다시 해 주세요'); throw e; }
+    }
     if (b.paused !== undefined) await updateSeries(uid, adm, id, { paused: !!b.paused });
     if (b.trash) {
       const no = b.trash.epNo === undefined ? undefined : Number(b.trash.epNo);

@@ -292,7 +292,7 @@ export async function publish(uid: string, p: PublishIn): Promise<{ seriesId: st
       s = { id: newId(), author_id: uid, author_name: base!.authorName, title: base!.title, description: base!.description, genre: base!.genre, age: base!.age, ai: p.ai, kind: 'free', days: base!.days, review: base!.apply ? 'pending' : 'none', hidden: false, thumb_path: d.cuts[0]?.path || null, episodes: 0, follows: 0, views: 0, rating_sum: 0, rating_count: 0, last_episode_at: null, created_at: nowIso() };
       M.series.unshift(s);
     }
-    const no = Math.max(0, ...M.episodes.filter((e) => e.series_id === s!.id).map((e) => e.no)) + 1;
+    const no = Math.max(0, ...M.episodes.filter((e) => e.series_id === s!.id && !e.deleted_at).map((e) => e.no)) + 1;
     M.episodes.push({ id: ++M.seq, series_id: s.id, no, title: p.episode.title, author_note: p.episode.authorNote || null, cuts: d.cuts, thumb_path: d.cuts[0]?.path || null, ai: p.ai, status, publish_at: when, views: 0, rating_sum: 0, rating_count: 0, comments: 0, created_at: nowIso() });
     s.episodes = no; s.last_episode_at = when; s.ai = s.ai || p.ai; d.used = true;
     return { seriesId: s.id, no };
@@ -305,7 +305,7 @@ export async function publish(uid: string, p: PublishIn): Promise<{ seriesId: st
     if (error) throw error;
     s = data as Series;
   }
-  const { data: last } = await sb.from('read_episodes').select('no').eq('series_id', s.id).order('no', { ascending: false }).limit(1).maybeSingle();
+  const { data: last } = await sb.from('read_episodes').select('no').eq('series_id', s.id).is('deleted_at', null).order('no', { ascending: false }).limit(1).maybeSingle();
   const no = ((last as { no: number } | null)?.no || 0) + 1;
   const { error: e2 } = await sb.from('read_episodes').insert({ series_id: s.id, no, title: p.episode.title, author_note: p.episode.authorNote || null, cuts: d.cuts, thumb_path: epThumb, ai: p.ai, status, publish_at: when });
   if (e2) throw e2;
@@ -366,12 +366,51 @@ export async function trashSeries(uid: string, isAdmin: boolean, id: string, on:
   const { error } = await db().from('read_series').update({ deleted_at: on ? nowIso() : null, updated_at: nowIso() }).eq('id', id);
   if (error) throw error;
 }
+/** 회차 번호 다시 매기기 — 보이는 회차를 1화부터 빈 번호 없이. order가 있으면 그 순서대로(지금 번호들을 원하는 차례로 적은 것).
+ *  휴지통의 회차는 9001번부터 뒤로 밀어 둬서 번호가 겹치지 않아요 */
+const TRASH_NO = 9000;
+export async function renumber(id: string, order?: number[]) {
+  if (!live()) {
+    const M = demo(), L = M.episodes.filter((e) => e.series_id === id);
+    const liveL = L.filter((e) => !e.deleted_at).sort((a, b) => (order ? order.indexOf(a.no) - order.indexOf(b.no) : a.no - b.no));
+    liveL.forEach((e, n) => { e.no = n + 1; });
+    L.filter((e) => e.deleted_at).forEach((e, n) => { e.no = TRASH_NO + n + 1; });
+    const s = M.series.find((x) => x.id === id); if (s) s.episodes = liveL.length;
+    return;
+  }
+  const sb = db();
+  const { data } = await sb.from('read_episodes').select('id,no,deleted_at,publish_at').eq('series_id', id).order('no', { ascending: true });
+  const all = (data || []) as { id: number; no: number; deleted_at: string | null; publish_at: string }[];
+  const liveL = all.filter((e) => !e.deleted_at), dead = all.filter((e) => e.deleted_at);
+  if (order) {
+    if (order.length !== liveL.length || liveL.some((e) => !order.includes(e.no))) throw new Error('bad_order');
+    liveL.sort((a, b) => order.indexOf(a.no) - order.indexOf(b.no));
+  }
+  const want = new Map<number, number>();
+  liveL.forEach((e, n) => want.set(e.id, n + 1));
+  dead.forEach((e, n) => want.set(e.id, TRASH_NO + n + 1));
+  const move = all.filter((e) => want.get(e.id) !== e.no);
+  if (move.length) {
+    // 번호가 겹치면 안 되니, 먼저 멀리 치워 두고 제자리에 놓아요
+    for (const e of move) { const { error } = await sb.from('read_episodes').update({ no: 100000 + e.id }).eq('id', e.id); if (error) throw error; }
+    for (const e of move) { const { error } = await sb.from('read_episodes').update({ no: want.get(e.id)! }).eq('id', e.id); if (error) throw error; }
+  }
+  const last = liveL.map((e) => e.publish_at).sort().pop() || null;
+  await sb.from('read_series').update({ episodes: liveL.length, last_episode_at: last, updated_at: nowIso() }).eq('id', id);
+}
+/** 회차 순서 바꾸기 · 몇 화인지 바꾸기 */
+export async function reorderEpisodes(uid: string, isAdmin: boolean, id: string, order: number[]) {
+  await ownSeries(uid, isAdmin, id);
+  await renumber(id, order);
+}
 export async function trashEpisode(uid: string, isAdmin: boolean, id: string, no: number, on: boolean) {
   await ownSeries(uid, isAdmin, id);
-  if (!live()) { const e = demo().episodes.find((x) => x.series_id === id && x.no === no); if (!e) throw new Error('not_found'); e.deleted_at = on ? nowIso() : null; return; }
-  const { data, error } = await db().from('read_episodes').update({ deleted_at: on ? nowIso() : null }).eq('series_id', id).eq('no', no).select('no');
+  if (!live()) { const e = demo().episodes.find((x) => x.series_id === id && x.no === no); if (!e) throw new Error('not_found'); e.deleted_at = on ? nowIso() : null; if (!on) e.no = 8999; await renumber(id); return; }
+  // 되살리는 회차는 맨 뒤 번호로 들어가요 (8999 → 다시 매기면 마지막 화)
+  const { data, error } = await db().from('read_episodes').update(on ? { deleted_at: nowIso() } : { deleted_at: null, no: 8999 }).eq('series_id', id).eq('no', no).select('no');
   if (error) throw error;
   if (!data?.length) throw new Error('not_found');
+  await renumber(id); // 지우면 뒤 회차가 앞으로 당겨져요 (2화 → 1화)
 }
 /** 완전히 지우기 — 휴지통에 있는 것만 (되살릴 수 없어요) */
 export async function purgeSeries(uid: string, isAdmin: boolean, id: string) {
