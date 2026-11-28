@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AGES, GENRES } from '@/lib/read/config';
 import { call, toast } from './client';
+import { Ic } from './Icons';
 import { k } from './k';
 
 type S = { id: string; title: string; authorName: string; genre: string; age: string; description: string };
@@ -32,7 +33,7 @@ export function SeriesEdit({ s, eps }: { s: S; eps: E[] }) {
   };
   return (
     <>
-      <button className={k('btn big')} onClick={() => { setF(s); setOpen(true); }}>연재 수정</button>
+      <button className={k('editic')} aria-label="연재 수정" title="연재 수정" onClick={() => { setF(s); setOpen(true); }}><Ic n="pen" /></button>
       {open && !ep && (
         <Sheet title="연재 수정" onClose={() => setOpen(false)}>
           <label className={k('field')}><span>작품 제목</span><input type="text" maxLength={40} value={f.title} onChange={(e) => set('title', e.target.value)} /></label>

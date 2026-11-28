@@ -413,3 +413,6 @@ html:has(.rd){scroll-behavior:smooth}
 .rd .r-oeps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .rd .r-oeps li{display:flex;align-items:center;gap:6px;font-size:13.5px}.rd .r-oeps li>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .rd .r-oeps .r-btn{padding:6px 12px;font-size:12.5px}
+.rd .r-editic{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;margin-left:10px;vertical-align:middle;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink-2)}
+.rd .r-editic:hover{color:var(--ink);border-color:var(--ink-2)}.rd .r-editic svg{width:16px;height:16px}
+.rd .r-osheet{font-size:15px;font-weight:400;letter-spacing:0;line-height:1.6;text-align:left}

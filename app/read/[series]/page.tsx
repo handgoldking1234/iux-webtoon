@@ -36,7 +36,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
       <section className={k('thead')}>
         <div className={k('th')}><Thumb s={v} w={300} h={400} alt={`${s.title} 썸네일`} /></div>
         <div>
-          <h1>{s.title}</h1>
+          <h1>{s.title}{owner && <SeriesEdit s={{ id: s.id, title: s.title, authorName: s.author_name, genre: s.genre, age: s.age, description: s.description }} eps={episodes.map((e) => ({ no: e.no, title: e.title, authorNote: e.author_note || '', hidden: e.status === 'hidden' }))} />}</h1>
           <p className={k('who')}><span>글/그림 {s.author_name}</span><span>{when}</span><span>{ageLabel(s.age)}</span></p>
           <p className={k('desc')}>{s.description}</p>
           <div className={k('chips')}>
@@ -51,7 +51,6 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
             <FollowButton seriesId={s.id} initial={followed} />
             <ShareButton />
             {owner && <Link className={k('btn big')} href={readHref('publish')}>다음 화 올리기</Link>}
-            {owner && <SeriesEdit s={{ id: s.id, title: s.title, authorName: s.author_name, genre: s.genre, age: s.age, description: s.description }} eps={episodes.map((e) => ({ no: e.no, title: e.title, authorNote: e.author_note || '', hidden: e.status === 'hidden' }))} />}
           </div>
         </div>
       </section>
