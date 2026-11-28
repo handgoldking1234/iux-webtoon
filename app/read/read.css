@@ -429,7 +429,7 @@ html:has(.rd){scroll-behavior:smooth}
 .rd .r-ico.r-fill{fill:currentColor}
 .rd .r-osheet p{margin:0}
 .rd .r-oseg{display:flex;flex-wrap:wrap;gap:6px 16px;font-weight:500;font-size:14px}.rd .r-oseg label{display:flex;align-items:center;gap:6px;cursor:pointer}
-.rd .r-osheet input[type=datetime-local]{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 12px;font:inherit;font-weight:500;max-width:260px;color-scheme:dark}
+.rd .r-osheet input[type=datetime-local]{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 12px;font:inherit;font-weight:500;max-width:260px}
 .rd .r-oway{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rd .r-oway small{color:var(--ink-2);font-size:12.5px;flex:1;min-width:180px}
 .rd .r-odrop{display:flex;flex-direction:column;align-items:center;gap:4px;padding:20px 12px;border:1.5px dashed var(--line);border-radius:12px;cursor:pointer;text-align:center}.rd .r-odrop:hover{border-color:var(--green)}.rd .r-odrop small{color:var(--ink-2);font-size:12.5px}.rd .r-odrop .r-ico{width:24px;height:24px}
 .rd .r-ofiles{list-style:none;margin:0;padding:0;max-height:200px;overflow:auto;border:1px solid var(--line);border-radius:10px}
@@ -446,9 +446,9 @@ html:has(.rd){scroll-behavior:smooth}
 .rd .r-obody{flex:1;min-height:0;overflow:auto;padding:18px 22px;display:flex;flex-direction:column;gap:12px}
 .rd .r-ofoot{display:flex;justify-content:flex-end;align-items:center;gap:8px;padding:12px 22px;border-top:1px solid var(--line);flex:none;flex-wrap:wrap}.rd .r-ofoot small{font-size:12.5px;line-height:1.45;flex:1;min-width:160px}
 /* 회차 목록 한 줄의 연필 · 휴지통 (작가만) */
-.rd .r-eprow{position:relative}
-.rd .r-eprow{border-bottom:1px solid var(--line)}.rd .r-eprow:last-child{border-bottom:0}.rd .r-eprow .r-ep{border-bottom:0}
-.rd .r-eprow:has(.r-eptools) .r-ep{padding-right:112px}
+.rd .r-eline{position:relative}
+.rd .r-eline{border-bottom:1px solid var(--line)}.rd .r-eline:last-child{border-bottom:0}.rd .r-eline .r-ep{border-bottom:0}
+.rd .r-eline:has(.r-eptools) .r-ep{padding-right:112px}
 .rd .r-eptools{position:absolute;right:16px;top:0;bottom:0;display:flex;align-items:center;gap:6px}
 .rd .r-eptools>button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center}
 .rd .r-eptools>button:hover{color:var(--ink);border-color:var(--ink-2)}.rd .r-eptools>button .r-ico{width:15px;height:15px}
@@ -469,3 +469,24 @@ html:has(.rd){scroll-behavior:smooth}
 .rd .r-oview{position:fixed;inset:0;z-index:90;background:rgba(0,0,0,.92);overflow:auto;padding:56px 0 40px;cursor:zoom-out}
 .rd .r-oview>div{width:min(690px,100%);margin:0 auto;cursor:default;background:#fff}.rd .r-oview img{display:block;width:100%;height:auto}
 .rd .r-oview .r-ox{position:fixed;right:14px;top:12px;color:#fff;background:rgba(255,255,255,.14)}
+/* ───────── 밝은 화면 · 어두운 화면 바꾸기 (오른쪽 아래 단추) */
+.rd .r-theme{position:fixed;right:max(16px,calc(50vw - 440px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:15;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line);background:var(--surface);color:var(--ink);box-shadow:0 4px 14px rgba(0,0,0,.25)}
+.rd .r-theme:hover{border-color:var(--ink-2)}.rd .r-theme .r-ico{width:20px;height:20px}
+.rd:has(.r-topbtn) .r-theme{bottom:calc(76px + env(safe-area-inset-bottom,0px))}
+.rd[data-theme=light]{--bg:#ffffff;--surface:#f6f6f6;--surface-2:#eaeaea;--ink:#121212;--ink-2:#5a5a5a;--ink-3:#8c8c8c;--line:#e2e2e2;--green:#1db954;--green-soft:#e2f6ea;--red:#d93a40;--amber:#b97a00;--blue:#2f62c9;color-scheme:light}
+.rd[data-theme=light]::before{background:#fff}
+.rd[data-theme=light] .r-gnb{background:rgba(255,255,255,.9);border-bottom:1px solid var(--line)}
+.rd[data-theme=light] :focus-visible{outline-color:#121212}
+.rd[data-theme=light] .r-btn{border-color:#c4c4c4}
+@media (hover:hover){.rd[data-theme=light] .r-btn:not([disabled]):hover{border-color:#121212}.rd[data-theme=light] .r-card:hover{background:#efefef}.rd[data-theme=light] .r-card:hover .r-th{box-shadow:0 8px 24px rgba(0,0,0,.18)}}
+.rd[data-theme=light] .r-btn.r-go,.rd[data-theme=light] .r-btn.r-play{border-color:var(--green)}
+.rd[data-theme=light] .r-topi .r-n{color:#d4d4d4}
+.rd[data-theme=light] .r-fchip{background:#eaeaea;color:#121212}.rd[data-theme=light] .r-fchip:hover{background:#dedede}.rd[data-theme=light] .r-fchip.r-on{background:#121212;color:#fff}
+.rd[data-theme=light] .r-rank li a:hover{background:rgba(0,0,0,.06)}
+.rd[data-theme=light] .r-ep:hover{background:#eeeeee}
+.rd[data-theme=light] .r-theme{box-shadow:0 4px 14px rgba(0,0,0,.12)}
+/* 그림 위에 얹는 어두운 판(대표 작품 · 띠 배너)은 밝은 화면에서도 어둡게 둬요 */
+.rd[data-theme=light] .r-hero,.rd[data-theme=light] .r-feature,.rd[data-theme=light] .r-band{--ink:#ffffff;--ink-2:#b3b3b3;--ink-3:#8c8c8c;--line:#3a3a3a;--surface:#181818;color:#fff}
+.rd[data-theme=light] .r-hero .r-btn,.rd[data-theme=light] .r-feature .r-btn,.rd[data-theme=light] .r-band .r-btn{border-color:#727272}
+.rd .r-eline:hover .r-ep{background:color-mix(in srgb,var(--bg) 60%,var(--surface))}
+.rd[data-theme=light] .r-eline:hover .r-ep{background:#eeeeee}

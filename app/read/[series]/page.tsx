@@ -59,7 +59,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
         <div className={k('hd')}><b>총 {episodes.length}화</b><span className={k('muted')}>최신화부터</span><span style={{ marginLeft: 'auto' }}><ReportButton type="series" id={s.id} label="작품 신고" /></span></div>
         {!episodes.length && <p className={k('empty')}>아직 공개된 회차가 없어요</p>}
         {episodes.map((e) => (
-          <div className={k('eprow')} key={e.id}>
+          <div className={k('eline')} key={e.id}>
           <Link className={k('ep')} href={readHref(`${s.id}/${e.no}`)}>
             <span className={k('eth')}>{img(e.thumb_path) ? <img src={img(e.thumb_path)!} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} /> : s.art ? <Art art={s.art} seed={s.id + e.no} w={320} h={200} /> : null}</span>
             <span style={{ minWidth: 0 }}><b>{e.no}화 · {e.title}</b><small>{e.rating_count ? <span className={k('star tnum')}>★ {avg(e).toFixed(2)}</span> : '별점 없음'}{e.status === 'hidden' ? ' · 숨김' : Date.parse(e.publish_at) > Date.now() ? ' · 예약 공개' : ''}</small></span>

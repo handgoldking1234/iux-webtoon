@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next';
 import { getMe } from '@/lib/auth';
 import Gnb from './_ui/Gnb';
+import ThemeToggle from './_ui/ThemeToggle';
 import { k } from './_ui/k';
 import './read.css';
 
@@ -13,7 +14,9 @@ export const viewport: Viewport = { width: 'device-width', initialScale: 1, view
 export default async function ReadLayout({ children }: { children: React.ReactNode }) {
   const me = await getMe();
   return (
-    <div className="rd">
+    <div className="rd" suppressHydrationWarning>
+      {/* 고른 화면 밝기를 그리기 전에 먼저 맞춰요 (깜빡임 없이) */}
+      <script dangerouslySetInnerHTML={{ __html: "try{if(localStorage.getItem('wb-read-theme')==='light')document.currentScript.parentElement.dataset.theme='light'}catch(e){}" }} />
       <Gnb signedIn={!!me} />
       <main>{children}</main>
       <footer className={k('foot')}>
@@ -24,6 +27,7 @@ export default async function ReadLayout({ children }: { children: React.ReactNo
           <a href="/">바로웹툰 소개</a>
         </div>
       </footer>
+      <ThemeToggle />
     </div>
   );
 }
