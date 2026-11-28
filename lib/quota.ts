@@ -43,7 +43,8 @@ export function usageCtx(raw: unknown, kind: 'text' | 'image', prompt: string): 
   const c = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
   const s = (v: unknown, n: number) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, n) : undefined);
   const i = (v: unknown, max: number) => (Number.isFinite(+(v as number)) && +(v as number) > 0 && +(v as number) <= max ? Math.round(+(v as number)) : undefined);
-  const guess = (kind === 'image' ? TASK_I : TASK_T).find(([re]) => re.test(prompt))?.[1] || (kind === 'image' ? '컷 그림' : '글');
+  const g0 = (kind === 'image' ? TASK_I : TASK_T).find(([re]) => re.test(prompt))?.[1] || (kind === 'image' ? '컷 그림' : '글');
+  const guess = kind === 'image' && g0 === '배경' && i(c.cut, 999) ? '컷 그림' : g0;
   return { project_id: s(c.project, 40), project_title: s(c.title, 80), ep_no: i(c.epNo, 9999), ep_title: s(c.epTitle, 80), ep_cuts: i(c.epCuts, 999), cut_no: i(c.cut, 999), task: s(c.task, 24) || guess, note: prompt.replace(/\s+/g, ' ').trim().slice(0, 300) || undefined };
 }
 
