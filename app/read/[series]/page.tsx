@@ -48,10 +48,10 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
             {owner && s.paused && <span className={k('chip')}>숨김 · 나만 보여요</span>}
           </div>
           <div className={k('acts')}>
-            {first !== null && <Link className={k('btn go big')} href={readHref(`${s.id}/${first}`)}>첫 화 보기</Link>}
-            <FollowButton seriesId={s.id} initial={followed} />
-            <ShareButton />
+            {/* 회차가 적으면 바로 아래 목록에서 고르면 돼요 — 목록이 길 때만 「첫 화 보기」 */}
+            {first !== null && episodes.length > 3 && <Link className={k('btn go big')} href={readHref(`${s.id}/${first}`)}>첫 화 보기</Link>}
             {owner && <UploadEpisode fixed={{ id: s.id, title: s.title, nextNo: s.episodes + 1 }} label="다음 화 올리기" />}
+            <span className={k('actr')}><FollowButton seriesId={s.id} initial={followed} /><ShareButton /></span>
           </div>
         </div>
       </section>

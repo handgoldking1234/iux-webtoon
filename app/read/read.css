@@ -452,3 +452,7 @@ html:has(.rd){scroll-behavior:smooth}
 .rd .r-eptools>button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center}
 .rd .r-eptools>button:hover{color:var(--ink);border-color:var(--ink-2)}.rd .r-eptools>button .r-ico{width:15px;height:15px}
 .rd .r-eptools .r-ovl{cursor:default}
+/* 관심 · 공유는 아이콘으로 오른쪽 끝에 */
+.rd .r-thead .r-acts{align-items:center}.rd .r-actr{display:flex;gap:8px;margin-left:auto}
+.rd .r-btn.r-icn{width:46px;height:46px;padding:0;border-radius:50%}.rd .r-btn.r-icn .r-ico{width:20px;height:20px}
+.rd .r-btn.r-icn.r-fav.r-on,.rd .r-hero .r-btn.r-icn.r-fav.r-on{width:46px;min-height:0;padding:0;background:transparent;border-color:var(--red);color:var(--red)}

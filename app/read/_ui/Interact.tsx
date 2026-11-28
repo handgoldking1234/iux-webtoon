@@ -7,17 +7,17 @@ import { k } from './k';
 export function FollowButton({ seriesId, initial }: { seriesId: string; initial: boolean }) {
   const [on, setOn] = useState(initial), [busy, setBusy] = useState(false);
   return (
-    <button className={k(`btn big fav ${on ? 'on' : ''}`)} aria-pressed={on} disabled={busy} onClick={async () => {
+    <button className={k(`btn icn fav ${on ? 'on' : ''}`)} aria-pressed={on} disabled={busy} onClick={async () => {
       setBusy(true);
       const j = await call<{ follows: number }>('follow', { seriesId, on: !on });
       setBusy(false);
       if (j) { setOn(!on); toast(!on ? '관심 작품에 넣었어요 · 새 회차가 올라오면 알려 드려요' : '관심 작품에서 뺐어요'); }
-    }} aria-label={on ? '관심 등록됨 · 누르면 빼요' : '관심 작품에 넣기'} title={on ? '관심 등록됨 · 누르면 빼요' : '관심 작품에 넣기'}><Ic n="heart" className={k(on ? 'ico fill' : 'ico')} />{on ? null : '관심'}</button>
+    }} aria-label={on ? '관심 등록됨 · 누르면 빼요' : '관심 작품에 넣기'} title={on ? '관심 등록됨 · 누르면 빼요' : '관심 작품에 넣기'}><Ic n="heart" className={k(on ? 'ico fill' : 'ico')} /></button>
   );
 }
 
 export function ShareButton() {
-  return <button className={k('btn big')} onClick={() => { const u = location.href; navigator.clipboard?.writeText(u).then(() => toast('주소를 복사했어요'), () => toast('주소창의 주소를 복사해 공유해 주세요')); }}>공유</button>;
+  return <button className={k('btn icn')} aria-label="공유 · 주소 복사" title="공유 · 주소 복사" onClick={() => { const u = location.href; navigator.clipboard?.writeText(u).then(() => toast('주소를 복사했어요'), () => toast('주소창의 주소를 복사해 공유해 주세요')); }}><Ic n="share" /></button>;
 }
 
 export function ViewPing({ episodeId }: { episodeId: number }) {
