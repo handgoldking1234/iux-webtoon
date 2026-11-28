@@ -35,13 +35,27 @@ export async function getQuota(p: Profile): Promise<Quota> {
   return { plan: p.plan, text: { used: m?.text_used ?? 0, limit: L.text, period: 'month' }, image: { used: imgUsed, limit: L.image, period: L.imagePeriod } };
 }
 
-export async function logUsage(p: Profile, row: { kind: 'text' | 'image'; model: string; units: number; in_tokens?: number; out_tokens?: number; cost_krw: number; ok?: boolean }) {
+/** 어디서 쓴 AI인지 — 작품 · 회차 · 컷 · 작업 종류 (편집기가 같이 보내요) */
+export type UsageCtx = { project_id?: string; project_title?: string; ep_no?: number; ep_title?: string; ep_cuts?: number; cut_no?: number; task?: string; note?: string };
+const TASK_T: [RegExp, string][] = [[/image-generation prompt|image prompt|이미지 프롬프트|그림 프롬프트/i, '그림 프롬프트'], [/말풍선|대사|dialogue/i, '대사'], [/콘티|storyboard|컷 구성|scene list/i, '콘티'], [/로그라인|시놉|기획|logline|synopsis|세계관|캐릭터 설정/i, '기획']];
+const TASK_I: [RegExp, string][] = [[/^Edit the first attached image/i, '컷 고치기'], [/character (reference )?sheet|turnaround/i, '캐릭터 시트'], [/^Cover art|^Episode thumbnail/i, '연재 표지 · 썸네일'], [/background (reference|plate|art)|establishing|location reference/i, '배경']];
+export function usageCtx(raw: unknown, kind: 'text' | 'image', prompt: string): UsageCtx {
+  const c = (raw && typeof raw === 'object' ? raw : {}) as Record<string, unknown>;
+  const s = (v: unknown, n: number) => (typeof v === 'string' && v.trim() ? v.trim().slice(0, n) : undefined);
+  const i = (v: unknown, max: number) => (Number.isFinite(+(v as number)) && +(v as number) > 0 && +(v as number) <= max ? Math.round(+(v as number)) : undefined);
+  const guess = (kind === 'image' ? TASK_I : TASK_T).find(([re]) => re.test(prompt))?.[1] || (kind === 'image' ? '컷 그림' : '글');
+  return { project_id: s(c.project, 40), project_title: s(c.title, 80), ep_no: i(c.epNo, 9999), ep_title: s(c.epTitle, 80), ep_cuts: i(c.epCuts, 999), cut_no: i(c.cut, 999), task: s(c.task, 24) || guess, note: prompt.replace(/\s+/g, ' ').trim().slice(0, 300) || undefined };
+}
+
+export async function logUsage(p: Profile, row: { kind: 'text' | 'image'; model: string; units: number; in_tokens?: number; out_tokens?: number; cost_krw: number; ok?: boolean }, ctx?: UsageCtx) {
   monthCostCache = null;
   if (!dbReady() || !adminReady()) {
     if (row.ok !== false) { local[row.kind] += row.units; local.cost += row.cost_krw; }
     return;
   }
-  await supabaseAdmin().from('ai_usage').insert({ user_id: p.id, ok: true, ...row });
+  const { error } = await supabaseAdmin().from('ai_usage').insert({ user_id: p.id, ok: true, ...row, ...(ctx || {}) });
+  // 칸이 아직 없는 DB에서도 사용량은 꼭 남겨요
+  if (error && ctx) await supabaseAdmin().from('ai_usage').insert({ user_id: p.id, ok: true, ...row });
 }
 
 /* ───────── 월 예산 — 넘으면 AI를 멈춰요 (관리자 › 설정에서 끌 수 있어요) */

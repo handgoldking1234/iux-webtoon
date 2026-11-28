@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { aiBlock, aiMe } from '@/lib/ai-access';
 import { err, isRes } from '@/lib/api';
-import { aiGate, logUsage } from '@/lib/quota';
+import { aiGate, logUsage, usageCtx } from '@/lib/quota';
 import { AiError, claudeModelFor, claudeTextStream, textJson } from '@/lib/ai';
 import { env } from '@/lib/env';
 import { textCostKrw } from '@/lib/pricing';
@@ -27,15 +27,16 @@ export async function POST(req: Request) {
   const engine = g.settings.engines.text;
   const model = engine === 'openai' ? env.openaiTextModel : claudeModelFor(prompts[0]);
   const quota = { ...g.quota, text: { ...g.quota.text, used: g.quota.text.used + 1 } };
+  const ctx = usageCtx(body.ctx, 'text', prompts[0]);
   try {
     if (body.stream === true && prompts.length === 1 && engine === 'claude') {
       const stream = await claudeTextStream(prompts[0], async (u) => {
-        await logUsage(me.profile, { kind: 'text', model, units: 1, in_tokens: u.inTokens, out_tokens: u.outTokens, cost_krw: textCostKrw(model, u.inTokens, u.outTokens) ?? g.settings.cost.text });
+        await logUsage(me.profile, { kind: 'text', model, units: 1, in_tokens: u.inTokens, out_tokens: u.outTokens, cost_krw: textCostKrw(model, u.inTokens, u.outTokens) ?? g.settings.cost.text }, ctx);
       });
       return new Response(stream, { headers: { 'content-type': 'text/plain; charset=utf-8', 'cache-control': 'no-store', 'x-accel-buffering': 'no', 'x-quota': JSON.stringify(quota) } });
     }
     const rs = await Promise.all(prompts.map((p) => textJson(engine, p)));
-    await logUsage(me.profile, { kind: 'text', model, units: 1, in_tokens: rs.reduce((a, r) => a + r.inTokens, 0), out_tokens: rs.reduce((a, r) => a + r.outTokens, 0), cost_krw: rs.reduce((a, r) => a + (textCostKrw(model, r.inTokens, r.outTokens) ?? g.settings.cost.text), 0) });
+    await logUsage(me.profile, { kind: 'text', model, units: 1, in_tokens: rs.reduce((a, r) => a + r.inTokens, 0), out_tokens: rs.reduce((a, r) => a + r.outTokens, 0), cost_krw: rs.reduce((a, r) => a + (textCostKrw(model, r.inTokens, r.outTokens) ?? g.settings.cost.text), 0) }, ctx);
     return NextResponse.json({ data: rs[0].data, datas: rs.length > 1 ? rs.map((r) => r.data) : undefined, truncated: rs.some((r) => r.truncated) || undefined, quota });
   } catch (e) {
     const a = e instanceof AiError ? e : new AiError('upstream_error', String(e));

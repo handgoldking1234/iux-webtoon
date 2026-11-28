@@ -201,15 +201,15 @@
     window.claude.use = function () {
       return Promise.resolve({
         json: function (prompt) {
-          return api('/api/ai/text', { method: 'POST', json: { prompt: String(prompt) } }).then(function (j) { setQuota(j.quota); if (j.truncated) setTimeout(function () { say('AI 답이 길어서 뒷부분이 잘렸어요 · 받은 데까지만 넣었어요. 컷 수를 줄이거나 나머지를 한 번 더 만들어 주세요'); }, 600); return j.data; }).catch(aiFail);
+          return api('/api/ai/text', { method: 'POST', json: { prompt: String(prompt), ctx: aiCtx() } }).then(function (j) { setQuota(j.quota); if (j.truncated) setTimeout(function () { say('AI 답이 길어서 뒷부분이 잘렸어요 · 받은 데까지만 넣었어요. 컷 수를 줄이거나 나머지를 한 번 더 만들어 주세요'); }, 600); return j.data; }).catch(aiFail);
         },
         /* 여러 조각을 동시에 물어요 — 서버가 한꺼번에 처리하고 사용 횟수는 1회예요 */
         jsonAll: function (prompts) {
-          return api('/api/ai/text', { method: 'POST', json: { prompts: prompts.map(String) } }).then(function (j) { setQuota(j.quota); return j.datas || [j.data]; }).catch(aiFail);
+          return api('/api/ai/text', { method: 'POST', json: { prompts: prompts.map(String), ctx: aiCtx() } }).then(function (j) { setQuota(j.quota); return j.datas || [j.data]; }).catch(aiFail);
         },
         /* 쓰는 대로 받아요 — onText(지금까지 받은 글) · 끝나면 읽은 JSON을 돌려줘요 */
         stream: function (prompt, onText) {
-          return api('/api/ai/text', { method: 'POST', json: { prompt: String(prompt), stream: true } }).then(function (r) {
+          return api('/api/ai/text', { method: 'POST', json: { prompt: String(prompt), stream: true, ctx: aiCtx() } }).then(function (r) {
             if (!r || !r.body || typeof r.body.getReader !== 'function') { setQuota(r && r.quota); return r && r.data; }
             try { setQuota(JSON.parse(r.headers.get('x-quota') || 'null')); } catch (_) {}
             var rd = r.body.getReader(), dec = new TextDecoder(), all = '';
@@ -279,13 +279,21 @@
       return new Promise(function (res) { c.toBlob(function (w) { if (w && w.type === 'image/webp' && w.size < b.size) return res(w); c.toBlob(function (j) { res(j && j.size < b.size ? j : b); }, 'image/jpeg', 0.92); }, 'image/webp', 0.92); });
     }).catch(function () { return b; });
   }
-  function image(prompt, W, H, refKeys) {
+  /** 지금 어디서 쓰는 AI인지 — 작품 · 회차 · 컷 (관리자 사용 내역에 남아요) */
+  function aiCtx(cut) {
+    var c = {};
+    try { c.project = (typeof WID !== 'undefined' && WID) || ''; c.title = (S.settings && S.settings.workTitle) || ''; } catch (_) {}
+    try { var e = ep(); if (e) { c.epNo = e.kind === 'cover' ? 0 : e.num; c.epTitle = e.kind === 'cover' ? '표지 · 썸네일' : (e.title || ''); c.epCuts = (e.cuts || []).length; } } catch (_) {}
+    if (cut > 0 && cut < 1000 && cut === Math.round(cut)) c.cut = cut;
+    return c;
+  }
+  function image(prompt, W, H, refKeys, cut) {
     var map = (typeof blobs !== 'undefined' && blobs) || new Map();
     var refs = (refKeys || []).filter(function (k, i, a) { return k && a.indexOf(k) === i && map.has(k); }).slice(0, 3);
     var model = '', res = '';
     try { var am = S.settings.aiModel || '나노바나나 2.1'; model = am.indexOf('GPT') >= 0 ? 'gpt' : am.indexOf('Pro') >= 0 ? 'pro' : ''; res = S.settings.sbRes === undefined ? '1K' : (S.settings.sbRes || ''); } catch (_) {}
     return Promise.all(refs.map(function (k) { return shrink(map.get(k)).catch(function () { return null; }); })).then(function (R) {
-      return fetch('/api/ai/image', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ prompt: prompt, width: Math.round(W), height: Math.round(H), model: model, res: res, refs: R.filter(Boolean) }) });
+      return fetch('/api/ai/image', { method: 'POST', credentials: 'same-origin', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ ctx: aiCtx(cut), prompt: prompt, width: Math.round(W), height: Math.round(H), model: model, res: res, refs: R.filter(Boolean) }) });
     }).then(function (r) {
       var q = r.headers.get('x-wb-quota'); if (q) try { setQuota(JSON.parse(q)); } catch (_) {}
       if (r.ok && (r.headers.get('content-type') || '').indexOf('image/') === 0) return r.blob().then(slim);

@@ -1,7 +1,7 @@
 import { imageCostKrw } from '@/lib/pricing';
 import { aiBlock, aiMe } from '@/lib/ai-access';
 import { err, isRes } from '@/lib/api';
-import { aiGate, logUsage } from '@/lib/quota';
+import { aiGate, logUsage, usageCtx } from '@/lib/quota';
 import { AiError, makeImage } from '@/lib/ai';
 import { env } from '@/lib/env';
 
@@ -23,7 +23,7 @@ export async function POST(req: Request) {
   const pro = b.model === 'pro' || gpt, engine = gpt ? 'openai' : g.settings.engines.image;
   try {
     const r = await makeImage(engine, prompt, +b.width || 768, +b.height || 1024, refs, pro, typeof b.res === 'string' ? b.res : undefined);
-    await logUsage(me.profile, { kind: 'image', model: r.model, units: 1, cost_krw: imageCostKrw(r.model, typeof b.res === 'string' && b.res ? b.res : '1K') ?? (pro ? g.settings.cost.imagePro : g.settings.cost.image) });
+    await logUsage(me.profile, { kind: 'image', model: r.model, units: 1, cost_krw: imageCostKrw(r.model, typeof b.res === 'string' && b.res ? b.res : '1K') ?? (pro ? g.settings.cost.imagePro : g.settings.cost.image) }, usageCtx(b.ctx, 'image', prompt));
     const quota = { ...g.quota, image: { ...g.quota.image, used: g.quota.image.used + 1 } };
     // 큰 그림(2K)은 4.5MB 응답 한도를 넘을 수 있어서, 통째로가 아니라 흘려 보내요
     const bytes = new Uint8Array(r.bytes), CH = 256 * 1024;

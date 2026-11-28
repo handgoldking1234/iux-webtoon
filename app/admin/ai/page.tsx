@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { aiReport } from '@/lib/admin-data';
 import { won, num } from '@/lib/fmt';
 import { getSettings } from '@/lib/settings';
+import ByWork from './ByWork';
 import Compare from './Compare';
 
 export const metadata = { title: 'AI 사용 · 비용' };
@@ -33,6 +34,7 @@ export default async function AiPage() {
           {d.top.length ? d.top.map((t, i) => <Link className="row" key={i} href={t.member ? `/admin/members/${t.member.id}` : '#'}><span className="av">{(t.member?.name || '?').slice(0, 1)}</span><span style={{ flex: 1 }}><b>{t.member?.name || '알 수 없음'}</b><span className="sub2">이미지 {t.image} · 글 {t.text}</span></span><b>{won(t.cost)}</b></Link>) : <p className="note">기록이 없어요</p>}
         </div>
       </div>
+      <ByWork />
       <Compare />
       <div className="callout i"><span>무료 한도: 글 AI 매달 <b>{st.limits.freeText}회</b> · 이미지 가입 선물 <b>{st.limits.freeImage}장</b> / 프로: 글 {st.limits.proText}회 · 이미지 {st.limits.proImage}장(월). 회원별 추가 이미지는 회원 상세에서 줄 수 있어요.</span></div>
     </section>

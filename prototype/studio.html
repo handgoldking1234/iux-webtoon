@@ -3630,7 +3630,7 @@ async function stuMakeRef(kind,id,view){const st=S.settings,left=AI_FREE-(st.aiU
  /* 같이 보내는 참고 그림: 외형 시트는 기본 시트(같은 얼굴), 장소는 이미 만든 그림(같은 곳) */
  const mkRefs=[...(vr?(o.refs||[]).slice(0,1):kind==='ch'?(o.refs||[]).slice(1,3):(o.refs||[]).slice(0,3)),...(S.settings.sbStyleRefs||[]).slice(0,1)].filter((k,i,a)=>k&&a.indexOf(k)===i).slice(0,3);/* 화풍 참고도 같이 — 시트 · 배경도 같은 그림체로 */
  prog(kind==='ch'?`${o.name} 캐릭터 시트 만드는 중`:`${o.name} 배경 만드는 중`);progSet(.4,st.aiModel||'나노바나나 2.1');await new Promise(r=>setTimeout(r,450));
- const seed=[...o.name].reduce((a,ch)=>(a*31+ch.charCodeAt(0))%997,3);let b=await sbMockImg(kind==='ch'?1200:1280,kind==='ch'?800:720,seed,kind==='ch'?1:2);b=await stuMockLabel(b,kind==='ch'?`캐릭터 시트 · ${o.name}${vr?` · ${vr.name}`:''}`:`배경 · ${o.name}${view?` · ${[(LOC_VIEWS.find(x=>x[0]===view.v)||[])[1],view.t?(LOC_TIMES.find(x=>x[0]===view.t)||[])[1]:''].filter(Boolean).join(' · ')}`:''}`,kind);
+ const seed=1000+[...o.name].reduce((a,ch)=>(a*31+ch.charCodeAt(0))%997,3);let b=await sbMockImg(kind==='ch'?1200:1280,kind==='ch'?800:720,seed,kind==='ch'?1:2);b=await stuMockLabel(b,kind==='ch'?`캐릭터 시트 · ${o.name}${vr?` · ${vr.name}`:''}`:`배경 · ${o.name}${view?` · ${[(LOC_VIEWS.find(x=>x[0]===view.v)||[])[1],view.t?(LOC_TIMES.find(x=>x[0]===view.t)||[])[1]:''].filter(Boolean).join(' · ')}`:''}`,kind);
  const k='ai_'+uid();if(kind==='loc'){(o.tags=o.tags||{})[k]={v:(view&&view.v)||'wide',t:(view&&view.t)||''};}blobs.set(k,b);putBlob(k,b);libAdd(k,'ai',{model:st.aiModel||'나노바나나 2.1',name:kind==='ch'?`${o.name}_시트.png`:`${o.name}_배경.png`,ref:kind});
  tgt.refs=[k,...(tgt.refs||[]).filter(x=>x!==k)].slice(0,6);if(kind==='ch')st.sbChars=sbCharsText(st.sbCharList);st.aiUsed=(st.aiUsed||0)+1;save();progEnd();stuRender();if(NAV==='plan'||NAV==='lib'||NAV==='ai')renderEps();
  toast(`${kind==='ch'?'캐릭터 시트':'배경'}를 만들었어요 · 장면마다 참고 이미지로 붙어요 (예시 이미지)`);}
@@ -3638,7 +3638,7 @@ function stuUpload(kind,id,vid){const inp=document.createElement('input');inp.ty
  const k='lib_'+uid();blobs.set(k,f);putBlob(k,f);libAdd(k,'up',{name:f.name,ref:kind});const tg=(vid&&(o.vars||[]).find(v=>v.id===vid))||o;tg.refs=[k,...(tg.refs||[])].slice(0,6);if(kind==='ch')st.sbChars=sbCharsText(st.sbCharList);save();stuRender();planRender();toast('참고 이미지를 넣었어요');};inp.click();}
 async function stuGo(){const st=S.settings,nc=st.aiN||1,left=AI_FREE-(st.aiUsed||0);if(!STU.p.trim())return;
  if(left<=0){$('#mAiImg')?.remove();paywall('img');return;}if(nc>left){toast(`맛보기가 ${left}장 남았어요 · 후보 수를 줄여 주세요`);return;}
- const [W,H]=stuSize(),prompt=stuPrompt(),c=STU.src==='sb'?cutById(STU.cid):null,seed=c?c.sb.no:[...STU.p].reduce((a,ch)=>(a*31+ch.charCodeAt(0))%997,7);
+ const [W,H]=stuSize(),prompt=stuPrompt(),c=STU.src==='sb'?cutById(STU.cid):null,seed=c?c.sb.no:1000+[...STU.p].reduce((a,ch)=>(a*31+ch.charCodeAt(0))%997,7);
  $('#mAiImg')?.remove();prog(`장면 만드는 중 · ${st.aiModel||'나노바나나 2.1'}`);const ks=[];
  for(let v=0;v<nc;v++){if(cancelFlag)break;progSet(v/nc,`${v+1}/${nc}장 그리는 중… 참고 ${stuRefs().length}장`);await new Promise(r=>setTimeout(r,350));const b=await sbMockImg(W,H,seed,v+(c&&c.sb.cands?c.sb.cands.length:0));const k='ai_'+uid();blobs.set(k,b);putBlob(k,b);progThumb(b);libAdd(k,'ai',{model:st.aiModel||'나노바나나 2.1',prompt:prompt.slice(0,400),...(c?{sno:c.sb.no}:{})});ks.push(k);}
  progEnd();if(!ks.length)return;st.aiUsed=(st.aiUsed||0)+ks.length;save();

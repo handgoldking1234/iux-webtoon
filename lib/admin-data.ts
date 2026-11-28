@@ -215,3 +215,38 @@ export async function admins() {
   const { data } = await supabaseAdmin().from('profiles').select('id,name,email,last_seen_at').eq('role', 'admin').limit(50);
   return (data || []) as { id: string; name: string | null; email: string | null; last_seen_at: string | null }[];
 }
+
+/* ───────── AI 사용 내역 — 작품 › 회차 › 호출 한 건씩 (최근 31일) */
+export type UseRow = { id: number; user_id: string; kind: 'text' | 'image'; model: string | null; units: number; in_tokens: number | null; out_tokens: number | null; cost_krw: number; ok: boolean; created_at: string; project_id: string | null; project_title: string | null; ep_no: number | null; ep_title: string | null; ep_cuts: number | null; cut_no: number | null; task: string | null; note: string | null };
+export type UseSum = { texts: number; images: number; inTok: number; outTok: number; cost: number; tasks: Record<string, number>; last: string };
+const sumOf = (rows: UseRow[]): UseSum => {
+  const s: UseSum = { texts: 0, images: 0, inTok: 0, outTok: 0, cost: 0, tasks: {}, last: '' };
+  rows.forEach((r) => {
+    if (r.kind === 'image') s.images += r.units; else s.texts += r.units;
+    s.inTok += r.in_tokens || 0; s.outTok += r.out_tokens || 0; s.cost += +r.cost_krw;
+    const t = r.task || (r.kind === 'image' ? '그림' : '글'); s.tasks[t] = (s.tasks[t] || 0) + r.units;
+    if (r.created_at > s.last) s.last = r.created_at;
+  });
+  return s;
+};
+export async function aiByWork() {
+  if (!adminReady()) return { demo: true, works: [], total: 0 };
+  const sb = supabaseAdmin();
+  const { data } = await sb.from('ai_usage').select('*').gte('created_at', daysAgo(31)).order('created_at', { ascending: false }).limit(5000);
+  const rows = (data || []) as UseRow[];
+  const ids = [...new Set(rows.map((r) => r.user_id))];
+  const { data: ps } = ids.length ? await sb.from('profiles').select('id,name,email').in('id', ids) : { data: [] };
+  const who = new Map((ps || []).map((p) => [p.id as string, (p.name || p.email || '회원') as string]));
+  const byWork = new Map<string, UseRow[]>();
+  rows.forEach((r) => { const k = `${r.user_id}|${r.project_id || ''}`; (byWork.get(k) || byWork.set(k, []).get(k)!).push(r); });
+  const works = [...byWork.entries()].map(([key, list]) => {
+    const byEp = new Map<string, UseRow[]>();
+    list.forEach((r) => { const k = r.project_id ? String(r.ep_no ?? -1) : 'x'; (byEp.get(k) || byEp.set(k, []).get(k)!).push(r); });
+    const eps = [...byEp.entries()].map(([k, rs]) => ({
+      key: k, no: rs[0].ep_no, title: rs.find((r) => r.ep_title)?.ep_title || '', cuts: rs.find((r) => r.ep_cuts)?.ep_cuts ?? null,
+      sum: sumOf(rs), rows: rs.slice(0, 200), more: Math.max(0, rs.length - 200),
+    })).sort((a, b) => (a.no ?? 1e9) - (b.no ?? 1e9));
+    return { key, user: who.get(list[0].user_id) || '회원', userId: list[0].user_id, projectId: list[0].project_id, title: list.find((r) => r.project_title)?.project_title || (list[0].project_id ? '제목 없음' : ''), sum: sumOf(list), eps };
+  }).sort((a, b) => (b.sum.last > a.sum.last ? 1 : -1));
+  return { demo: false, works, total: rows.length };
+}
