@@ -448,7 +448,7 @@ html:has(.rd){scroll-behavior:smooth}
 /* 회차 목록 한 줄의 연필 · 휴지통 (작가만) */
 .rd .r-eprow{position:relative}
 .rd .r-eprow:has(.r-eptools) .r-ep>span:nth-child(2){padding-right:92px}
-.rd .r-eptools{position:absolute;right:104px;top:50%;transform:translateY(-50%);display:flex;gap:6px}
+.rd .r-eptools{position:absolute;right:104px;top:0;bottom:0;display:flex;align-items:center;gap:6px}
 .rd .r-eptools>button{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--ink-2);display:inline-flex;align-items:center;justify-content:center}
 .rd .r-eptools>button:hover{color:var(--ink);border-color:var(--ink-2)}.rd .r-eptools>button .r-ico{width:15px;height:15px}
 .rd .r-eptools .r-ovl{cursor:default}

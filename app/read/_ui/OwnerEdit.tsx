@@ -1,5 +1,6 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { AGES, GENRES } from '@/lib/read/config';
 import { call, toast } from './client';
@@ -39,14 +40,19 @@ const whenText = (iso: string) => new Date(iso).toLocaleString('ko-KR', { month:
 
 /** 창 — 위(제목 · 닫기)와 아래(단추)는 그대로 있고, 가운데만 스크롤돼요 */
 function Sheet({ title, children, foot, onClose }: { title: string; children: React.ReactNode; foot?: React.ReactNode; onClose: () => void }) {
-  return (
+  // 화면 맨 위 층에 그려요 — 단추 안쪽에 그리면 그 자리에 갇혀서 창이 깨져 보여요
+  const [host, setHost] = useState<Element | null>(null);
+  useEffect(() => { setHost(document.querySelector('.rd') || document.body); }, []);
+  if (!host) return null;
+  return createPortal(
     <div className={k('ovl')} role="dialog" aria-modal="true" aria-label={title} onClick={(ev) => { if (ev.target === ev.currentTarget) onClose(); }}>
       <div className={k('osheet')}>
         <div className={k('ohd')}><h2>{title}</h2><button type="button" className={k('ox')} aria-label="닫기" title="닫기" onClick={onClose}><Ic n="x" /></button></div>
         <div className={k('obody')}>{children}</div>
         {foot && <div className={k('ofoot')}>{foot}</div>}
       </div>
-    </div>
+    </div>,
+    host,
   );
 }
 
@@ -98,11 +104,12 @@ function CutPick({ files, setFiles, busy, label }: { files: File[]; setFiles: (f
           </li>
         ))}</ol>
       </>}
-      {view && (
+      {view && createPortal(
         <div className={k('oview')} role="dialog" aria-modal="true" aria-label="이어서 미리보기" onClick={() => setView(false)}>
           <button type="button" className={k('ox')} aria-label="닫기"><Ic n="x" /></button>
           <div onClick={(e) => e.stopPropagation()}>{files.map((x, i) => <img key={x.name + x.size + i} src={urlOf(x)} alt={`${i + 1}번째 그림`} />)}</div>
-        </div>
+        </div>,
+        document.querySelector('.rd') || document.body,
       )}
     </>
   );
