@@ -977,6 +977,7 @@ body:has(.modal:not([hidden]),#ed:not([hidden])) .coach{display:none}
 .plempty{padding:28px;text-align:center;color:var(--muted);border:1px dashed var(--line);border-radius:12px}
 .lnk{border:0;background:none;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline}
 .plkv{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--line)}.plkv span{color:var(--muted)}
+.pldochd h4 small,.pldoc h5 small{font-size:12px;font-weight:500;color:var(--muted);margin-left:6px}.pldoc .ple{outline:0;border-radius:4px;padding:1px 3px;margin:-1px -3px;white-space:pre-wrap;cursor:text;transition:background .12s}.pldoc .ple:hover{background:var(--panel2)}.pldoc .ple:focus{background:var(--panel2);box-shadow:0 0 0 1.5px var(--accent)}.pldoc .ple:empty::before{content:attr(data-ph);color:var(--muted);opacity:.7}.pldoc .ple:empty{display:inline-block;min-width:60px}.pldoc .plmeta{color:var(--muted)}
 .pldochd{display:flex;align-items:center;gap:8px;margin-bottom:12px}.pldochd h4{margin:0 auto 0 0}
 .pldoc{border:1px solid var(--line);border-radius:12px;padding:28px 34px;background:var(--panel);line-height:1.7;max-width:760px}.pldoc h4{font-size:22px;margin:0 0 6px}.pldoc h5{font-size:15px;margin:22px 0 6px;padding-bottom:4px;border-bottom:1px solid var(--line)}.pldoc h6{font-size:13px;margin:12px 0 4px}.pldoc p{margin:0 0 6px;font-size:13px;white-space:pre-wrap}.pldoc p.li{padding-left:12px;position:relative}.pldoc p.li::before{content:"·";position:absolute;left:2px}
 .plsum{display:flex;flex-direction:column;gap:7px;padding:10px;border-radius:10px;background:var(--panel2);margin-bottom:8px}
@@ -2650,7 +2651,7 @@ function plSecHTML(k){const P=plan(),q=txtAi();
   ${(()=>{const C=plChars().filter(c=>c.name),ok=C.filter(c=>(c.refs||[]).length).length,no=C.filter(c=>!(c.refs||[]).length),g=(s.sbSheet||[]).length;
    return `<div class="plartch"><span>${ic('user',13)}캐릭터 시트</span><b>인물 ${ok}/${C.length}${g?` · 단체 ${g}장`:''}</b><button class="btn sm${no.length?' pri':''}" data-placts="gosheet">${no.length?`시트 만들기 · ${no.length}명 남음`:'시트 관리'} · 콘티·AI ${ic('arrow',11)}</button></div>`;})()}
   <div class="plf"><span>생성 해상도</span><div class="seg plseg">${SB_RES.map(([k,l])=>`<button type="button" data-placts="artres" data-v="${k}" aria-pressed="${res===k}">${l}</button>`).join('')}</div><small class="note" style="margin:0">${({'':'해상도를 적지 않아요 · AI 기본값','1K':'1K 기본 — 웹툰 가로 690px에 충분해요','2K':'2K — 더 선명하게 (값이 더 들어요)','4K':'4K — 인쇄 · 크게 자르기용 · 느리고 비싸요'})[res]}</small></div>`;}
- else if(k==='doc'){h=`<div class="pldochd"><h4>기획서</h4><button class="btn sm" data-placts="copymd">${ic('copy',13)}마크다운 복사</button><button class="btn sm" data-placts="savemd" data-dl>${ic('dl',13)}.md로 받기</button></div><article class="pldoc">${plDocHTML()}</article>`;}
+ else if(k==='doc'){h=`<div class="pldochd"><h4>기획서 <small>글자를 누르면 바로 고쳐져요</small></h4><button class="btn sm" data-placts="copymd">${ic('copy',13)}마크다운 복사</button><button class="btn sm" data-placts="savemd" data-dl>${ic('dl',13)}.md로 받기</button></div><article class="pldoc">${plDocHTML()}</article>`;}
  return h;}
 function planRender(){const m=$('#mPlan');if(!m){if($('#mWork'))wkRender();return;}$('#plTabs').innerHTML=plTabsHTML();const fo=document.activeElement&&m.contains(document.activeElement)?document.activeElement.getAttribute('data-plk')||document.activeElement.id:null;
  const P0=plan(),sheet=m.querySelector('.plsheet');sheet.classList.toggle('simple',!P0.detail);
@@ -2675,9 +2676,30 @@ function plDocMD(){const P=plan(),C=plChars().filter(c=>c.name),st=P.struct||'3a
  if(S.settings.sbStyle){const pr=SB_PRESETS.find(x=>x[1]===S.settings.sbStyle);L.push('## 화풍',pr?pr[0]:S.settings.sbStyle,'');}
  if(P.selling)L.push('## 셀링 포인트',P.selling,'');
  return L.join('\n');}
-function plDocHTML(){const md=plDocMD();return md.split('\n').map(l=>l.startsWith('### ')?`<h6>${esc(l.slice(4))}</h6>`:l.startsWith('## ')?`<h5>${esc(l.slice(3))}</h5>`:l.startsWith('# ')?`<h4>${esc(l.slice(2))}</h4>`:l.startsWith('- ')?`<p class="li">${esc(l.slice(2)).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>')}</p>`:l.trim()?`<p>${esc(l)}</p>`:'').join('')||'<p class="note">아직 비어 있어요</p>';}
+/* 기획서를 보면서 바로 고치기 — 글자를 누르면 그 자리에서 고쳐지고 각 칸(로그라인 · 인물 · 줄거리 …)에 그대로 저장돼요 */
+function plDocHTML(){const P=plan(),C=plChars(),CN=C.filter(c=>c.name),st=P.struct||'3act',E=S.episodes.filter(e=>e.kind!=='cover').sort((a,b)=>a.num-b.num);
+ const ed=(path,v,ph)=>`<span class="ple" contenteditable="plaintext-only" spellcheck="false" data-ple="${path}" data-ph="${esc(ph||'')}">${esc(v||'')}</span>`;
+ const sec=(t,path,v,ph)=>`<h5>${t}</h5><p>${ed(path,v,ph)}</p>`;
+ let h=`<h4>${ed('title',S.settings.workTitle,'작품 제목')}</h4>`;
+ const meta=[P.format||'연재',(P.genres||[]).join(' · ')||P.genre,P.tone,P.target,P.eps?`${P.eps}화 계획`:''].filter(Boolean);if(meta.length)h+=`<p class="plmeta">${esc(meta.join(' / '))}</p>`;
+ h+=sec('로그라인','p.logline',P.logline,'한 문장으로 — 누가 · 무엇을 · 왜')+sec('기획의도','p.intent',P.intent,'왜 이 이야기인지')+sec('세계관 · 배경','p.world',P.world,'시대 · 장소 · 규칙');
+ const LO=(S.settings.locs||[]).map((l,i)=>[l,i]).filter(([l])=>l.name);if(LO.length)h+='<h6>주요 장소</h6>'+LO.map(([l,i])=>`<p class="li"><b>${ed('loc.'+i+'.name',l.name,'장소 이름')}</b> — ${ed('loc.'+i+'.desc',l.desc,'어떤 곳인지')}</p>`).join('');
+ if(CN.length){h+='<h5>등장인물</h5>';CN.forEach(c=>{h+=`<h6>${ed('ch.'+c.id+'.name',c.name,'이름')} · ${ed('ch.'+c.id+'.role',c.role,'역할')}</h6>`;[['소개','intro'],['욕망','want'],['비밀','secret'],['성격','pers'],['말투','voice'],['외모','look'],['고정 의상','outfit'],['소속','group']].forEach(([l,k])=>{if(c[k])h+=`<p class="li">${l}: ${ed('ch.'+c.id+'.'+k,c[k],l)}</p>`;});});}
+ const R=(P.rels||[]).map(r=>{const a=CN.find(c=>c.id===r.a),b=CN.find(c=>c.id===r.b);return a&&b?`<p class="li">${esc(a.name)} ↔ ${esc(b.name)} · ${esc(r.t)}${r.call?` (${esc(r.call)})`:''}</p>`:'';}).filter(Boolean);if(R.length)h+='<h5>인물 관계 <small>관계도에서 고쳐요</small></h5>'+R.join('');
+ const A=P.acts||{};h+=`<h5>줄거리 (${st==='3act'?'3막':'기승전결'})</h5>`;PL_STRUCT[st].forEach(([s,tag])=>{const a=A[s]||{};h+=`<h6>${esc(tag)} ${esc(s)}${a.from?` · ${a.from}~${a.to||'?'}화`:''}</h6><p>${ed('act.'+s,a.t,'이 구간에서 벌어지는 일')}</p>`;});h+=`<h6>전체 요약</h6><p>${ed('p.story',P.story,'처음부터 끝까지 한 문단으로')}</p>`;
+ if(E.length){h+='<h5>회차 시놉시스</h5>';E.forEach(e=>{h+=`<h6>${e.num}화 · ${ed('ep.'+e.id+'.title',e.title,'회차 제목')}</h6><p>${ed('ep.'+e.id+'.syn',e.syn,'이 화에서 벌어지는 일')}</p>`;});}
+ if(S.settings.sbStyle){const pr=SB_PRESETS.find(x=>x[1]===S.settings.sbStyle);h+=`<h5>화풍 <small>화풍 칸에서 골라요</small></h5><p>${esc(pr?pr[0]:S.settings.sbStyle)}</p>`;}
+ h+=sec('셀링 포인트','p.selling',P.selling,'이 작품만의 강점');return h;}
+function plDocSet(el){const a=el.dataset.ple.split('.'),v=el.innerText.replace(/ /g,' ').replace(/\n+$/,''),P=plan();
+ if(a[0]==='title')S.settings.workTitle=v.replace(/\n/g,' ').trim();
+ else if(a[0]==='p')P[a[1]]=v;
+ else if(a[0]==='loc'){const l=(S.settings.locs||[])[+a[1]];if(l)l[a[2]]=v;}
+ else if(a[0]==='ch'){const c=plChars().find(x=>String(x.id)===a[1]);if(c)c[a[2]]=a[2]==='name'||a[2]==='role'?v.replace(/\n/g,' ').trim():v;}
+ else if(a[0]==='act'){const k=a.slice(1).join('.');P.acts=P.acts||{};(P.acts[k]=P.acts[k]||{}).t=v;}
+ else if(a[0]==='ep'){const e=S.episodes.find(x=>String(x.id)===a[1]);if(e)e[a[2]]=a[2]==='title'?v.replace(/\n/g,' ').trim():v;}
+ plSave();}
 let plSaveT;function plSave(){clearTimeout(plSaveT);plSaveT=setTimeout(save,400);}
-function plInput(ev){const t=ev.target,P=plan();
+function plInput(ev){const t=ev.target,P=plan();if(t.dataset&&t.dataset.ple){plDocSet(t);return;}
   if(t.dataset&&t.dataset.pkd){const e=S.episodes.find(x=>x.id===PLEPV.id),c=e&&e.pack&&e.pack.cuts[+t.dataset.i];if(!c)return;(c.dir=c.dir||{})[t.dataset.pkd]=t.value;const x=e.cuts.find(y=>y.sb&&+y.sb.no===+c.no);if(x)x.sb.dir={...c.dir};plSave();return;}
  if(t.dataset&&(t.dataset.pke||t.dataset.pkl)){const e=S.episodes.find(x=>x.id===PLEPV.id),c=e&&e.pack&&e.pack.cuts[+t.dataset.i];if(!c)return;if(t.dataset.pke)c[t.dataset.pke]=t.value;else{const l=c.lines&&c.lines[+t.dataset.j];if(l)l[t.dataset.pkl]=t.value;}plSave();return;}
  if(t.matches&&t.matches('[data-pkn]')){const v=Math.max(0,Math.min(80,parseInt(t.value,10)||0));PLPK.n=v;const w=t.closest('.plpkrow');w.querySelectorAll('[data-placts=pkn]').forEach(x=>x.setAttribute('aria-pressed',!t.value.trim()&&+x.dataset.v===v));t.parentNode.classList.toggle('on',!!t.value.trim());if(+t.value>80)t.value=80;return;}
