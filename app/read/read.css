@@ -424,7 +424,7 @@ html:has(.rd){scroll-behavior:smooth}
 /* 작가용 — 휴지통 · 그림으로 올리기 · 관심 아이콘 */
 .rd .r-thead h1 .r-editic+.r-editic{margin-left:6px}
 .rd .r-btn.r-danger{border-color:var(--red);color:var(--red)}.rd .r-btn.r-danger:hover{background:var(--red);color:#fff}
-.rd .r-btn.r-fav{gap:6px}.rd .r-btn.r-fav.r-on{padding:0;width:48px;background:transparent;border-color:var(--red);color:var(--red)}
+.rd .r-btn.r-fav{gap:6px}.rd .r-btn.r-fav.r-on{padding:13px 0;width:50px;min-height:48px;background:transparent;border-color:var(--red);color:var(--red)}
 .rd .r-hero .r-fav.r-on{border-color:var(--red);color:var(--red)}
 .rd .r-ico.r-fill{fill:currentColor}
 .rd .r-osheet p{margin:0}
