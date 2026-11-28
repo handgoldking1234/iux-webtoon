@@ -138,7 +138,8 @@ function EpEdit({ seriesId, e, nos, onClose }: { seriesId: string; e: E; nos: nu
       }
       setBusy('저장 중…');
       if (!(await call(`series/${seriesId}`, { episode: { no: e.no, title, authorNote: note, publishAt } }, 'PATCH'))) return;
-      if (pos !== sorted.indexOf(e.no) + 1) {
+      // 번호가 비어 있으면(예: 1화를 지워 2화만 남음) 저장할 때 1화부터 다시 매겨요
+      if (pos !== sorted.indexOf(e.no) + 1 || sorted.some((n, i) => n !== i + 1)) {
         const order = sorted.filter((n) => n !== e.no); order.splice(pos - 1, 0, e.no);
         if (!(await call(`series/${seriesId}`, { order }, 'PATCH'))) return;
       }
