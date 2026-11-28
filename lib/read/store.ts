@@ -71,7 +71,7 @@ export async function getSeries(id: string, viewer?: { id: string; isAdmin: bool
     // 작품 · 회차 목록 · 관심 여부를 한꺼번에 물어요 (차례로 물으면 그만큼 느려요)
     const [{ data }, { data: e }, f] = await Promise.all([
         db().from('read_series').select('*').eq('id', id).maybeSingle(),
-        db().from('read_episodes').select('id,series_id,no,title,thumb_path,ai,status,publish_at,views,rating_sum,rating_count,comments,created_at,cuts').eq('series_id', id).order('no', { ascending: false }),
+        db().from('read_episodes').select('id,series_id,no,title,author_note,thumb_path,ai,status,publish_at,views,rating_sum,rating_count,comments,created_at,cuts').eq('series_id', id).order('no', { ascending: false }),
         viewer ? db().from('read_follows').select('series_id').eq('series_id', id).eq('user_id', viewer.id).maybeSingle() : Promise.resolve({ data: null }),
       ]);
     s = data as Series | null;
@@ -286,6 +286,42 @@ export async function publish(uid: string, p: PublishIn): Promise<{ seriesId: st
     sb.from('read_drafts').update({ used: true }).eq('id', d.id),
   ]);
   return { seriesId: s.id, no };
+}
+
+/* ───────── 작가가 올린 작품 · 회차 고치기 (본인 것만 — 관리자는 모두) */
+export type SeriesPatch = Partial<Pick<Series, 'title' | 'description' | 'genre' | 'age' | 'author_name'>>;
+export type EpisodePatch = { title?: string; author_note?: string | null; hidden?: boolean };
+async function ownSeries(uid: string, isAdmin: boolean, id: string): Promise<Series> {
+  const s = live() ? ((await db().from('read_series').select('*').eq('id', id).maybeSingle()).data as Series | null) : demo().series.find((x) => x.id === id) || null;
+  if (!s || (s.author_id !== uid && !isAdmin)) throw new Error('not_found');
+  return s;
+}
+export async function updateSeries(uid: string, isAdmin: boolean, id: string, patch: SeriesPatch) {
+  const s = await ownSeries(uid, isAdmin, id);
+  if (!live()) { Object.assign(s, patch); return; }
+  const { error } = await db().from('read_series').update({ ...patch, updated_at: nowIso() }).eq('id', id);
+  if (error) throw error;
+}
+export async function updateEpisode(uid: string, isAdmin: boolean, id: string, no: number, patch: EpisodePatch) {
+  await ownSeries(uid, isAdmin, id);
+  const row: Record<string, unknown> = {};
+  if (patch.title !== undefined) row.title = patch.title;
+  if (patch.author_note !== undefined) row.author_note = patch.author_note;
+  if (!live()) {
+    const e = demo().episodes.find((x) => x.series_id === id && x.no === no);
+    if (!e) throw new Error('not_found');
+    Object.assign(e, row);
+    if (patch.hidden !== undefined) e.status = patch.hidden ? 'hidden' : Date.parse(e.publish_at) > Date.now() ? 'scheduled' : 'public';
+    return;
+  }
+  if (patch.hidden !== undefined) {
+    const { data } = await db().from('read_episodes').select('publish_at').eq('series_id', id).eq('no', no).maybeSingle();
+    if (!data) throw new Error('not_found');
+    row.status = patch.hidden ? 'hidden' : Date.parse((data as { publish_at: string }).publish_at) > Date.now() ? 'scheduled' : 'public';
+  }
+  if (!Object.keys(row).length) return;
+  const { error } = await db().from('read_episodes').update(row).eq('series_id', id).eq('no', no);
+  if (error) throw error;
 }
 
 /* ───────── 관리자 */

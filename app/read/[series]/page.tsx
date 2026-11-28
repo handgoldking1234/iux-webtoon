@@ -9,6 +9,7 @@ import { avg } from '@/lib/read/types';
 import { sv } from '@/lib/read/view';
 import Art from '../_ui/Art';
 import { FollowButton, ReportButton, ShareButton } from '../_ui/Interact';
+import { SeriesEdit } from '../_ui/OwnerEdit';
 import Thumb from '../_ui/Thumb';
 import { k } from '../_ui/k';
 
@@ -50,6 +51,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
             <FollowButton seriesId={s.id} initial={followed} />
             <ShareButton />
             {owner && <Link className={k('btn big')} href={readHref('publish')}>다음 화 올리기</Link>}
+            {owner && <SeriesEdit s={{ id: s.id, title: s.title, authorName: s.author_name, genre: s.genre, age: s.age, description: s.description }} eps={episodes.map((e) => ({ no: e.no, title: e.title, authorNote: e.author_note || '', hidden: e.status === 'hidden' }))} />}
           </div>
         </div>
       </section>

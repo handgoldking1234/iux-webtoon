@@ -403,3 +403,13 @@
 .rd .r-epbar{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:6px}.rd .r-epbar .r-btn{justify-content:center}.rd .r-epbar .r-off{opacity:.35;pointer-events:none}
 .rd .r-topbtn{position:fixed;right:max(16px,calc(50vw - 440px));bottom:calc(20px + env(safe-area-inset-bottom,0px));z-index:15;width:46px;height:46px;border-radius:50%;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);color:var(--ink);box-shadow:0 6px 18px rgba(0,0,0,.35)}.rd .r-topbtn:hover{border-color:var(--green);color:var(--green)}
 html:has(.rd){scroll-behavior:smooth}
+/* 작가용 — 연재 수정 창 */
+.rd .r-ovl{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px}
+.rd .r-osheet{width:min(560px,100%);max-height:calc(100dvh - 32px);overflow:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.rd .r-osheet h2{font-size:19px;margin:0}.rd .r-osheet h3{font-size:14px;margin:10px 0 0;padding-top:14px;border-top:1px solid var(--line)}
+.rd .r-osheet .r-field{display:flex;flex-direction:column;gap:6px;font-size:13px;font-weight:700}.rd .r-osheet .r-field small{font-weight:500;color:var(--ink-2);margin-left:6px}
+.rd .r-osheet .r-two{gap:10px}
+.rd .r-obtn{display:flex;justify-content:flex-end;gap:8px}
+.rd .r-oeps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
+.rd .r-oeps li{display:flex;align-items:center;gap:6px;font-size:13.5px}.rd .r-oeps li>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rd .r-oeps .r-btn{padding:6px 12px;font-size:12.5px}
