@@ -23,7 +23,7 @@ export default function Gnb({ signedIn }: { signedIn: boolean }) {
         </nav>
         <div className={k('right')}>
           {signedIn
-            ? <Link className={k('btn')} href={readHref('publish')} title="내가 올린 작품 · 연재하는 방법">내 연재</Link>
+            ? <Link className={k('btn')} href={readHref('publish')} title="그림 파일로 올리기 · 내가 올린 작품 고치기 · 휴지통">연재 올리기</Link>
             : <a className={k('btn only-wide')} href={`/login?next=${encodeURIComponent(p)}`}>로그인</a>}
           <a className={k('btn go')} href="/studio" title="웹툰 만들기 (작업실) · 만든 회차는 작업실에서 「연재하기」로 올려요"><Ic n="pen" />웹툰 만들기</a>
         </div>
