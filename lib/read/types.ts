@@ -17,6 +17,10 @@ export type Series = {
   review: 'none' | 'pending' | 'approved' | 'rejected';
   review_note?: string | null;
   hidden: boolean;
+  /** 작가가 잠깐 숨김 */
+  paused?: boolean;
+  /** 휴지통에 넣은 시각 — 30일 뒤 완전히 지워요 */
+  deleted_at?: string | null;
   thumb_path: string | null;
   episodes: number;
   follows: number;
@@ -42,6 +46,7 @@ export type Episode = {
   ai: boolean;
   status: 'public' | 'scheduled' | 'hidden';
   publish_at: string;
+  deleted_at?: string | null;
   views: number;
   rating_sum: number;
   rating_count: number;

@@ -1,13 +1,21 @@
 import { AGES, GENRES } from '@/lib/read/config';
-import { setArt, signArt, updateEpisode, updateSeries, type EpisodePatch, type SeriesPatch } from '@/lib/read/store';
+import { purgeEpisode, purgeSeries, setArt, signArt, trashEpisode, trashSeries, updateEpisode, updateSeries, type EpisodePatch, type SeriesPatch } from '@/lib/read/store';
 import { body, err, ok, withMe } from '../../_h';
 
 /** 작가가 자기 작품 · 회차 정보를 고쳐요 (제목 · 필명 · 장르 · 연령 · 소개 / 회차 제목 · 작가의 말 · 숨김) */
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   return withMe(async (me) => {
     const { id } = await params;
-    const b = await body<{ series?: Record<string, unknown>; episode?: Record<string, unknown>; art?: { dir?: string; epNo?: number } }>(req);
+    const b = await body<{ series?: Record<string, unknown>; episode?: Record<string, unknown>; art?: { dir?: string; epNo?: number }; paused?: boolean; trash?: { on?: boolean; epNo?: number; purge?: boolean } }>(req);
     const uid = me.profile.id, adm = me.isAdmin;
+    if (b.paused !== undefined) await updateSeries(uid, adm, id, { paused: !!b.paused });
+    if (b.trash) {
+      const no = b.trash.epNo === undefined ? undefined : Number(b.trash.epNo);
+      if (no !== undefined && (!Number.isInteger(no) || no < 1)) return err('bad', '회차를 알려 주세요');
+      if (b.trash.purge) { if (no) await purgeEpisode(uid, adm, id, no); else await purgeSeries(uid, adm, id); }
+      else if (no) await trashEpisode(uid, adm, id, no, b.trash.on !== false);
+      else await trashSeries(uid, adm, id, b.trash.on !== false);
+    }
     if (b.series) {
       const s = b.series, p: SeriesPatch = {};
       const title = String(s.title ?? '').trim().slice(0, 40), author = String(s.authorName ?? '').trim().slice(0, 20), desc = String(s.description ?? '').trim().slice(0, 300);
@@ -26,6 +34,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       if (e.title !== undefined) { const t = String(e.title).trim().slice(0, 60); if (!t) return err('bad', '회차 제목을 적어 주세요'); p.title = t; }
       if (e.authorNote !== undefined) p.author_note = String(e.authorNote).trim().slice(0, 500) || null;
       if (e.hidden !== undefined) p.hidden = !!e.hidden;
+      if (e.publishAt !== undefined) { const t = Date.parse(String(e.publishAt)); if (!Number.isFinite(t)) return err('bad', '공개 일시를 다시 골라 주세요'); p.publishAt = new Date(Math.max(t, 0)).toISOString(); }
       await updateEpisode(uid, adm, id, no, p);
     }
     if (b.art) {

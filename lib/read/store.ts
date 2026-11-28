@@ -21,7 +21,8 @@ export const newId = (n = 8): string => {
   for (let i = 0; i < n; i++) s += a[b[i] % a.length];
   return RESERVED.has(s) ? newId(n) : s;
 };
-const visibleEp = (e: Episode) => e.status === 'public' && Date.parse(e.publish_at) <= Date.now();
+/** 예약 공개는 시각이 되면 저절로 보여요 (숨김만 계속 안 보임) */
+const visibleEp = (e: Episode) => e.status !== 'hidden' && !e.deleted_at && Date.parse(e.publish_at) <= Date.now();
 
 /* ───────── 그림 주소 */
 export function img(path: string | null | undefined): string | null {
@@ -33,8 +34,8 @@ export const thumbOf = (s: Series) => img(s.thumb_path);
 
 /* ───────── 목록 */
 async function allSeries(): Promise<Series[]> {
-  if (!live()) return demo().series.filter((s) => !s.hidden && s.episodes > 0);
-  const { data } = await db().from('read_series').select('*').eq('hidden', false).gt('episodes', 0).order('last_episode_at', { ascending: false, nullsFirst: false }).limit(500);
+  if (!live()) return demo().series.filter((s) => !s.hidden && !s.paused && !s.deleted_at && s.episodes > 0);
+  const { data } = await db().from('read_series').select('*').eq('hidden', false).eq('paused', false).is('deleted_at', null).gt('episodes', 0).order('last_episode_at', { ascending: false, nullsFirst: false }).limit(500);
   return (data || []) as Series[];
 }
 export const rankScore = (s: Series) => avg(s) * Math.log10(s.follows + s.views / 50 + 10);
@@ -66,12 +67,12 @@ export async function getSeries(id: string, viewer?: { id: string; isAdmin: bool
   if (!live()) {
     const M = demo();
     s = M.series.find((x) => x.id === id) || null;
-    if (s) { eps = M.episodes.filter((e) => e.series_id === id); followed = !!viewer && M.follows.has(`${id}:${viewer.id}`); }
+    if (s) { eps = M.episodes.filter((e) => e.series_id === id && !e.deleted_at); followed = !!viewer && M.follows.has(`${id}:${viewer.id}`); }
   } else {
     // 작품 · 회차 목록 · 관심 여부를 한꺼번에 물어요 (차례로 물으면 그만큼 느려요)
     const [{ data }, { data: e }, f] = await Promise.all([
         db().from('read_series').select('*').eq('id', id).maybeSingle(),
-        db().from('read_episodes').select('id,series_id,no,title,author_note,thumb_path,ai,status,publish_at,views,rating_sum,rating_count,comments,created_at,cuts').eq('series_id', id).order('no', { ascending: false }),
+        db().from('read_episodes').select('id,series_id,no,title,author_note,thumb_path,ai,status,publish_at,views,rating_sum,rating_count,comments,created_at,cuts').eq('series_id', id).is('deleted_at', null).order('no', { ascending: false }),
         viewer ? db().from('read_follows').select('series_id').eq('series_id', id).eq('user_id', viewer.id).maybeSingle() : Promise.resolve({ data: null }),
       ]);
     s = data as Series | null;
@@ -79,7 +80,8 @@ export async function getSeries(id: string, viewer?: { id: string; isAdmin: bool
   }
   if (!s) return null;
   const owner = !!viewer && (viewer.id === s.author_id || viewer.isAdmin);
-  if (s.hidden && !owner) return null;
+  if (s.deleted_at) return null; // 휴지통에 있는 작품은 「내 연재」에서만 보여요
+  if ((s.hidden || s.paused) && !owner) return null;
   eps = eps.filter((e) => owner || visibleEp(e)).sort((a, b) => b.no - a.no);
   return { series: s, episodes: eps, followed, owner };
 }
@@ -224,8 +226,8 @@ export async function markDraftReady(uid: string, id: string) {
   if (error) throw error;
 }
 export async function mySeries(uid: string): Promise<Series[]> {
-  if (!live()) return demo().series.filter((s) => s.author_id === uid);
-  const { data } = await db().from('read_series').select('*').eq('author_id', uid).order('updated_at', { ascending: false });
+  if (!live()) return demo().series.filter((s) => s.author_id === uid && !s.deleted_at);
+  const { data } = await db().from('read_series').select('*').eq('author_id', uid).is('deleted_at', null).order('updated_at', { ascending: false });
   return (data || []) as Series[];
 }
 
@@ -240,8 +242,8 @@ export type PublishIn = {
 /** 내 작품들의 회차 (연재하기 팝업 — 그림만 다시 올릴 회차 고르기) */
 export async function myEpisodes(ids: string[]): Promise<Pick<Episode, 'series_id' | 'no' | 'title' | 'author_note'>[]> {
   if (!ids.length) return [];
-  if (!live()) return demo().episodes.filter((e) => ids.includes(e.series_id));
-  const { data } = await db().from('read_episodes').select('series_id,no,title,author_note').in('series_id', ids).order('no', { ascending: true });
+  if (!live()) return demo().episodes.filter((e) => ids.includes(e.series_id) && !e.deleted_at);
+  const { data } = await db().from('read_episodes').select('series_id,no,title,author_note').in('series_id', ids).is('deleted_at', null).order('no', { ascending: true });
   return (data || []) as Pick<Episode, 'series_id' | 'no' | 'title' | 'author_note'>[];
 }
 export async function publish(uid: string, p: PublishIn): Promise<{ seriesId: string; no: number }> {
@@ -315,8 +317,8 @@ export async function publish(uid: string, p: PublishIn): Promise<{ seriesId: st
 }
 
 /* ───────── 작가가 올린 작품 · 회차 고치기 (본인 것만 — 관리자는 모두) */
-export type SeriesPatch = Partial<Pick<Series, 'title' | 'description' | 'genre' | 'age' | 'author_name'>>;
-export type EpisodePatch = { title?: string; author_note?: string | null; hidden?: boolean };
+export type SeriesPatch = Partial<Pick<Series, 'title' | 'description' | 'genre' | 'age' | 'author_name' | 'paused'>>;
+export type EpisodePatch = { title?: string; author_note?: string | null; hidden?: boolean; publishAt?: string };
 async function ownSeries(uid: string, isAdmin: boolean, id: string): Promise<Series> {
   const s = live() ? ((await db().from('read_series').select('*').eq('id', id).maybeSingle()).data as Series | null) : demo().series.find((x) => x.id === id) || null;
   if (!s || (s.author_id !== uid && !isAdmin)) throw new Error('not_found');
@@ -337,17 +339,74 @@ export async function updateEpisode(uid: string, isAdmin: boolean, id: string, n
     const e = demo().episodes.find((x) => x.series_id === id && x.no === no);
     if (!e) throw new Error('not_found');
     Object.assign(e, row);
-    if (patch.hidden !== undefined) e.status = patch.hidden ? 'hidden' : Date.parse(e.publish_at) > Date.now() ? 'scheduled' : 'public';
+    if (patch.publishAt !== undefined) e.publish_at = patch.publishAt;
+    if (patch.hidden !== undefined || patch.publishAt !== undefined) e.status = (patch.hidden ?? e.status === 'hidden') ? 'hidden' : Date.parse(e.publish_at) > Date.now() + 60e3 ? 'scheduled' : 'public';
     return;
   }
-  if (patch.hidden !== undefined) {
-    const { data } = await db().from('read_episodes').select('publish_at').eq('series_id', id).eq('no', no).maybeSingle();
+  if (patch.hidden !== undefined || patch.publishAt !== undefined) {
+    const { data } = await db().from('read_episodes').select('publish_at,status').eq('series_id', id).eq('no', no).maybeSingle();
     if (!data) throw new Error('not_found');
-    row.status = patch.hidden ? 'hidden' : Date.parse((data as { publish_at: string }).publish_at) > Date.now() ? 'scheduled' : 'public';
+    const cur = data as { publish_at: string; status: Episode['status'] };
+    const at = patch.publishAt !== undefined ? patch.publishAt : cur.publish_at;
+    if (patch.publishAt !== undefined) row.publish_at = at;
+    const hide = patch.hidden !== undefined ? patch.hidden : cur.status === 'hidden';
+    row.status = hide ? 'hidden' : Date.parse(at) > Date.now() + 60e3 ? 'scheduled' : 'public';
   }
   if (!Object.keys(row).length) return;
   const { error } = await db().from('read_episodes').update(row).eq('series_id', id).eq('no', no);
   if (error) throw error;
+}
+
+/* ───────── 휴지통 — 넣으면 독자에게 안 보이고, 30일 안에는 되살릴 수 있어요 */
+export const TRASH_DAYS = 30;
+const trashEdge = () => new Date(Date.now() - TRASH_DAYS * 864e5).toISOString();
+export async function trashSeries(uid: string, isAdmin: boolean, id: string, on: boolean) {
+  const s = await ownSeries(uid, isAdmin, id);
+  if (!live()) { s.deleted_at = on ? nowIso() : null; return; }
+  const { error } = await db().from('read_series').update({ deleted_at: on ? nowIso() : null, updated_at: nowIso() }).eq('id', id);
+  if (error) throw error;
+}
+export async function trashEpisode(uid: string, isAdmin: boolean, id: string, no: number, on: boolean) {
+  await ownSeries(uid, isAdmin, id);
+  if (!live()) { const e = demo().episodes.find((x) => x.series_id === id && x.no === no); if (!e) throw new Error('not_found'); e.deleted_at = on ? nowIso() : null; return; }
+  const { data, error } = await db().from('read_episodes').update({ deleted_at: on ? nowIso() : null }).eq('series_id', id).eq('no', no).select('no');
+  if (error) throw error;
+  if (!data?.length) throw new Error('not_found');
+}
+/** 완전히 지우기 — 휴지통에 있는 것만 (되살릴 수 없어요) */
+export async function purgeSeries(uid: string, isAdmin: boolean, id: string) {
+  const s = await ownSeries(uid, isAdmin, id);
+  if (!s.deleted_at) throw new Error('not_found');
+  if (!live()) { const M = demo(); M.series = M.series.filter((x) => x.id !== id); M.episodes = M.episodes.filter((x) => x.series_id !== id); return; }
+  const { error } = await db().from('read_series').delete().eq('id', id).not('deleted_at', 'is', null);
+  if (error) throw error;
+}
+export async function purgeEpisode(uid: string, isAdmin: boolean, id: string, no: number) {
+  await ownSeries(uid, isAdmin, id);
+  if (!live()) { const M = demo(); M.episodes = M.episodes.filter((x) => !(x.series_id === id && x.no === no && x.deleted_at)); return; }
+  const { error } = await db().from('read_episodes').delete().eq('series_id', id).eq('no', no).not('deleted_at', 'is', null);
+  if (error) throw error;
+}
+/** 내 휴지통 — 여는 김에 30일 지난 것은 완전히 지워요 */
+export async function myTrash(uid: string): Promise<{ series: Series[]; episodes: (Pick<Episode, 'series_id' | 'no' | 'title' | 'deleted_at'> & { series_title: string })[] }> {
+  if (!live()) {
+    const M = demo(), mine = M.series.filter((s) => s.author_id === uid);
+    return { series: mine.filter((s) => s.deleted_at), episodes: M.episodes.filter((e) => e.deleted_at && mine.some((s) => s.id === e.series_id && !s.deleted_at)).map((e) => ({ series_id: e.series_id, no: e.no, title: e.title, deleted_at: e.deleted_at, series_title: mine.find((s) => s.id === e.series_id)?.title || '' })) };
+  }
+  const sb = db(), edge = trashEdge();
+  const { data: all } = await sb.from('read_series').select('*').eq('author_id', uid);
+  const mine = (all || []) as Series[], ids = mine.map((s) => s.id);
+  const old = mine.filter((s) => s.deleted_at && s.deleted_at < edge).map((s) => s.id);
+  await Promise.all([
+    old.length ? sb.from('read_series').delete().in('id', old) : null,
+    ids.length ? sb.from('read_episodes').delete().in('series_id', ids).lt('deleted_at', edge) : null,
+  ]);
+  const { data: eps } = ids.length ? await sb.from('read_episodes').select('series_id,no,title,deleted_at').in('series_id', ids).not('deleted_at', 'is', null).order('deleted_at', { ascending: false }) : { data: [] };
+  const live2 = mine.filter((s) => !old.includes(s.id));
+  return {
+    series: live2.filter((s) => s.deleted_at),
+    episodes: ((eps || []) as Pick<Episode, 'series_id' | 'no' | 'title' | 'deleted_at'>[]).filter((e) => live2.some((s) => s.id === e.series_id && !s.deleted_at)).map((e) => ({ ...e, series_title: live2.find((s) => s.id === e.series_id)?.title || '' })),
+  };
 }
 
 /** 이미지 다시 올리기 — 올릴 주소 받기 (새 폴더에 올려서 예전 그림이 남아 보이지 않게) */

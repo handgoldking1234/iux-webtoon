@@ -1,6 +1,7 @@
 'use client';
 import { useEffect, useState } from 'react';
 import { call, toast } from './client';
+import { Ic } from './Icons';
 import { k } from './k';
 
 export function FollowButton({ seriesId, initial }: { seriesId: string; initial: boolean }) {
@@ -11,7 +12,7 @@ export function FollowButton({ seriesId, initial }: { seriesId: string; initial:
       const j = await call<{ follows: number }>('follow', { seriesId, on: !on });
       setBusy(false);
       if (j) { setOn(!on); toast(!on ? '관심 작품에 넣었어요 · 새 회차가 올라오면 알려 드려요' : '관심 작품에서 뺐어요'); }
-    }}>{on ? '관심 등록됨' : '+ 관심'}</button>
+    }} aria-label={on ? '관심 등록됨 · 누르면 빼요' : '관심 작품에 넣기'} title={on ? '관심 등록됨 · 누르면 빼요' : '관심 작품에 넣기'}><Ic n="heart" className={k(on ? 'ico fill' : 'ico')} />{on ? null : '관심'}</button>
   );
 }
 

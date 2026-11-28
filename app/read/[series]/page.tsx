@@ -9,7 +9,7 @@ import { avg } from '@/lib/read/types';
 import { sv } from '@/lib/read/view';
 import Art from '../_ui/Art';
 import { FollowButton, ReportButton, ShareButton } from '../_ui/Interact';
-import { SeriesEdit } from '../_ui/OwnerEdit';
+import { NextEpisode, SeriesEdit } from '../_ui/OwnerEdit';
 import Thumb from '../_ui/Thumb';
 import { k } from '../_ui/k';
 
@@ -36,7 +36,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
       <section className={k('thead')}>
         <div className={k('th')}><Thumb s={v} w={300} h={400} alt={`${s.title} 썸네일`} /></div>
         <div>
-          <h1>{s.title}{owner && <SeriesEdit s={{ id: s.id, title: s.title, authorName: s.author_name, genre: s.genre, age: s.age, description: s.description }} eps={episodes.map((e) => ({ no: e.no, title: e.title, authorNote: e.author_note || '', hidden: e.status === 'hidden' }))} />}</h1>
+          <h1>{s.title}{owner && <SeriesEdit s={{ id: s.id, title: s.title, authorName: s.author_name, genre: s.genre, age: s.age, description: s.description, paused: !!s.paused, nextNo: s.episodes + 1 }} eps={episodes.map((e) => ({ no: e.no, title: e.title, authorNote: e.author_note || '', hidden: e.status === 'hidden', publishAt: e.publish_at }))} />}</h1>
           <p className={k('who')}><span>글/그림 {s.author_name}</span><span>{when}</span><span>{ageLabel(s.age)}</span></p>
           <p className={k('desc')}>{s.description}</p>
           <div className={k('chips')}>
@@ -45,12 +45,13 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
             {avg(s) > 0 && <span className={k('chip')}>★ {avg(s).toFixed(2)}</span>}
             {owner && s.review === 'pending' && <span className={k('chip')}>요일연재 검토 중</span>}
             {owner && s.hidden && <span className={k('chip')}>운영 숨김</span>}
+            {owner && s.paused && <span className={k('chip')}>숨김 · 나만 보여요</span>}
           </div>
           <div className={k('acts')}>
             {first !== null && <Link className={k('btn go big')} href={readHref(`${s.id}/${first}`)}>첫 화 보기</Link>}
             <FollowButton seriesId={s.id} initial={followed} />
             <ShareButton />
-            {owner && <Link className={k('btn big')} href={readHref('publish')}>다음 화 올리기</Link>}
+            {owner && <NextEpisode seriesId={s.id} nextNo={s.episodes + 1} />}
           </div>
         </div>
       </section>
@@ -60,7 +61,7 @@ export default async function SeriesPage({ params }: { params: Promise<{ series:
         {episodes.map((e) => (
           <Link className={k('ep')} key={e.id} href={readHref(`${s.id}/${e.no}`)}>
             <span className={k('eth')}>{img(e.thumb_path) ? <img src={img(e.thumb_path)!} alt="" loading="lazy" style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'top' }} /> : s.art ? <Art art={s.art} seed={s.id + e.no} w={320} h={200} /> : null}</span>
-            <span style={{ minWidth: 0 }}><b>{e.no}화 · {e.title}</b><small>{e.rating_count ? <span className={k('star tnum')}>★ {avg(e).toFixed(2)}</span> : '별점 없음'}{e.status !== 'public' ? ` · ${e.status === 'scheduled' ? '예약 공개' : '숨김'}` : Date.parse(e.publish_at) > Date.now() ? ' · 예약 공개' : ''}</small></span>
+            <span style={{ minWidth: 0 }}><b>{e.no}화 · {e.title}</b><small>{e.rating_count ? <span className={k('star tnum')}>★ {avg(e).toFixed(2)}</span> : '별점 없음'}{e.status === 'hidden' ? ' · 숨김' : Date.parse(e.publish_at) > Date.now() ? ' · 예약 공개' : ''}</small></span>
             <span className={k('d tnum')}>{date(e.publish_at)}</span>
           </Link>
         ))}

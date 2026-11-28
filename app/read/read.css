@@ -421,3 +421,21 @@ html:has(.rd){scroll-behavior:smooth}
 .rd .r-oart{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rd .r-oart small{color:var(--ink-2);font-size:12.5px;flex:1;min-width:180px}
 .rd .r-osheet label.r-btn{cursor:pointer}.rd .r-osheet label.r-btn[aria-disabled=true]{opacity:.5;pointer-events:none}
 .rd .r-oeps li{flex-wrap:wrap}
+/* 작가용 — 휴지통 · 그림으로 올리기 · 관심 아이콘 */
+.rd .r-thead h1 .r-editic+.r-editic{margin-left:6px}
+.rd .r-btn.r-danger{border-color:var(--red);color:var(--red)}.rd .r-btn.r-danger:hover{background:var(--red);color:#fff}
+.rd .r-btn.r-fav{gap:6px}.rd .r-btn.r-fav.r-on{padding:0;width:48px;background:transparent;border-color:var(--red);color:var(--red)}
+.rd .r-hero .r-fav.r-on{border-color:var(--red);color:var(--red)}
+.rd .r-ico.r-fill{fill:currentColor}
+.rd .r-osheet p{margin:0}
+.rd .r-oseg{display:flex;flex-wrap:wrap;gap:6px 16px;font-weight:500;font-size:14px}.rd .r-oseg label{display:flex;align-items:center;gap:6px;cursor:pointer}
+.rd .r-osheet input[type=datetime-local]{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:10px;padding:9px 12px;font:inherit;font-weight:500;max-width:260px;color-scheme:dark}
+.rd .r-oway{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.rd .r-oway small{color:var(--ink-2);font-size:12.5px;flex:1;min-width:180px}
+.rd .r-odrop{display:flex;flex-direction:column;align-items:center;gap:4px;padding:20px 12px;border:1.5px dashed var(--line);border-radius:12px;cursor:pointer;text-align:center}.rd .r-odrop:hover{border-color:var(--green)}.rd .r-odrop small{color:var(--ink-2);font-size:12.5px}.rd .r-odrop .r-ico{width:24px;height:24px}
+.rd .r-ofiles{list-style:none;margin:0;padding:0;max-height:200px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+.rd .r-ofiles li{display:flex;align-items:center;gap:8px;padding:6px 10px;font-size:13px;border-bottom:1px solid var(--line)}.rd .r-ofiles li:last-child{border-bottom:0}
+.rd .r-ofiles .r-tnum{width:24px;color:var(--ink-2)}.rd .r-ofiles .r-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rd .r-ofiles button{width:28px;height:28px;border-radius:6px;border:1px solid var(--line);background:transparent;color:var(--ink)}.rd .r-ofiles button:disabled{opacity:.3}
+.rd .r-oagree{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.5;cursor:pointer}.rd .r-oagree input{margin-top:3px}.rd .r-oagree a{text-decoration:underline}
+.rd .r-oeps li small{color:var(--ink-2);font-weight:500}.rd .r-oeps .r-btn .r-ico{width:14px;height:14px}
+.rd .r-trow{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:10px 14px;border:1px solid var(--line);border-radius:10px}.rd .r-trow>span{flex:1;min-width:160px;display:flex;flex-direction:column}.rd .r-trow small{color:var(--ink-2);font-size:12.5px}
